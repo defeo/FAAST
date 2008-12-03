@@ -1,3 +1,4 @@
+SHELL = /bin/bash
 CC = g++
 OPT=-g -pg -Wall -DAS_DEBUG=1
 
@@ -14,7 +15,7 @@ CPROFLIB =
 ROOT = .
 SRC = $(ROOT)/src
 INC = $(ROOT)/include
-BIN = $(ROOT)/bin/$(shell uname -m)
+BIN = $(ROOT)/bin/$(shell hostname)-$(shell uname -m)-$(CC)$(shell $(CC) -dumpversion)
 
 # Parameters for gcc
 # For cvs compatibility reasons, headers of linked libraries must be in
@@ -27,27 +28,31 @@ LIB=$(NTLLIB) $(GMPLIB) $(MLIB) $(ZLIB) $(CPROFLIB)
 COMMONOBJS := 
 COMMONOBJS := $(COMMONOBJS:%=$(BIN)/%)
 
+# Script to create the bin directory
+createbin:
+	if [[ ! -d $(BIN) ]] ; then mkdir $(BIN); fi
+
 ########## binaries
 
-#TESTCRV := testcrv.o montgomery.o io.o $(NTLFLDOBJS)
-#TESTCRV := $(TESTCRV:%=$(BIN)/%)
-#testcrv: $(COMMONOBJS) $(TESTCRV)
-#	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTCRV) $(LIB) -o $(BIN)/testcrv
+TEST := test.o
+TEST := $(TEST:%=$(BIN)/%)
+test: $(COMMONOBJS) $(TEST)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
 ########## .o files
 
-#$(BIN)/testcrv.o: $(SRC)/testcrv.c++ $(INC)/crvell.h $(INC)/options.h $(INC)/io.h
-#	$(CC) -c $(OPT) $(IPATH) $(SRC)/testcrv.c++ -o $(BIN)/testcrv.o
+$(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.h
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
 
 ########## other files
 
 #$(INC)/options.h: $(INC)/crvell/twistinvariant.h $(INC)/crvell.h $(INC)/crvell/classic.h \
 #	$(INC)/artintower.h $(INC)/artintower/ntl-based/tower.h
-
+	
 
 ######################################################################
 .PHONY: all
-all: 
+all: createbin test
 
 .PHONY: clean
 clean:

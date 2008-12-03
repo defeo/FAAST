@@ -1,0 +1,4 @@
+#ifndef FIELDPOLYNOMIAL_H_
+#define FIELDPOLYNOMIAL_H_
+
+#endif /*FIELDPOLYNOMIAL_H_*/
