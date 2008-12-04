@@ -41,14 +41,14 @@ test: $(COMMONOBJS) $(TEST)
 
 ########## .o files
 
-$(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.h
+$(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
 
 ########## other files
 
-#$(INC)/options.h: $(INC)/crvell/twistinvariant.h $(INC)/crvell.h $(INC)/crvell/classic.h \
-#	$(INC)/artintower.h $(INC)/artintower/ntl-based/tower.h
-	
+$(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp
+$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp
+
 
 ######################################################################
 .PHONY: all
