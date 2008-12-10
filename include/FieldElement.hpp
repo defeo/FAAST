@@ -31,7 +31,7 @@ namespace AS {
 		FieldElement() throw() : rep(), parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this element belongs to */
-		Field<T> parent() throw(UndefinedFieldException)
+		Field<T> parent() const throw(UndefinedFieldException)
 		{ return parent_field; }
 		
 	/****************** Copy ******************/
@@ -76,6 +76,7 @@ namespace AS {
 		{ operator=(a); operator/=(b); }
 			
 		/* Unary operations */
+		FieldElement<T> operator-() const throw();
 		FieldElement<T> inv() const throw(DivisionByZeroException);
 		FieldElement<T> operator^(const BigInt&) const throw();
 		FieldElement<T> operator^(const long) const throw();
@@ -94,14 +95,15 @@ namespace AS {
 		FieldElement<T> pseudotrace(const long n) const throw();
 		
 		/* Self-incrementing Unary operations */
-		void self_inv() const throw(DivisionByZeroException);
-		void operator^=(const BigInt&) const throw();
-		void operator^=(const long) const throw();
-		void self_frobenius() const throw();
-		void self_frobenius(const long) const throw();
-		void self_trace(const Field<T> F) const throw(NotASubFieldException);
-		void self_trace() const throw();
-		void self_pseudotrace(const long n) const throw();
+	 	void negate() throw();
+		void self_inv() throw(DivisionByZeroException);
+		void operator^=(const BigInt&) throw();
+		void operator^=(const long) throw();
+		void self_frobenius() throw();
+		void self_frobenius(const long) throw();
+		void self_trace(const Field<T> F) throw(NotASubFieldException);
+		void self_trace() throw();
+		void self_pseudotrace(const long n) throw();
 		
 	/****************** Coercion of elements ******************/
 		FieldElement<T> operator>>(const Field<T>&) const 
@@ -114,6 +116,13 @@ namespace AS {
 		bool operator!=(const FieldElement<T>& e) { return !this==e; }
 		bool IsZero() const throw();
 		bool IsOne() const throw();
+
+	/****************** Infrastructure ******************/
+		/* Interface with infrastructure. Use this only if you are
+		 * sure of what you do !
+		 */
+		ModPoly toInfrastructure() const throw();
+
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
 		/* Print the element as a polynomial over GF(p) in the

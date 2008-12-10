@@ -1,4 +1,164 @@
 #ifndef FIELDPOLYNOMIAL_H_
 #define FIELDPOLYNOMIAL_H_
 
+#include "Exceptions.hpp"
+#include <string>
+#include <vector>
+
+namespace AS {
+	template <class T> class Field;
+	
+	template <class T> class FieldPolynomial {
+	private:
+		typedef typename T::GFp         GFp;
+		typedef typename T::Poly        Poly;
+		typedef typename T::ModPoly     ModPoly;
+		typedef typename T::PolyModPoly PolyModPoly;
+		typedef typename T::BigInt      BigInt;
+		
+	/****************** Members ******************/
+		/* The representation of this element */
+		PolyModPoly rep;
+		/* The field this element belongs to */
+		const Field<T>* parent_field;
+
+
+	public:
+	/****************** Constructors ******************/
+		/* Constructor by default.
+		 * Constructs the 0 polynomial (over any field).
+		 */
+		FieldPolynomial() throw() : rep(), parent_field(NULL) {}
+	/****************** Properties ******************/
+		/* The field this polynomial is defined over */
+		Field<T> parent() const throw(UndefinedFieldException)
+		{ return parent_field; }
+		/* Degree. Returns -1 if the polynomial is 0. */
+		long degree() const throw();
+		
+	/****************** Copy ******************/
+		FieldPolynomial(const FieldPolynomial<T>&) throw();
+		FieldPolynomial<T>& operator=(const FieldPolynomial<T> &) throw();
+		
+	/****************** Coefficients ******************/
+		void getCoeff(const long, FieldElement<T>&) const throw();
+		void setCoeff(const long, const FieldElement<T>&) throw();
+	
+	/****************** Arithmetics ******************/
+		/* Binary operations */
+		FieldPolynomial<T> operator+(const FieldPolynomial<T>&)
+			const throw(NotInSameFieldException);
+		FieldPolynomial<T> operator-(const FieldPolynomial<T>&)
+			const throw(NotInSameFieldException);
+		FieldPolynomial<T> operator*(const FieldPolynomial<T>&)
+			const throw(NotInSameFieldException);
+		FieldPolynomial<T> operator/(const FieldPolynomial<T>&)
+			const throw(NotInSameFieldException, DivisionByZeroException);
+		FieldPolynomial<T> operator%(const FieldPolynomial<T>&)
+			const throw(NotInSameFieldException, DivisionByZeroException);
+			
+		/* Self-incrementing binary operations. */
+		void operator+=(const FieldPolynomial<T>&)
+			throw(NotInSameFieldException);
+		void operator-=(const FieldPolynomial<T>&)
+			throw(NotInSameFieldException);
+		void operator*=(const FieldPolynomial<T>&)
+			throw(NotInSameFieldException);
+		void operator/=(const FieldPolynomial<T>&)
+			throw(NotInSameFieldException, DivisionByZeroException);
+		void operator%=(const FieldPolynomial<T>&)
+			throw(NotInSameFieldException, DivisionByZeroException);
+
+		/* Memory-efficient (NTL-like) binary operations.
+		 * Aplly on the arguments and store in this.
+		 */
+		void sum(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
+			throw(NotInSameFieldException) 
+		{ operator=(a); operator+=(b); }
+		void difference(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
+			throw(NotInSameFieldException)
+		{ operator=(a); operator-=(b); }
+		void product(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
+			throw(NotInSameFieldException)
+		{ operator=(a); operator*=(b); }
+		void division(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
+			throw(NotInSameFieldException, DivisionByZeroException)
+		{ operator=(a); operator/=(b); }
+		void mod(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
+			throw(NotInSameFieldException, DivisionByZeroException)
+		{ operator=(a); operator%=(b); }
+			
+		/* Unary operations */
+		bool divides(const FieldPolynomial<T>&) const throw();
+		FieldPolynomial<T> operator-() const throw();
+		FieldPolynomial<T> operator^(const BigInt&) const throw();
+		FieldPolynomial<T> operator^(const long) const throw();
+		FieldPolynomial<T> derivative() const throw();
+		FieldPolynomial<T> monic() const throw();
+		/* Frobenius and iterated frobenius over the coefficients */
+		FieldPolynomial<T> frobenius() const throw();
+		FieldPolynomial<T> frobenius(const long) const throw();
+		
+		/* Self-incrementing Unary operations */
+		void negate() throw();
+		void operator^=(const BigInt&) throw();
+		void operator^=(const long) throw();
+		void self_derivative() throw();
+		void normalize() throw();
+		void self_frobenius() throw();
+		void self_frobenius(const long) throw();
+		
+	/****************** Coercion of elements ******************/
+		FieldPolynomial<T> operator>>(const Field<T>&) const 
+			throw(IllegalCoercionException);
+		void operator>>=(const Field<T>&) throw(IllegalCoercionException);
+		bool isCoercible(const Field<T>&) const throw();
+		
+	/****************** Comparison ******************/
+		bool operator==(const FieldPolynomial<T>&);
+		bool operator!=(const FieldPolynomial<T>& e) { return !this==e; }
+		bool IsZero() const throw();
+		bool IsOne() const throw();
+
+	/****************** Infrastructure ******************/
+		/* Interface with infrastructure. Use this only if you are
+		 * sure of what you do !
+		 */
+		ModPoly toInfrastructure() const throw();
+
+	/****************** Printing ******************/
+		ostream& print(ostream&) const;
+		/* Print the element as a polynomial over the base field in the
+		 * variable varPoly. varField is used to print the element of the field.
+		 */
+		ostream& print(ostream&, const string& varPoly, const string& varField) const;
+		/* Print the element as a polynomial over the base field in the
+		 * variable varPoly.
+		 * varsField is used to print the element of the field on the
+		 * multivariate basis. The number of variables in vars must match
+		 * one plus the Artin-Schreier height of the base field.
+		 * 
+		 * throws : ASException if there's not enough variables
+		 *          in var
+		 */
+		ostream& print(ostream&, const string& varPoly, vector<const string>& varsField) const;
+	/****************** Destructor ******************/
+		~FieldPolynomial() throw() {}
+
+
+	/*****************************************************/
+	/****************** Private section ******************/
+	/*****************************************************/
+	
+	private:
+	/****************** Internal Constructors ******************/
+		/* Construct an element with given representation and parent.
+		 * Reserved for used by Field<T>
+		 */
+		FieldPolynomial(PolyModPoly& P, Field<T>* p) throw() :
+			rep(P), parent_field(p) {}
+
+	};
+}
+
 #endif /*FIELDPOLYNOMIAL_H_*/

@@ -3,6 +3,7 @@
 
 #include "Exceptions.hpp"
 #include "FieldElement.hpp"
+#include "FieldPolynomial.hpp"
 
 namespace AS {
 	template <class T> class Field {
@@ -112,6 +113,11 @@ namespace AS {
 		FieldElement<T> primitiveElement() const throw ();
 		/* A random element of the field */
 		FieldElement<T> random() const throw ();
+		/* Interface with infrastructure. Use this only if you are
+		 * sure of what you do !
+		 */
+		FieldElement<T> fromInfrastructure(const ModPoly&) const throw();
+		FieldElement<T> fromInfrastructure(const PolyModPoly&) const throw();
 	
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
@@ -174,5 +180,7 @@ namespace AS {
 		//Field<T> () throw();
 	};
 }
+
+#include "../src/Field.c++"
 
 #endif /*FIELD_H_*/
