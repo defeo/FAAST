@@ -9,16 +9,24 @@ namespace AS {
 	template <class T> class Field;
 	
 	template <class T> class FieldElement {
+	
+	friend class Field<T>;
+	
 	private:
-		typedef typename T::GFp         GFp;
-		typedef typename T::Poly        Poly;
-		typedef typename T::ModPoly     ModPoly;
-		typedef typename T::PolyModPoly PolyModPoly;
-		typedef typename T::BigInt      BigInt;
+		typedef typename T::GFp     GFp;
+		typedef typename T::MatGFp  MatGFp;
+		typedef typename T::GFpX    GFpX;
+		typedef typename T::GFpE    GFpE;
+		typedef typename T::GFpEX   GFpEX;
+		typedef typename T::BigInt  BigInt;
+		typedef typename T::Context Context;
+		
 		
 	/****************** Members ******************/
 		/* The representation of this element */
-		ModPoly rep;
+		GFp repBase;
+		GFpE repExt;
+		bool base;
 		/* The field this element belongs to */
 		const Field<T>* parent_field;
 
@@ -28,15 +36,15 @@ namespace AS {
 		/* Constructor by default.
 		 * Constructs the 0 element (of any field).
 		 */
-		FieldElement() throw() : rep(), parent_field(NULL) {}
+		FieldElement() throw() : parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this element belongs to */
 		Field<T> parent() const throw(UndefinedFieldException)
 		{ return parent_field; }
 		
 	/****************** Copy ******************/
-		FieldElement(const FieldElement<T>&) throw();
-		FieldElement<T>& operator=(const FieldElement<T> &) throw();
+//		FieldElement(const FieldElement<T>&) throw();
+//		FieldElement<T>& operator=(const FieldElement<T> &) throw();
 		
 	/****************** Arithmetics ******************/
 		/* Binary operations */
@@ -121,7 +129,8 @@ namespace AS {
 		/* Interface with infrastructure. Use this only if you are
 		 * sure of what you do !
 		 */
-		ModPoly toInfrastructure() const throw();
+		void toInfrastructure(GFp&) const throw(IllegalCoercionException);
+		void toInfrastructure(GFpE&) const throw(IllegalCoercionException);
 
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
@@ -151,8 +160,12 @@ namespace AS {
 		/* Construct an element with given representation and parent.
 		 * Reserved for used by Field<T>
 		 */
-		FieldElement(ModPoly& P, Field<T>* p) throw() :
-			rep(P), parent_field(p) {}
+		FieldElement(const Field<T>* p, const GFp& PBase, const GFpE& PExt, const bool b) throw() :
+			parent_field(p), repBase(PBase), repExt(PExt), base(b) {}
+		FieldElement(const Field<T>* p, const GFpE& P) throw() :
+			parent_field(p), repExt(P), base(false) {}
+		FieldElement(const Field<T>* p, const GFp& P) throw() :
+			parent_field(p), repBase(P), base(true) {}
 
 	};
 

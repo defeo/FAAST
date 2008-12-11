@@ -10,15 +10,20 @@ namespace AS {
 	
 	template <class T> class FieldPolynomial {
 	private:
-		typedef typename T::GFp         GFp;
-		typedef typename T::Poly        Poly;
-		typedef typename T::ModPoly     ModPoly;
-		typedef typename T::PolyModPoly PolyModPoly;
-		typedef typename T::BigInt      BigInt;
+		typedef typename T::GFp     GFp;
+		typedef typename T::MatGFp  MatGFp;
+		typedef typename T::GFpX    GFpX;
+		typedef typename T::GFpE    GFpE;
+		typedef typename T::GFpEX   GFpEX;
+		typedef typename T::BigInt  BigInt;
+		typedef typename T::Context Context;
+		
 		
 	/****************** Members ******************/
 		/* The representation of this element */
-		PolyModPoly rep;
+		GFpX repBase;
+		GFpEX repExt;
+		bool base;
 		/* The field this element belongs to */
 		const Field<T>* parent_field;
 
@@ -28,7 +33,7 @@ namespace AS {
 		/* Constructor by default.
 		 * Constructs the 0 polynomial (over any field).
 		 */
-		FieldPolynomial() throw() : rep(), parent_field(NULL) {}
+		FieldPolynomial() throw() : parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this polynomial is defined over */
 		Field<T> parent() const throw(UndefinedFieldException)
@@ -124,7 +129,8 @@ namespace AS {
 		/* Interface with infrastructure. Use this only if you are
 		 * sure of what you do !
 		 */
-		ModPoly toInfrastructure() const throw();
+		void toInfrastructure(GFpX& ) const throw(IllegalCoercionException);
+		void toInfrastructure(GFpEX& ) const throw(IllegalCoercionException);
 
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
@@ -155,8 +161,12 @@ namespace AS {
 		/* Construct an element with given representation and parent.
 		 * Reserved for used by Field<T>
 		 */
-		FieldPolynomial(PolyModPoly& P, Field<T>* p) throw() :
-			rep(P), parent_field(p) {}
+		FieldPolynomial(const Field<T>* p, const GFpX& PBase, const GFpEX& PExt, const bool b) throw() :
+			parent_field(p), repBase(PBase), repExt(PExt), base(b) {}
+		FieldPolynomial(const Field<T>* p, const GFpEX& P) throw() :
+			parent_field(p), repExt(P), base(false) {}
+		FieldPolynomial(const Field<T>* p, const GFpX& P) throw() :
+			parent_field(p), repBase(P), base(true) {}
 
 	};
 }

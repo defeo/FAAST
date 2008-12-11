@@ -1,6 +1,7 @@
 #ifndef TYPES_H_
 #define TYPES_H_
 
+#include <NTL/ZZ.h>
 #include <NTL/ZZ_p.h>
 #include <NTL/ZZ_pE.h>
 #include <NTL/ZZ_pX.h>
@@ -16,26 +17,30 @@ NTL_CLIENT
 
 namespace AS {
 	struct ZZ_p_Algebra {
-		typedef ZZ_p        GFp;
-		typedef mat_ZZ_p    MatGFp;
-		typedef ZZ_pX       Poly;
-		typedef ZZ_pE       ModPoly;
-		typedef ZZ_pEX      PolyModPoly;
-		typedef ZZ          BigInt;
+		typedef ZZ_p         GFp;
+		typedef mat_ZZ_p     MatGFp;
+		typedef ZZ_pX        GFpX;
+		typedef ZZ_pE        GFpE;
+		typedef ZZ_pEX       GFpEX;
+		typedef ZZ           BigInt;
 		typedef struct {
 			ZZ_pContext  p;
 			ZZ_pEContext P;
-		}                   Context;
+		}                    Context;
+		typedef ZZ_pXModulus GFpXModulus;
 	};
 
 	struct GF2_Algebra {
 		typedef GF2         GFp;
 		typedef mat_GF2     MatGFp;
-		typedef GF2X        Poly;
-		typedef GF2E        ModPoly;
-		typedef GF2EX       PolyModPoly;
+		typedef GF2X        GFpX;
+		typedef GF2E        GFpE;
+		typedef GF2EX       GFpEX;
 		typedef ZZ          BigInt;
-		typedef GF2EContext Context;
+		typedef struct {
+			GF2EContext P;
+		}                   Context;
+		typedef GF2XModulus GFpXModulus;
 	};
 }
 

@@ -10,11 +10,12 @@ namespace AS {
 	private:
 		typedef typename T::GFp         GFp;
 		typedef typename T::MatGFp      MatGFp;
-		typedef typename T::Poly        Poly;
-		typedef typename T::ModPoly     ModPoly;
-		typedef typename T::PolyModPoly PolyModPoly;
+		typedef typename T::GFpX        GFpX;
+		typedef typename T::GFpE        GFpE;
+		typedef typename T::GFpEX       GFpEX;
 		typedef typename T::BigInt      BigInt;
 		typedef typename T::Context     Context;
+		typedef typename T::GFpXModulus GFpXModulus;
 		
 	/****************** Members for the stem ******************/
 		/* The immediate subfield and overfield, if they're defined */
@@ -25,16 +26,16 @@ namespace AS {
 		 */
 		Context context;
 		/* The generator over GF(p) */
-		const FieldElement<T> primitive;
+		FieldElement<T> primitive;
 		/* Precomputed pseudotraces */
-		vector<const FieldElement<T> > pseudotraces;
+		vector<FieldElement<T> > pseudotraces;
 		/* Lift-up precomputation */
 		const FieldElement<T> liftuphelper;
 		/* The inverse matrix of the linear application X^p-X */
-		const MatGFp artin;
+		MatGFp artin;
 		/* Flags related to the construction of the extension */
 		const bool plusone;
-		const bool cube;
+		const bool twopplusone;
 
 	/****************** Members for non-stem fields ******************/
 		/* The stem-field to which this one is isomorphic */
@@ -52,7 +53,7 @@ namespace AS {
 		/* The Artin-Schreier height */
 		const long height;
 		/* The generator over the subfield */
-		const FieldElement<T> gen;
+		FieldElement<T> gen;
 		/* The element of the subfield such that this field is
 		 * the Artin-Schreier extension defined by the polynomial
 		 * 			X^p - X - alpha
@@ -65,22 +66,24 @@ namespace AS {
 		/* Default constructor, builds a field from some default value
 		 * (i.e. the context for NTL).
 		 * 
-		 * throws : NotIrreducibleException if the default makes no sense
+		 * throws : NotPrimeException, NotIrreducibleException if the
+		 *          default makes no sense
 		 */
-		Field() throw (NotIrreducibleException);
+		Field() throw (NotPrimeException, NotIrreducibleException);
 		/* Build a field from an irreducible polynomial P.
 		 * 
 		 * throws : NotIrreducibleException if P is not irreducible
 		 */
-		Field(const Poly& P) throw (NotIrreducibleException);
+		Field(const GFpX& P) throw (NotIrreducibleException);
 		/* Build the field GF(p^d) using some default
 		 * polynomial.
 		 * Notice that this operation implicitely creates
 		 * the field GF(p) too.
 		 * 
 		 * throws : NotPrimeException if p is not prime
+		 * throws : ASException if d less than one
 		 */
-		Field(long p, long d = 1) throw (NotPrimeException);
+		Field(long p, long d = 1) throw (ASException);
 	
 	/****************** Field Extensions ******************/
 		/* Build a default extension of degree p over this field. 
@@ -116,8 +119,10 @@ namespace AS {
 		/* Interface with infrastructure. Use this only if you are
 		 * sure of what you do !
 		 */
-		FieldElement<T> fromInfrastructure(const ModPoly&) const throw();
-		FieldElement<T> fromInfrastructure(const PolyModPoly&) const throw();
+		FieldElement<T> fromInfrastructure(const GFp&) const throw();
+		FieldElement<T> fromInfrastructure(const GFpE&) const throw(IllegalCoercionException);
+		FieldPolynomial<T> fromInfrastructure(const GFpX&) const throw();
+		FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
 	
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
@@ -163,7 +168,7 @@ namespace AS {
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
 	/****************** Destructor ******************/
-		~Field() throw ();
+		~Field() throw () {}
 
 
 	/*****************************************************/
