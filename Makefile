@@ -46,9 +46,19 @@ $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 
 ########## other files
 
-$(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp
-$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp
+$(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp $(INC)/FieldPolynomial.hpp $(SRC)/Field.c++
+	touch $(INC)/Field.hpp
+$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldElement.c++
+	touch $(INC)/FieldElement.hpp
+$(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
+	touch $(INC)/FieldPolynomial.hpp
 
+$(SRC)/Field.c++: $(INC)/Types.hpp
+	touch $(SRC)/Field.c++
+$(SRC)/FieldElement.c++: $(INC)/Types.hpp
+	touch $(SRC)/FieldElement.c++
+$(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
+	touch $(SRC)/FieldPolynomial.c++
 
 ######################################################################
 .PHONY: all

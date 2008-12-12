@@ -25,9 +25,15 @@ namespace AS {
 	class DivisionByZeroException : public ASException {};
 	class IllegalCoercionException : public ASException {};
 	class UndefinedFieldException : public ASException {
+	public:
 		virtual const char* what() const throw() {
 			return "This is the 0 element of any field.";
 		}
+	};
+	class BadParametersException : public ASException {
+	public:
+		BadParametersException() {}
+		BadParametersException(const char* m) : ASException(m) {}
 	};
 }
 

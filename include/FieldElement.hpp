@@ -161,11 +161,11 @@ namespace AS {
 		 * Reserved for used by Field<T>
 		 */
 		FieldElement(const Field<T>* p, const GFp& PBase, const GFpE& PExt, const bool b) throw() :
-			parent_field(p), repBase(PBase), repExt(PExt), base(b) {}
+			repBase(PBase), repExt(PExt), base(b), parent_field(p) {}
 		FieldElement(const Field<T>* p, const GFpE& P) throw() :
-			parent_field(p), repExt(P), base(false) {}
+			repExt(P), base(false), parent_field(p) {}
 		FieldElement(const Field<T>* p, const GFp& P) throw() :
-			parent_field(p), repBase(P), base(true) {}
+			repBase(P), base(true), parent_field(p) {}
 
 	};
 
