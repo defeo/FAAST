@@ -48,7 +48,7 @@ namespace AS {
 		 */
 		const Field<T>* vsubfield;
 		/* the characteristic */
-		const long p;
+		const BigInt p;
 		/* the degree */
 		const long d;
 		/* The Artin-Schreier height */
@@ -79,7 +79,7 @@ namespace AS {
 		 * throws : NotPrimeException, NotIrreducibleException if the
 		 *          default makes no sense
 		 */
-		static Field<T>& createField(bool test = true)
+		static const Field<T>& createField(const bool test = true)
 		throw (NotPrimeException, NotIrreducibleException);
 		/* Build a field from an irreducible polynomial P.
 		 * 
@@ -90,7 +90,7 @@ namespace AS {
 		 *          over a prime field
 		 * throws : NotIrreducibleException if P is not irreducible
 		 */
-		static Field<T>& createField(const GFpX& P, bool test = true)
+		static const Field<T>& createField(const GFpX& P, const bool test = true)
 		throw (NotPrimeException, NotIrreducibleException);
 		/* Build the field GF(p^d) using some default
 		 * polynomial.
@@ -103,28 +103,39 @@ namespace AS {
 		 * throws : NotPrimeException if p is not prime
 		 * throws : ASException if d less than one
 		 */
-		static Field<T>& createField(long p, long d = 1, bool test = true)
+		static const Field<T>& createField
+		(const BigInt& p, const long d = 1, const bool test = true)
 		throw (NotPrimeException, BadParametersException);
 	
 	/****************** Field Extensions ******************/
 		/* Build a default extension of degree p over this field. 
 		 */
-		Field<T> ArtinSchreierExtension() const throw ();
+		const Field<T>& ArtinSchreierExtension() const
+		throw (CharacteristicTooLargeException, NotSupportedException);
 		/* Build the splitting field of the polynomial
 		 * 			X^p - X - alpha
 		 * over this field. This may or may not be an extension of
 		 * degree p depending if the polynomial is irreducible.
 		 */
-		Field<T> ArtinSchreierExtension(const FieldElement<T>& alpha) const throw ();
+		const Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha)
+		const throw (CharacteristicTooLargeException, NotSupportedException);
 		
 	/****************** Properties ******************/
-		long characteristic() const throw () { return p; }
+		BigInt characteristic() const throw () { return p; }
 		long degree() const throw () { return d; }
-		BigInt cardinality() const throw ();
+		ZZ cardinality() const throw ();
 		/* The number of Artin-Schreier extensions from the base
 		 * field.
 		 */
 		long ArtinSchreierHeight() const throw () { return height; }
+		/* The minimal polynomial over the immediate subfield of the
+		 * element returned by generator.
+		 */
+		FieldPolynomial<T> generatingPolynomial() const throw();
+		/* The minimal polynomial over GF(p) of the element returned
+		 * by primitiveElement().
+		 */
+		FieldPolynomial<T> primitivePolynomial() const throw();
 		
 	/****************** Field Elements ******************/
 		/* Constructs the element i times 1 */
@@ -137,17 +148,21 @@ namespace AS {
 		FieldElement<T> primitiveElement() const throw () { return *primitive; } 
 		/* A random element of the field */
 		FieldElement<T> random() const throw ();
-		/* Interface with infrastructure. Use this only if you are
-		 * sure of what you do !
-		 */
+		
+	/****************** Infrastructure ******************/
+		/* Use these methods only if you are sure of what you do ! */
+
+		/* Build elements from infrastracture */
 		FieldElement<T> fromInfrastructure(const GFp&) const throw();
 		FieldElement<T> fromInfrastructure(const GFpE&) const throw(IllegalCoercionException);
 		FieldPolynomial<T> fromInfrastructure(const GFpX&) const throw();
 		FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
+		/* Set the context to work in this field */
+		void switchContext() const throw();
 	
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
-		Field<T> baseField() const throw();
+		const Field<T>& baseField() const throw();
 
 	/****************** Level embedding ******************/
 		/* Push the element e down to this field and store
@@ -180,12 +195,13 @@ namespace AS {
 		/* Two fields are isomorphic if the isomorphism between them
 		 * has actually been computed
 		 */
-		bool isIsomporphic(const Field<T>& f) const throw () { return stem==f.stem; }
+		bool isIsomorphic(const Field<T>& f) const throw () { return stem==f.stem; }
 		/* There is inclusion between two fields only if the inclusion
 		 * has actually been computed.
 		 */
 		bool isSubFieldOf(const Field<T>& f) const throw ();
-		bool isOverFieldOf(const Field<T>& f) const throw ();
+		bool isOverFieldOf(const Field<T>& f) const throw ()
+		{ return f.isSubFieldOf(*this); }
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
 	/****************** Destructor ******************/
@@ -216,7 +232,7 @@ namespace AS {
 			const bool twopminuso,
 			const Field<T>* st,
 			const Field<T>* vsub,
-			const long cha,
+			const BigInt& cha,
 			const long deg,
 			const long h,
 			const FieldElement<T>* g,
@@ -239,7 +255,7 @@ namespace AS {
 			const Context& ctxt,
 			const GFpE& pri,
 			const MatGFp& mat,
-			const long cha,
+			const BigInt& cha,
 			const long deg,
 			const GFpE& g
 		) throw() :
@@ -259,7 +275,7 @@ namespace AS {
 		Field<T> (
 			const Context& ctxt,
 			const GFp& pri,
-			const long cha
+			const BigInt& cha
 		) throw() :
 		subfield(), overfield(),
 		context(ctxt),
@@ -275,8 +291,16 @@ namespace AS {
 		{}
 
 	};
+
+	/****************** Printing ******************/
+	template <class T> ostream& operator<<(ostream& o, const Field<T>& f) {
+		return f.print(o);
+	}
 }
 
+
+
 #include "../src/Field.c++"
+//#include "../src/FieldAlgortihms.c++"
 
 #endif /*FIELD_H_*/

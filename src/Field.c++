@@ -1,14 +1,16 @@
 #include "Types.hpp"
 
 #include <NTL/ZZ_pXFactoring.h>
+#include <NTL/lzz_pXFactoring.h>
 #include <NTL/GF2XFactoring.h>
 #include <string>
 #include <sstream>
 
 namespace AS {
 	
-	template <class T> typename T::MatGFp artinMatrix(const long p, const long d,
-	const typename T::GFpXModulus& P) {
+	/* TODO: Oups ! we got a problem when p|d ! */
+	template <class T> typename T::MatGFp artinMatrix
+	(const typename T::BigInt& p, const long d, const typename T::GFpXModulus& P) {
 		typedef typename T::MatGFp      MatGFp;
 		typedef typename T::GFpX        GFpX;
 
@@ -43,10 +45,10 @@ namespace AS {
 	 * throws : NotPrimeException, NotIrreducibleException if the
 	 *          default makes no sense
 	 */
-	template<> Field<ZZ_p_Algebra>& Field<ZZ_p_Algebra>::createField
-	(bool test)	throw (NotPrimeException, NotIrreducibleException) {
+	template <class T> const Field<T>& Field<T>::createField(const bool test)
+	throw (NotPrimeException, NotIrreducibleException) {
 		// retrieve all the informations on the modulus
-		long p = to_long(GFp::modulus());
+		BigInt p = GFp::modulus();
 		GFpXModulus P = GFpE::modulus();
 		long d = deg(P);
 		Context context; context.p.save(); context.P.save();
@@ -63,16 +65,15 @@ namespace AS {
 		if (d >= 2) {
 			// build GF(p)
 			GFp one; one = 1;
-			Field<ZZ_p_Algebra>* baseField = new Field<ZZ_p_Algebra>(context, one, p);
+			Field<T>* baseField = new Field<T>(context, one, p);
 			// compute the generator of this field
 			GFpE primitive; conv(primitive, GFpX(1,1));
 			// compute the inverse matrix of X^p-X
 			GFpXModulus Pmod; build(Pmod, P);
-			MatGFp artin = artinMatrix<ZZ_p_Algebra>(p,d,Pmod);
+			MatGFp artin = artinMatrix<T>(p,d,Pmod);
 			// build the field
-			Field<ZZ_p_Algebra>* K =
-				new Field<ZZ_p_Algebra>(baseField, context, primitive,
-				                        artin, p, d, primitive);
+			Field<T>* K = new Field<T>
+				(baseField, context, primitive, artin, p, d, primitive);
 			// connect the base field
 			baseField->overfield = K;
 			return *K;
@@ -80,12 +81,12 @@ namespace AS {
 		// build GF(p)
 		else {
 			GFp primitive; primitive = 1;
-			return *(new Field<ZZ_p_Algebra>(context, primitive, p));
+			return *(new Field<T>(context, primitive, p));
 		}
 	}
 
-	template<> Field<GF2_Algebra>& Field<GF2_Algebra>::createField
-	(bool test)	throw (NotPrimeException, NotIrreducibleException) {
+	template<> const Field<GF2_Algebra>& Field<GF2_Algebra>::createField
+	(const bool test) throw (NotPrimeException, NotIrreducibleException) {
 		// retrieve all the informations on the modulus
 		long p = 2;
 		GFpXModulus P = GFpE::modulus();
@@ -131,8 +132,8 @@ namespace AS {
 	 *          over a prime field
 	 * throws : NotIrreducibleException if P is not irreducible
 	 */
-	template<class T> Field<T>& Field<T>::createField
-	(const GFpX& P, bool test)
+	template<class T> const Field<T>& Field<T>::createField
+	(const GFpX& P, const bool test)
 	throw (NotPrimeException, NotIrreducibleException) {
 		GFpE::init(P);
 		return createField(test);
@@ -149,8 +150,8 @@ namespace AS {
 	 * throws : NotPrimeException if p is not prime
 	 * throws : ASException if d less than one
 	 */
-	template<> Field<ZZ_p_Algebra>& Field<ZZ_p_Algebra>::createField
-	(long p, long d, bool test)
+	template <class T> const Field<T>& Field<T>::createField
+	(const BigInt& p, const long d, const bool test)
 	throw (NotPrimeException, BadParametersException) {
 		if (d < 1) {
 			throw BadParametersException("Cannot create an extension field of negative degree.");
@@ -162,15 +163,15 @@ namespace AS {
 			throw NotPrimeException();
 		}
 		
-		GFp::init(to_ZZ(p));
+		GFp::init(p);
 		GFpX P;
 		if (d >= 2) BuildIrred(P, d);
 		else SetX(P);
 		return createField(P, false);
 	}
 	
-	template<> Field<GF2_Algebra>& Field<GF2_Algebra>::createField
-	(long p, long d, bool test)
+	template<> const Field<GF2_Algebra>& Field<GF2_Algebra>::createField
+	(const BigInt& p, const long d, const bool test)
 	throw (NotPrimeException, BadParametersException) {
 		if (d < 1) {
 			throw BadParametersException("Cannot create an extension field of negative degree.");
@@ -186,70 +187,145 @@ namespace AS {
 		else SetX(P);
 		return createField(P, false);
 	}
-
-/****************** Field Extensions ******************/
-	/* Build a default extension of degree p over this field. 
-	 */
-//	Field<T> ArtinSchreierExtension() const throw ();
-	/* Build the splitting field of the polynomial
-	 * 			X^p - X - alpha
-	 * over this field. This may or may not be an extension of
-	 * degree p depending if the polynomial is irreducible.
-	 */
-//	Field<T> ArtinSchreierExtension(const FieldElement<T>& alpha) const throw ();
 	
 /****************** Properties ******************/
-	template <class T> typename T::BigInt Field<T>::cardinality() const throw () {
-		BigInt c;
-		power(c, p, d);
-		return c;
+	template <class T> ZZ Field<T>::cardinality() const throw () {
+		switchContext();
+		if (d == 1) return to_ZZ(p);
+		else return GFpE::cardinality();
 	}
-	
+
+	/* The minimal polynomial over the immediate subfield of the
+	 * element returned by generator.
+	 */
+	template <class T> FieldPolynomial<T> Field<T>::generatingPolynomial()
+	const throw() {
+		switchContext();
+		// if this is GF(p) or a base field, this is the same as 
+		// the primitive polynomial
+		if (height == 0) return primitivePolynomial();
+		// else, it is X^p - X - alpha
+		else {
+			FieldPolynomial<T> res(-alpha);
+			res.setCoeff(1, -1);
+			res.setCoeff(to_long(p));
+		}
+	}
+
+	/* The minimal polynomial over GF(p) of the element returned
+	 * by primitiveElement().
+	 */
+	template <class T> FieldPolynomial<T> Field<T>::primitivePolynomial()
+	const throw() {
+		switchContext();
+		// if this is GF(p), return X-1
+		if (d == 1) {
+			FieldPolynomial<T> res = -one();
+			res.setCoeff(1);
+			return res;
+		}
+		// else, return the modulus
+		else return fromInfrastructure(GFpE::modulus().val());
+	}
+
 /****************** Field Elements ******************/
 	/* Constructs the element i times 1 */
-//	FieldElement<T> scalar(const long i) const throw ();
+	template <class T> FieldElement<T> Field<T>::scalar(const long i)
+	const throw () {
+		switchContext();
+		if (d == 1) {
+			GFp x; x = i;
+			return FieldElement<T>(this, x);
+		} else {
+			GFpE x; x = i;
+			return FieldElement<T>(this, x);
+		}
+	}
 	/* A random element of the field */
-//	FieldElement<T> random() const throw ();
-	/* Interface with infrastructure. Use this only if you are
-	 * sure of what you do !
-	 */
-//	FieldElement<T> fromInfrastructure(const GFp&) const throw();
-//	FieldElement<T> fromInfrastructure(const GFpE&) const throw(IllegalCoercionException);
-//	FieldPolynomial<T> fromInfrastructure(const GFpX&) const throw();
-//	FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
+	template <class T> FieldElement<T> Field<T>::random() const throw () {
+		switchContext();
+		if (d == 1) {
+			GFp x; random(x);
+			return FieldElement<T>(this, x);
+		} else {
+			GFpE x; random(x);
+			return FieldElement<T>(this, x);
+		}
+	}
+
+/****************** Infrastructure ******************/
+	/* Use these methods only if you are sure of what you do ! */
+
+	/* Build elements from infrastracture */
+	template <class T> FieldElement<T> Field<T>::fromInfrastructure(const GFp& x)
+	const throw() {
+		switchContext();
+		if (d == 1) return FieldElement<T>(this, x);
+		else {
+			GFpE X; X = x;
+			return FieldElement<T>(this, X);
+		}
+	}
+
+	template <class T> FieldElement<T> Field<T>::fromInfrastructure(const GFpE& x)
+	const throw(IllegalCoercionException) {
+		if (d == 1) throw IllegalCoercionException();
+		return FieldElement<T>(this, x);
+	}
+
+	template <class T> FieldPolynomial<T> Field<T>::fromInfrastructure(const GFpX& x)
+	const throw() {
+		switchContext();
+		if (d == 1) return FieldPolynomial<T>(this, x);
+		else {
+			GFpEX X; X = x;
+			return FieldPolynomial<T>(this, X);
+		}
+	}
+
+	template <class T> FieldPolynomial<T> Field<T>::fromInfrastructure(const GFpEX& x)
+	const throw(IllegalCoercionException) {
+		if (d == 1) throw IllegalCoercionException();
+		return FieldPolynomial<T>(this, x);
+	}
+
+	/* Set the context to work in this field */
+	template<class T> void Field<T>::switchContext() const throw() {
+		context.p.restore();
+		context.P.restore();
+	}
+	template<> void Field<GF2_Algebra>::switchContext() const throw() {
+		context.P.restore();
+	}
 
 /****************** Field lattice navigation ******************/
 	/* The field GF(p) */
-//	Field<T> baseField() const throw();
-
-/****************** Level embedding ******************/
-	/* Push the element e down to this field and store
-	 * the result in v.
-	 * 
-	 * throw : IllegalCoercionException if the field e belongs to
-	 *         is not the immediate overfield of this.
-	 */
-//	void pushDown(FieldElement<T>& e, vector<FieldElement<T> >& v) const
-//		 throw(IllegalCoercionException);
-
-	/* Lift the elements in v up to this field and store the result in e.
-	 * If v is too short, it is filled with zeros. If v is too
-	 * long, the unnecessary elements are ignored.
-	 * 
-	 * throw : NotInSameFieldException if the elements of v do not
-	 *         belong all to the same field.
-	 * throw : IllegalCoercionException if the field e belongs to
-	 *         is not the immediate subfield of this.
-	 */
-//	void liftUp(vector<FieldElement<T> >& v, FieldElement<T>& e) const
-//		throw(NotInSameFieldException, IllegalCoercionException);
+	template <class T> const Field<T>& Field<T>::baseField() const throw() {
+		if (!subfield) return *this;
+		const Field<T>* result = subfield;
+		while (result->subfield) result = result->subfield;
+		return *result;
+	}
 
 /****************** Comparison ******************/
 	/* There is inclusion between two fields only if the inclusion
 	 * has actually been computed.
 	 */
-//	bool isSubFieldOf(const Field<T>& f) const throw ();
-//	bool isOverFieldOf(const Field<T>& f) const throw ();
+	template <class T> bool Field<T>::isSubFieldOf(const Field<T>& f)
+	const throw () {
+		const Field<T>* stemf = f.stem;
+#ifdef AS_DEBUG
+		if (!stemf || !stem) throw ASException("Error : Stem is NULL.");
+#endif
+		while (stemf != stem && stemf->subfield)
+			stemf = stemf->subfield;
+		return stemf == stem;
+	}
+	
 /****************** Printing ******************/
-//	ostream& print(ostream&) const;
+	template <class T> ostream& Field<T>::print(ostream& o) const {
+		o << "Finite field GF(" << p;
+		if (d > 1) o << "^" << d;
+		return o << ")";
+	}
 }

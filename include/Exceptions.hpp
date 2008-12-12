@@ -24,6 +24,7 @@ namespace AS {
 	class NotInSameFieldException : public ASException {};
 	class DivisionByZeroException : public ASException {};
 	class IllegalCoercionException : public ASException {};
+	class NotSupportedException : public ASException {};
 	class UndefinedFieldException : public ASException {
 	public:
 		virtual const char* what() const throw() {
@@ -34,6 +35,12 @@ namespace AS {
 	public:
 		BadParametersException() {}
 		BadParametersException(const char* m) : ASException(m) {}
+	};
+	class CharacteristicTooLargeException : public ASException {
+	public:
+		virtual const char* what() const throw() {
+			return "Do you really think it is wise to do computational\n Artin-Schreier theory in characteristic\n >= 2^(your machine word length) ?!";
+		}
 	};
 }
 

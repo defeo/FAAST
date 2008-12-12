@@ -43,11 +43,20 @@ namespace AS {
 		
 	/****************** Copy ******************/
 		FieldPolynomial(const FieldPolynomial<T>&) throw();
-		FieldPolynomial<T>& operator=(const FieldPolynomial<T> &) throw();
+		FieldPolynomial<T>& operator=(const FieldPolynomial<T>&) throw();
+		/* Starting only from the constant coefficient */
+		FieldPolynomial(const FieldElement<T>& e) throw();
+		FieldPolynomial<T>& operator=(const FieldElement<T>& e) throw();
 		
 	/****************** Coefficients ******************/
 		void getCoeff(const long, FieldElement<T>&) const throw();
 		void setCoeff(const long, const FieldElement<T>&) throw();
+		void setCoeff(const long i, const long c)
+		throw(UndefinedFieldException)
+		{ setCoeff(i, parent_field->scalar(c)); }
+		void setCoeff(const long i)
+		throw(UndefinedFieldException)
+		{ setCoeff(i, parent_field->one()); }
 	
 	/****************** Arithmetics ******************/
 		/* Binary operations */
@@ -96,7 +105,6 @@ namespace AS {
 		/* Unary operations */
 		bool divides(const FieldPolynomial<T>&) const throw();
 		FieldPolynomial<T> operator-() const throw();
-		FieldPolynomial<T> operator^(const BigInt&) const throw();
 		FieldPolynomial<T> operator^(const long) const throw();
 		FieldPolynomial<T> derivative() const throw();
 		FieldPolynomial<T> monic() const throw();
@@ -106,7 +114,6 @@ namespace AS {
 		
 		/* Self-incrementing Unary operations */
 		void negate() throw();
-		void operator^=(const BigInt&) throw();
 		void operator^=(const long) throw();
 		void self_derivative() throw();
 		void normalize() throw();

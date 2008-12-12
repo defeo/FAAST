@@ -86,7 +86,7 @@ namespace AS {
 		/* Unary operations */
 		FieldElement<T> operator-() const throw();
 		FieldElement<T> inv() const throw(DivisionByZeroException);
-		FieldElement<T> operator^(const BigInt&) const throw();
+		FieldElement<T> operator^(const ZZ&) const throw();
 		FieldElement<T> operator^(const long) const throw();
 		/* Frobenius and iterated frobenius */
 		FieldElement<T> frobenius() const throw();
@@ -105,7 +105,7 @@ namespace AS {
 		/* Self-incrementing Unary operations */
 	 	void negate() throw();
 		void self_inv() throw(DivisionByZeroException);
-		void operator^=(const BigInt&) throw();
+		void operator^=(const ZZ&) throw();
 		void operator^=(const long) throw();
 		void self_frobenius() throw();
 		void self_frobenius(const long) throw();
