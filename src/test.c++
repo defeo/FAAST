@@ -9,7 +9,7 @@ typedef Field<zz_p_Algebra> gfp;
 typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
-	const GFp& K = GFp::createField(to_ZZ(5),4);
+	const GFp& K = GFp::createField(to_ZZ(5),25);
 	const gfp& k = gfp::createField(2,5);
 	const GFp2& L = GFp2::createField(2,3);
 	const GFp& base = K.baseField();

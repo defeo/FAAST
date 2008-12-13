@@ -32,8 +32,14 @@ namespace AS {
 		const auto_ptr<const vector<FieldElement<T> > > pseudotraces;
 		/* Lift-up precomputation */
 		const auto_ptr<const FieldElement<T> > liftuphelper;
-		/* The inverse matrix of the linear application X^p-X */
+		/* The inverse matrix of the d-1 minor of the
+		 * linear application X^p-X
+		 */
 		const MatGFp artin;
+		/* The line we took away from X^p-X to make
+		 * it invertible
+		 */
+		const long artinLine;
 		/* Flags related to the construction of the extension */
 		const bool plusone;
 		const bool twopminusone;
@@ -228,6 +234,7 @@ namespace AS {
 			const vector<FieldElement<T> >* pseudo,
 			const FieldElement<T>* liftup,
 			const MatGFp& mat,
+			const long line,
 			const bool pluso,
 			const bool twopminuso,
 			const Field<T>* st,
@@ -243,7 +250,7 @@ namespace AS {
 		primitive(pri),
 		pseudotraces(pseudo),
 		liftuphelper(liftup),
-		artin(mat),
+		artin(mat), artinLine(line),
 		plusone(pluso), twopminusone(twopminuso),
 		stem(st), vsubfield(vsub),
 		p(cha), d(deg), height(h),
@@ -255,6 +262,7 @@ namespace AS {
 			const Context& ctxt,
 			const GFpE& pri,
 			const MatGFp& mat,
+			const long line,
 			const BigInt& cha,
 			const long deg,
 			const GFpE& g
@@ -264,7 +272,7 @@ namespace AS {
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
 		liftuphelper(),
-		artin(mat),
+		artin(mat), artinLine(line),
 		plusone(false), twopminusone(false),
 		stem(this), vsubfield(),
 		p(cha), d(deg), height(0),
@@ -282,7 +290,7 @@ namespace AS {
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
 		liftuphelper(),
-		artin(),
+		artin(), artinLine(),
 		plusone(false), twopminusone(false),
 		stem(this), vsubfield(),
 		p(cha), d(1), height(0),

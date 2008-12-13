@@ -8,25 +8,32 @@
 
 namespace AS {
 	
-	/* TODO: Oups ! we got a problem when p|d ! */
 	template <class T> typename T::MatGFp artinMatrix
-	(const typename T::BigInt& p, const long d, const typename T::GFpXModulus& P) {
+	(const typename T::BigInt& p, const long line, const typename T::GFpXModulus& P) {
 		typedef typename T::MatGFp      MatGFp;
 		typedef typename T::GFpX        GFpX;
 
-		// we just want the d-1 minor on the bottom right
+		long d = deg(P);
+		// we just want an invertinle d-1 minor
 		MatGFp appl; appl.SetDims(d-1, d-1);
+		// X^p mod P
 		GFpX Xp = PowerXMod(p, P);
+		// column is the column of X^p-X at each iteration
 		GFpX column(0,1);
+		// build the minor
 		for (long i = 1 ; i < d ; i++) {
 			MulMod(column, column, Xp, P);
-			for (int j = 1 ; j < d ; j++) {
+			for (long j = 0 ; j < line ; j++) {
+				appl[j][i-1] = coeff(column, j);
+			}
+			for (long j = line+1 ; j < d ; j++) {
 				appl[j-1][i-1] = coeff(column, j);
 			}
-			appl[i-1][i-1]--;
+			if (i > line) appl[i-1][i-1]--;
+			else if (i < line) appl[i][i-1]--;
 		}
 		//invert
-		return inv(appl);		
+		return inv(appl);
 	}
 
 /****************** Constructors ******************/
@@ -70,10 +77,14 @@ namespace AS {
 			GFpE primitive; conv(primitive, GFpX(1,1));
 			// compute the inverse matrix of X^p-X
 			GFpXModulus Pmod; build(Pmod, P);
-			MatGFp artin = artinMatrix<T>(p,d,Pmod);
+			// We pick a redundant line : it corresponds
+			// to a power of x of trace different from 0.
+			// The residue formula tells us that Tr(x^dep) != 0
+			long line = d - 1 - deg(diff(P));
+			MatGFp artin = artinMatrix<T>(p,line,Pmod);
 			// build the field
-			Field<T>* K = new Field<T>
-				(baseField, context, primitive, artin, p, d, primitive);
+			Field<T>* K = new Field<T>(baseField, context, primitive,
+			                           artin, line, p, d, primitive);
 			// connect the base field
 			baseField->overfield = K;
 			return *K;
@@ -106,11 +117,15 @@ namespace AS {
 			GFpE primitive; conv(primitive, GFpX(1,1));
 			// compute the inverse matrix of X^p-X
 			GFpXModulus Pmod; build(Pmod, P);
-			MatGFp artin = artinMatrix<GF2_Algebra>(p,d,Pmod);
+			// We pick a redundant line : it corresponds
+			// to a power of x of trace different from 0.
+			// The residue formula tells us that Tr(x^dep) != 0
+			long line = d - 1 - deg(diff(P));
+			MatGFp artin = artinMatrix<GF2_Algebra>(p,line,Pmod);
 			// build the field
 			Field<GF2_Algebra>* K =
 				new Field<GF2_Algebra>(baseField, context, primitive,
-				                        artin, p, d, primitive);
+				                        artin, line, p, d, primitive);
 			// connect the base field
 			baseField->overfield = K;
 			return *K;
