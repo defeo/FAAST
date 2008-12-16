@@ -60,7 +60,7 @@ namespace AS {
 		long d = deg(P);
 		Context context; context.p.save(); context.P.save();
 		// test primality
-		if ( p <= 1 || (test && !ProbPrime(p)) ) {
+		if ( p <= long(1) || (test && !ProbPrime(p)) ) {
 			throw NotPrimeException();
 		}
 		// test irreducibility
@@ -245,7 +245,7 @@ namespace AS {
 
 /****************** Field Elements ******************/
 	/* Constructs the element i times 1 */
-	template <class T> FieldElement<T> Field<T>::scalar(const long i)
+	template <class T> FieldElement<T> Field<T>::scalar(const BigInt& i)
 	const throw () {
 		switchContext();
 		if (d == 1) {

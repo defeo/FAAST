@@ -145,7 +145,7 @@ namespace AS {
 		
 	/****************** Field Elements ******************/
 		/* Constructs the element i times 1 */
-		FieldElement<T> scalar(const long i) const throw ();
+		FieldElement<T> scalar(const BigInt& i) const throw ();
 		FieldElement<T> zero() const throw () { return scalar(0); }
 		FieldElement<T> one() const throw () { return scalar(1); }
 		/* The generator over the immediately preceding subfield */
@@ -309,6 +309,6 @@ namespace AS {
 
 
 #include "../src/Field.c++"
-//#include "../src/FieldAlgortihms.c++"
+#include "../src/FieldAlgorithms.c++"
 
 #endif /*FIELD_H_*/

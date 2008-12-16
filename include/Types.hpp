@@ -21,6 +21,22 @@
 NTL_CLIENT
 
 namespace AS {
+	class ZZ_auto : public ZZ {
+	public:
+		ZZ_auto() {};
+		ZZ_auto(const long i) : ZZ(to_ZZ(i)) {}
+		ZZ_auto(const ZZ& i) : ZZ(i) {}
+		ZZ_auto& operator=(const ZZ_auto& i) { ZZ::operator=(i); return *this; }
+		ZZ_auto& operator=(const ZZ& i) { ZZ::operator=(i); return *this; }
+		ZZ_auto& operator=(const long i) { ZZ::operator=(i); return *this; }
+		operator long() {
+			return to_long(*this);
+#if AS_DEBUG >= 2
+			cout << "Warning : possible loss of precision." << endl;
+#endif
+		}
+	};
+
 	struct zz_p_Algebra {
 		typedef zz_p         GFp;
 		typedef mat_zz_p     MatGFp;
@@ -41,7 +57,7 @@ namespace AS {
 		typedef ZZ_pX        GFpX;
 		typedef ZZ_pE        GFpE;
 		typedef ZZ_pEX       GFpEX;
-		typedef ZZ           BigInt;
+		typedef ZZ_auto      BigInt;
 		typedef struct {
 			ZZ_pContext  p;
 			ZZ_pEContext P;
@@ -61,14 +77,6 @@ namespace AS {
 		}                   Context;
 		typedef GF2XModulus GFpXModulus;
 	};
-
-	template <class T> long to_long(const typename T::BigInt& B) throw()
-	{ return B; }
-	template <class T> void to_BigInt(typename T::BigInt& B, const long l)
-	throw()	{ B = l; }
-
-	template<> inline long to_long<ZZ_p_Algebra>(const ZZ& B) throw()
-	{ return to_long(B); }
 }
 
 #endif /*TYPES_H_*/

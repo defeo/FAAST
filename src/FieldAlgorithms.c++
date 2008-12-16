@@ -1,39 +1,42 @@
+#include "utilities.hpp"
+
 /* This file contains algorithms from Sections 3 and 6 of the paper */
 
 namespace AS {
 	// Return Q(X^p-X)
-	template <class T> void compose_Xp_minus_X(GFpX& res, const GFpX& Q) {
+	template <class T> void compose_Xp_minus_X
+	(typename T::GFpX& res, const typename T::GFpX& Q, const typename T::BigInt& p) {
 		
 	}
 	// Return Q(X-1)
-	template <class T> void compose_X_minus_1(GFpX& res, const GFpX& Q) {
-		GFpX Q0, Q1, Q0X, Q1X;
-		long degree = deg(f);
-		long k = (p == 2) ? NumBits(degree) : //TODO;
-		if (k > 1) {
-			long halfdegree = power_long(2, k-1);
-			for (long i = 0 ; i < halfdegree ; i++)
-				SetCoeff(f0, i, coeff(f, i));
-			for (long i = halfdegree ; i <= degree ; i++)
-				SetCoeff(f1, i - halfdegree, coeff(f, i));
-				
-			f0X = composeXminus1(f0);
-			f1X = composeXminus1(f1);
-			result = f0X + f1X + LeftShift(f1X, halfdegree);
+	template <class T> void compose_X_minus_1
+	(typename T::GFpX& res, const typename T::GFpX& Q, const typename T::BigInt& p) {
+		typedef typename T::GFpX GFpX;
+	
+		long degree = deg(Q);
+		long k = NumPits(p, degree);
+		if (k > 0) {
+			res = 0;
+			long splitdegree = power_long(p, k-1);
+			for (long i = 0 ; i <= degree ; i += splitdegree) {
+				GFpX Q1;
+				for (long j = 0 ; j < splitdegree && i+j <= degree ; j++) {
+					SetCoeff(Q1, j, coeff(Q, i+j));
+				}
+				GFpX Q1X; compose_X_minus_1(Q1X, Q1);
+				// Horner's rule
+				res = Q1X + LeftShift(res, splitdegree) - res;
+			}
 		} else {
-			GF2X tmp; SetCoeff(tmp,0); SetCoeff(tmp,1);
-			result = coeff(f, 0); 
-			if (coeff(f, 1)==1) result += tmp;
+			res = Q;
 		}
-		
-		return result;
 	}
 
 /****************** Field Extensions ******************/
 	/* Build a default extension of degree p over this field. 
 	 */
-	template <class T> Field<T>& Field<T>::ArtinSchreierExtension()
-	const throw (CharacteristicTooLargeExeption, NotSupportedException) {
+	template <class T> const Field<T>& Field<T>::ArtinSchreierExtension()
+	const throw (CharacteristicTooLargeException, NotSupportedException) {
 #ifdef AS_DEBUG
 		if (!stem) throw ASException("Error : Stem is NULL.");
 #endif
@@ -43,7 +46,7 @@ namespace AS {
 		// Build the extension (Section 3)
 
 		// test if the characteristic stays in one word
-		if (p > to_long(p)) throw CharacteristicTooLargeException();
+		if (p != long(p)) throw CharacteristicTooLargeException();
 		//TODO
 	}
 	
@@ -52,7 +55,7 @@ namespace AS {
 	 * over this field. This may or may not be an extension of
 	 * degree p depending if the polynomial is irreducible.
 	 */
-//	Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha) const throw (CharacteristicTooLargeExeption, NotSupportedException);
+//	const Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha) const throw (CharacteristicTooLargeExeption, NotSupportedException);
 
 
 /****************** Level embedding ******************/

@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT=-g -pg -Wall -DAS_DEBUG=1
+OPT=-g -pg -Wall -DAS_DEBUG=2
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
@@ -64,6 +64,9 @@ $(SRC)/FieldElement.c++: $(INC)/Types.hpp
 
 $(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
 	touch $(SRC)/FieldPolynomial.c++
+
+$(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
+	touch $(SRC)/FieldAlgorithms.c++
 
 ######################################################################
 .PHONY: all

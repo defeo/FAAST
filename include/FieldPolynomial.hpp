@@ -51,7 +51,7 @@ namespace AS {
 	/****************** Coefficients ******************/
 		void getCoeff(const long, FieldElement<T>&) const throw();
 		void setCoeff(const long, const FieldElement<T>&) throw();
-		void setCoeff(const long i, const long c)
+		void setCoeff(const long i, const BigInt& c)
 		throw(UndefinedFieldException)
 		{ setCoeff(i, parent_field->scalar(c)); }
 		void setCoeff(const long i)
