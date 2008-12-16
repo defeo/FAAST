@@ -3,17 +3,14 @@
 /* This file contains algorithms from Sections 3 and 6 of the paper */
 
 namespace AS {
-	// Return Q(X^p-X)
-	template <class T> void compose_Xp_minus_X
-	(typename T::GFpX& res, const typename T::GFpX& Q, const typename T::BigInt& p) {
-		
-	}
-	// Return Q(X-1)
-	template <class T> void compose_X_minus_1
-	(typename T::GFpX& res, const typename T::GFpX& Q, const typename T::BigInt& p) {
+	// compute Q(R)
+	template <class T> void compose
+	(typename T::GFpX& res, const typename T::GFpX& Q,
+	const typename T::GFpX& R, const long p) {
 		typedef typename T::GFpX GFpX;
 	
 		long degree = deg(Q);
+		long degR = deg(R);
 		long k = NumPits(p, degree);
 		if (k > 0) {
 			res = 0;
@@ -23,12 +20,49 @@ namespace AS {
 				for (long j = 0 ; j < splitdegree && i+j <= degree ; j++) {
 					SetCoeff(Q1, j, coeff(Q, i+j));
 				}
-				GFpX Q1X; compose_X_minus_1(Q1X, Q1);
+				GFpX Q1X; compose(Q1X, Q1, R, p);
 				// Horner's rule
-				res = Q1X + LeftShift(res, splitdegree) - res;
+				for (long h = 0 ; h <= degR && res != 0 ; h++) {
+					if (coeff(R, h) != 0)
+						res += coeff(R, h) * LeftShift(res, splitdegree*h);
+				}
+				res += Q1X;
 			}
 		} else {
 			res = Q;
+		}
+	}
+	
+	/* Pollard Rho */
+	void factor(const long n, vector<pair<long,int> >& factors) {
+		
+	}
+	
+	// compute the n-th cyclotomic polynomial
+	template <class T> void cyclotomic
+	(typename T::GFpX& res, const long n, const long p) {
+		typedef typename T::GFpX GFpX;
+
+		if (n == 1) { SetX(res); setCoeff(res, 0, -1); }
+		else {
+			vector<pair<long,int> > factors; factor(n, factors);
+			// first process the squarefree factors of n
+			GFpX Phi; cyclotomic(Phi, 1, p);
+			long m = 1;  // this variable contains the non-squarefree part
+			for (long i = 0 ; i < factors.size() ; i++) {
+				m *= power_long(factors[i].first, (factors[i].second - 1));
+				long q = factors[i].first;
+				GFpX Phip; compose(Phip, Phi, GFpX(q,1), p);
+#ifdef AS_DEBUG
+				if (Phip % Phi != 0)
+					throw ASException("Error : computing the cyclotomic polynomial.");
+#endif
+				Phi = Phip / Phi;
+			}
+			// now add the other factors
+			if (m > 1) {
+				compose(res, Phi, GFpX(m,1), p);
+			} else res = Phi;
 		}
 	}
 
