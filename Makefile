@@ -56,6 +56,9 @@ $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldElement.c++
 $(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
 	touch $(INC)/FieldPolynomial.hpp
 
+$(INC)/utilities.hpp: $(SRC)/utilities.c++
+	touch $(INC)/utilities.hpp
+
 $(SRC)/Field.c++: $(INC)/Types.hpp
 	touch $(SRC)/Field.c++
 
