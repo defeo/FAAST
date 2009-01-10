@@ -1,20 +1,21 @@
 namespace AS {
-	/* return the gratest power of p less than n */
-	long NumPits(const long p, const long n) {
+	/* return the least power of p greater than n */
+	long NumPits(const long p, long n) {
 		if (p == 2) return NumBits(n);
 		else {
 			if (n == 0) return 0;
-			long k = floor(log(n) / log(p));
+			if (n < 0) n = -n;
+			long k = floor(log(n) / log(p)) + 1;
 			long pk = power_long(p, k);
 			if (pk <= n) {
-				long i = -1;
+				long i = 0;
 				while (pk <= n) { i++; pk *= p; }
 #if AS_DEBUG>=2
 				if (i > 1) cout << "cmath log imprecise by " << i << " p-its." << endl;
 #endif
 				return k+i;
 			} else {
-				long i = 0;
+				long i = -1;
 				while (pk > n) { i++; pk /= p; }
 #if AS_DEBUG>=2
 				if (i > 1) cout << "cmath log imprecise by " << i << " p-its." << endl;
@@ -31,25 +32,28 @@ namespace AS {
 	(typename T::GFpX& res, const typename T::GFpX& Q,
 	const typename T::GFpX& R, const typename T::BigInt p) {
 		typedef typename T::GFpX GFpX;
-	
-		long degree = deg(Q);
-		long degR = deg(R);
+
+		long degree = max(deg(Q),0);
+		long degR = max(deg(R),0);
 		long k = NumPits(p, degree);
 		if (k > 0) {
 			res = 0;
 			long splitdegree = power_long(p, k-1);
-			for (long i = 0 ; i <= degree ; i += splitdegree) {
+			for (long i = splitdegree * (degree / splitdegree) ; i >= 0 ; i -= splitdegree) {
 				GFpX Q1;
 				for (long j = 0 ; j < splitdegree && i+j <= degree ; j++) {
 					SetCoeff(Q1, j, coeff(Q, i+j));
 				}
 				GFpX Q1X; compose<T>(Q1X, Q1, R, p);
 				// Horner's rule
-				for (long h = 0 ; h <= degR && res != 0 ; h++) {
-					if (coeff(R, h) != 0)
-						res += coeff(R, h) * LeftShift(res, splitdegree*h);
+				GFpX shifted;
+				if (res != 0) {
+					for (long h = 0 ; h <= degR ; h++) {
+						if (coeff(R, h) != 0)
+							shifted += coeff(R, h) * LeftShift(res, splitdegree*h);
+					}
 				}
-				res += Q1X;
+				res = Q1X + shifted;
 			}
 		} else {
 			res = Q;
@@ -95,7 +99,7 @@ namespace AS {
 		if (g == zzn) {
 			ZZ gg;
 			while (gg <= 1) {
-				PowerMod(ys,ys,2,zzn); AddMod(y, y, zzc, zzn);
+				PowerMod(ys,ys,2,zzn); AddMod(ys, ys, zzc, zzn);
 				gg = GCD(abs(x-ys), zzn);
 			}
 			if (gg == n) return 0;
@@ -190,9 +194,10 @@ namespace AS {
 			// first process the squarefree factors of n
 			GFpX Phi; cyclotomic<T>(Phi, 1, p);
 			long m = 1;  // this variable contains the non-squarefree part
-			for (unsigned long i = 0 ; i < factors.size() ; i++) {
-				m *= power_long(factors[i].first, (factors[i].second - 1));
-				long q = factors[i].first;
+			vector<pair<long,int> >::iterator it;
+			for (it = factors.begin() ; it != factors.end() ; it++) {
+				m *= power_long(it->first, (it->second - 1));
+				long q = it->first;
 				GFpX Phip; compose<T>(Phip, Phi, GFpX(q,1), p);
 #ifdef AS_DEBUG
 				if (Phip % Phi != 0)
@@ -200,6 +205,7 @@ namespace AS {
 #endif
 				Phi = Phip / Phi;
 			}
+			
 			// now add the other factors
 			if (m > 1) {
 				compose<T>(res, Phi, GFpX(m,1), p);
