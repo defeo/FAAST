@@ -5,6 +5,69 @@
  */
 
 namespace AS {
+	
+	/* Cantor's algorithm to compute the minimal polynomial
+	 * of the primitive generator of the Artin-Schreier
+	 * extension.
+	 * 
+	 * It assumes the modulus has already been properly set
+	 * to the (2p-1)th cyclotomic polynomial.
+	 */
+	template <class T> void cantor89(typename T::GFpX& res,
+	const typename T::GFpX& Q, const long p) {
+		typedef typename T::GFpX  GFpX;
+		typedef typename T::GFpE  GFpE;
+		typedef typename T::GFpEX GFpEX;
+		
+		// X mod Phi(X), the (2p-1)th root of unity
+		GFpE omega; GFpX omegaX;
+		SetX(omegaX); conv(omega, omegaX);
+		// prepare the values X^i for i in [0..2p-2]
+		vector<GFpE> omegas;
+		omegas.reserve(2*p-1);
+		omegas[0] = 1;
+		for (long i = 1; i <= 2*p-2 ; i++)
+			omegas[i] = omegas[i-1]*omega;
+
+		// Qstar = prod_i Q(omega^i Y)
+		GFpEX Qstar; conv(Qstar, Q);
+		GFpEX Qtmp;
+		// WARNING : oughta do better by a subproduct tree
+		// approach
+		for (long i = 1 ; i <= 2*p-2 ; i++) {
+			long c = 0;
+			for (long j = 0 ; j < deg(Q) ; j++) {
+				SetCoeff(Qtmp, j,
+					coeff(Q, j) * omegas[c]);
+				c += i; c %= 2*p - 1;
+			}
+			Qstar *= Qtmp; 
+		}
+		
+		// qstar( X^(2p-1) ) = Qstar
+		GFpX qstar;
+		long c = 0;
+		for (long i = 0 ; i <= deg(Qstar) ; i += 2*p-1) {
+			SetCoeff(qstar, c, coeff(rep(coeff(Qstar, i)), 0));
+			c++;
+#ifdef AS_DEBUG
+			if (deg(rep(coeff(Qstar, i))) > 0) throw
+				ASException("Error in Cantor89");
+			for (long j = 1 ; j < 2*p-1 ; j++) {
+				if (coeff(Qstar, i+j) != 0) throw
+				ASException("Error in Cantor89");
+			}
+#endif
+		}
+		
+		// result = qstar(X^p - X)
+		GFpX xpminusx;
+		SetCoeff(xpminusx, p, 1);
+		SetCoeff(xpminusx, 1, -1);
+		compose<T>(res, qstar, xpminusx, p);
+	}
+
+
 /****************** Field Extensions ******************/
 	/* Build a default extension of degree p over this field. 
 	 */
@@ -14,13 +77,91 @@ namespace AS {
 		if (!stem) throw ASException("Error : Stem is NULL.");
 #endif
 		// if the extension already exists, return it
+		// WARNING : this behavior is not correct when
+		// this field is the prime field of some other field
 		if (stem->overfield) return *(stem->overfield);
 
 		// Build the extension (Section 3)
 
 		// test if the characteristic stays in one word
 		if (p != long(p)) throw CharacteristicTooLargeException();
-		//TODO
+		
+		switchContext();
+		GFpX Q; bool po, tpmo;
+
+		// Compute the minimal polynomial Q of the new level
+		 
+		// first floor, Q_1 = Q_0(X^p - X)
+		if (height == 0) {
+			// extend modulo X^p - X - x0
+			tpmo = false; po = false;
+			// if this field is GF(p)
+			if (d == 1) {
+				// the minimal polynomials is X^p - X - 1
+				SetCoeff(Q, p, 1);
+				SetCoeff(Q, 1, -1);
+				SetCoeff(Q, 0, -1);
+			} else {
+				GFpX Q0 = GFpE::modulus().val();
+				// if needed, make the trace of the primitive element
+				// different from 0
+				if (trace(primitive->repExt) == 0) {
+					// extend modulo X^p - X - x0 - 1
+					po = true;
+					if (d % p == 0) throw
+						NotSupportedException("I don't know how to build a primitive tower over this base field.");
+					// X-1
+					GFpX xminus1; SetX(xminus1); SetCoeff(xminus1,0,-1);
+					// Q_0* = Q_0(X-1)
+					compose<T>(Q0, Q0, xminus1, p);
+				}
+				// X^p - X
+				GFpX xpminusx;
+				SetCoeff(xpminusx, p, 1);
+				SetCoeff(xpminusx, 1, -1);
+				// Q_1 = Q_0
+				compose<T>(Q, Q0, xpminusx, p);
+			}
+		}
+		// second floor in characteristic 2,
+		// Q_2 = Q_1(X^p - X)
+		else if (height == 1 && p == long(2)) {
+			// extend modulo X^p - X - x1
+			po = false; tpmo = false;
+			const GFpX& Q0 = GFpE::modulus().val();
+			// X^p - X
+			GFpX xpminusx;
+			SetCoeff(xpminusx, p, 1);
+			SetCoeff(xpminusx, 1, -1);
+			// Q_1 = Q_0
+			compose<T>(Q, Q0, xpminusx, p);			
+		}
+		// generic case, see paper
+		else {
+			// extend modulo X^p - X - x1^(2p-1)
+			po = false; tpmo = true;
+			const GFpX& Q0 = GFpE::modulus().val();
+			// switch modulus to compute modulo the cyclotomic
+			// polynomial
+			if ( !(baseField().Phi.get()) ) {
+				GFpX phi;
+				cyclotomic<T>(phi, 2*long(p)-1, p);
+				GFpE::init(phi);
+				Context* ctxt = new Context();
+				ctxt->P.save();
+				baseField().Phi.reset(ctxt);
+			} else baseField().Phi->P.restore();
+			// apply Cantor's algorithm to compute the
+			// minimal polynomial
+			cantor89<T>(Q, Q0, p);
+		}
+		
+		// prepare the new context
+		GFpE::init(Q);
+		Context ctxt = baseField().context;
+		ctxt.P.save();
+		
+		//TODO: primitive element, alpha, precomputed elements
 	}
 	
 	/* Build the splitting field of the polynomial

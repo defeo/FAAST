@@ -29,7 +29,7 @@ namespace AS {
 		ZZ_auto& operator=(const ZZ_auto& i) { ZZ::operator=(i); return *this; }
 		ZZ_auto& operator=(const ZZ& i) { ZZ::operator=(i); return *this; }
 		ZZ_auto& operator=(const long i) { ZZ::operator=(i); return *this; }
-		operator long() {
+		operator long() const {
 			return to_long(*this);
 #if AS_DEBUG >= 2
 			cout << "Warning : possible loss of precision." << endl;

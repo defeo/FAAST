@@ -11,8 +11,8 @@ typedef Field<zz_p_Algebra> gfp;
 typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
-	const GFp& K = GFp::createField(to_ZZ(5),25);
-	const gfp& k = gfp::createField(3,5);
+	const GFp& K = GFp::createField(to_ZZ(3),5);
+	const gfp& k = gfp::createField(5,25);
 	const GFp2& L = GFp2::createField(2,3);
 	const GFp& base = K.baseField();
 
@@ -38,5 +38,21 @@ int main(int argv, char* argc[]) {
 		cputime += NTL::GetTime();
 		//cout << Phi << endl;
 		cout << cputime << endl;
+
+		GF2_Algebra::GFpX Phi2;
+		cputime = -NTL::GetTime();
+		cyclotomic<GF2_Algebra>(Phi2, n, 2);
+		cputime += NTL::GetTime();
+		//cout << Phi2 << endl;
+		cout << cputime << endl;
+
+		ZZ_p_Algebra::GFpX Phi3;
+		cputime = -NTL::GetTime();
+		cyclotomic<ZZ_p_Algebra>(Phi3, n, K.characteristic());
+		cputime += NTL::GetTime();
+		//cout << Phi3 << endl;
+		cout << cputime << endl;
+		
+		K.ArtinSchreierExtension();
 	}
 }

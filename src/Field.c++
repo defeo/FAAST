@@ -171,7 +171,7 @@ namespace AS {
 		if (d < 1) {
 			throw BadParametersException("Cannot create an extension field of negative degree.");
 		}
-		if (p <= 1) {
+		if (p <= long(1)) {
 			throw NotPrimeException();
 		}
 		if (test && !ProbPrime(p)) {

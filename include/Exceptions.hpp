@@ -24,7 +24,11 @@ namespace AS {
 	class NotInSameFieldException : public ASException {};
 	class DivisionByZeroException : public ASException {};
 	class IllegalCoercionException : public ASException {};
-	class NotSupportedException : public ASException {};
+	class NotSupportedException : public ASException {
+	public:
+		NotSupportedException() {}
+		NotSupportedException(const char* m) : ASException(m) {}
+	};
 	class UndefinedFieldException : public ASException {
 	public:
 		virtual const char* what() const throw() {

@@ -43,6 +43,8 @@ namespace AS {
 		/* Flags related to the construction of the extension */
 		const bool plusone;
 		const bool twopminusone;
+		/* The (2p-1)th cyclotomic polynomial */
+		mutable auto_ptr<const Context> Phi;
 
 	/****************** Members for non-stem fields ******************/
 		/* The stem-field to which this one is isomorphic */
@@ -237,6 +239,7 @@ namespace AS {
 			const long line,
 			const bool pluso,
 			const bool twopminuso,
+			const Context& Ph,
 			const Field<T>* st,
 			const Field<T>* vsub,
 			const BigInt& cha,
@@ -252,6 +255,7 @@ namespace AS {
 		liftuphelper(liftup),
 		artin(mat), artinLine(line),
 		plusone(pluso), twopminusone(twopminuso),
+		Phi(Ph),
 		stem(st), vsubfield(vsub),
 		p(cha), d(deg), height(h),
 		gen(g), alpha(a)
@@ -274,6 +278,7 @@ namespace AS {
 		liftuphelper(),
 		artin(mat), artinLine(line),
 		plusone(false), twopminusone(false),
+		Phi(),
 		stem(this), vsubfield(),
 		p(cha), d(deg), height(0),
 		gen(new FieldElement<T>(this, g)),
@@ -292,6 +297,7 @@ namespace AS {
 		liftuphelper(),
 		artin(), artinLine(),
 		plusone(false), twopminusone(false),
+		Phi(),
 		stem(this), vsubfield(),
 		p(cha), d(1), height(0),
 		gen(new FieldElement<T>(this, pri)),
