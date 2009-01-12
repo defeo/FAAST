@@ -88,6 +88,7 @@ namespace AS {
 		
 		switchContext();
 		GFpX Q; bool po, tpmo;
+		FieldElement<T>* alpha;
 
 		// Compute the minimal polynomial Q of the new level
 		 
@@ -101,11 +102,15 @@ namespace AS {
 				SetCoeff(Q, p, 1);
 				SetCoeff(Q, 1, -1);
 				SetCoeff(Q, 0, -1);
+				// alpha = 1
+				alpha = new FieldElement<T>(one());
 			} else {
+				// alpha = x0
+				alpha = new FieldElement<T>(*primitive);
 				GFpX Q0 = GFpE::modulus().val();
 				// if needed, make the trace of the primitive element
 				// different from 0
-				if (trace(primitive->repExt) == 0) {
+				if (primitive->trace() == 0) {
 					// extend modulo X^p - X - x0 - 1
 					po = true;
 					if (d % p == 0) throw
@@ -114,6 +119,8 @@ namespace AS {
 					GFpX xminus1; SetX(xminus1); SetCoeff(xminus1,0,-1);
 					// Q_0* = Q_0(X-1)
 					compose<T>(Q0, Q0, xminus1, p);
+					// alpha = x0 + 1
+					*alpha += one();
 				}
 				// X^p - X
 				GFpX xpminusx;
@@ -134,7 +141,9 @@ namespace AS {
 			SetCoeff(xpminusx, p, 1);
 			SetCoeff(xpminusx, 1, -1);
 			// Q_1 = Q_0
-			compose<T>(Q, Q0, xpminusx, p);			
+			compose<T>(Q, Q0, xpminusx, p);
+			// alpha = x1
+			alpha = new FieldElement<T>(*primitive);
 		}
 		// generic case, see paper
 		else {
@@ -154,6 +163,9 @@ namespace AS {
 			// apply Cantor's algorithm to compute the
 			// minimal polynomial
 			cantor89<T>(Q, Q0, p);
+			// alpha = x1^(2p-1)
+			alpha = new FieldElement<T>(*primitive);
+			*alpha ^= long(2)*p - 1;
 		}
 		
 		// prepare the new context
@@ -161,7 +173,13 @@ namespace AS {
 		Context ctxt = baseField().context;
 		ctxt.P.save();
 		
-		//TODO: primitive element, alpha, precomputed elements
+		// primitive element and generator
+		GFpX priX; SetX(priX);
+		GFpE pri; conv(pri, priX);
+		
+		overfield = new Field<T>(this, ctxt, pri, po, tpmo,
+								 p, long(p)*d, height+1, alpha);
+		return *overfield;
 	}
 	
 	/* Build the splitting field of the polynomial

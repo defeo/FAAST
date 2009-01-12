@@ -20,8 +20,8 @@ namespace AS {
 		
 	/****************** Members for the stem ******************/
 		/* The immediate subfield and overfield, if they're defined */
-		const Field<T>* subfield;
-		const Field<T>* overfield;
+		mutable const Field<T>* subfield;
+		mutable const Field<T>* overfield;
 		/* Infrastructure-dependent data to perform computations in
 		 * the field. (e.g. GF2EContext in NTL)
 		 */
@@ -29,9 +29,9 @@ namespace AS {
 		/* The generator over GF(p) */
 		const auto_ptr<const FieldElement<T> > primitive;
 		/* Precomputed pseudotraces */
-		const auto_ptr<const vector<FieldElement<T> > > pseudotraces;
+		mutable auto_ptr<const vector<FieldElement<T> > > pseudotraces;
 		/* Lift-up precomputation */
-		const auto_ptr<const FieldElement<T> > liftuphelper;
+		mutable auto_ptr<const FieldElement<T> > liftuphelper;
 		/* The inverse matrix of the d-1 minor of the
 		 * linear application X^p-X
 		 */
@@ -302,6 +302,31 @@ namespace AS {
 		p(cha), d(1), height(0),
 		gen(new FieldElement<T>(this, pri)),
 		alpha()
+		{}
+		/* Private constructor for primitive stem fields */
+		Field<T> (
+			const Field<T>* sub,
+			const Context& ctxt,
+			const GFpE& pri,
+			const bool po,
+			const bool tpmo,
+			const BigInt& cha,
+			const long deg,
+			const long h,
+			const FieldElement<T>* aleph
+		) throw() :
+		subfield(sub), overfield(),
+		context(ctxt),
+		primitive(new FieldElement<T>(this, pri)),
+		pseudotraces(),
+		liftuphelper(),
+		artin(), artinLine(-1),
+		plusone(po), twopminusone(tpmo),
+		Phi(),
+		stem(this), vsubfield(),
+		p(cha), d(deg), height(h),
+		gen(new FieldElement<T>(this, pri)),
+		alpha(aleph)
 		{}
 
 	};

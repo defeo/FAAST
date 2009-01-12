@@ -121,7 +121,9 @@ namespace AS {
 		
 	/****************** Comparison ******************/
 		bool operator==(const FieldElement<T>&);
+		bool operator==(const BigInt&);
 		bool operator!=(const FieldElement<T>& e) { return !this==e; }
+		bool operator!=(const BigInt& i) { return !this==i; }
 		bool IsZero() const throw();
 		bool IsOne() const throw();
 
