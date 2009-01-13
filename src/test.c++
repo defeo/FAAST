@@ -1,6 +1,5 @@
 #include "Types.hpp"
 #include "Field.hpp"
-#include "utilities.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -11,48 +10,35 @@ typedef Field<zz_p_Algebra> gfp;
 typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
-	const GFp& K = GFp::createField(to_ZZ(3),5);
-	const gfp& k = gfp::createField(5,25);
-	const GFp2& L = GFp2::createField(2,3);
-	const GFp& base = K.baseField();
+	const GFp& L = GFp::createField(to_ZZ(3),5);
+	const gfp& k = gfp::createField(2,9);
+	const GFp2& K = GFp2::createField(2,9);
+	const GFp2& base = K.baseField();
 
-/*	cout << K.characteristic() << " " << K.degree() << endl 
+	cout << K.characteristic() << " " << K.degree() << endl 
 		<< k.characteristic() << " " << k.degree() << endl
 		<< L << ", " << base << endl
 		<< L.cardinality() << " " << K.cardinality() << " "
 		<< base.cardinality() << " " << k.cardinality() << endl;
-	cout << K.isOverFieldOf(base) << K.isIsomorphic(K) << (K==K) << endl;*/
-
-	while (true) {
-		long n; cin >> n;
-		vector<pair<long,int> > factors;
-		factor(n, factors);
-		vector<pair<long,int> >::iterator it;
-		for (it = factors.begin() ; it != factors.end() ; it++) {
-			cout << "(" << it->first << ", " << it->second << ") ";
-		}
-		cout << endl;
-		zz_p_Algebra::GFpX Phi;
-		double cputime = -NTL::GetTime();
-		cyclotomic<zz_p_Algebra>(Phi, n, k.characteristic());
-		cputime += NTL::GetTime();
-		//cout << Phi << endl;
-		cout << cputime << endl;
-
-		GF2_Algebra::GFpX Phi2;
-		cputime = -NTL::GetTime();
-		cyclotomic<GF2_Algebra>(Phi2, n, 2);
-		cputime += NTL::GetTime();
-		//cout << Phi2 << endl;
-		cout << cputime << endl;
-
-		ZZ_p_Algebra::GFpX Phi3;
-		cputime = -NTL::GetTime();
-		cyclotomic<ZZ_p_Algebra>(Phi3, n, K.characteristic());
-		cputime += NTL::GetTime();
-		//cout << Phi3 << endl;
-		cout << cputime << endl;
-		
-		K.ArtinSchreierExtension();
-	}
+	cout << K.isOverFieldOf(base) << K.isIsomorphic(K) << (K==K) << endl;
+	
+	double cputime = -NTL::GetTime();
+	const GFp2& KK = K.ArtinSchreierExtension();
+	cputime += NTL::GetTime();
+	cout << KK << " in " << cputime << endl;
+	
+	cputime = -NTL::GetTime();
+	const GFp2& KKK = KK.ArtinSchreierExtension();
+	cputime += NTL::GetTime();
+	cout << KKK << " in " << cputime << endl;
+	
+	cputime = -NTL::GetTime();
+	const GFp2& KKKK = KKK.ArtinSchreierExtension();
+	cputime += NTL::GetTime();
+	cout << KKKK << " in " << cputime << endl;
+	
+	cputime = -NTL::GetTime();
+	const GFp2& KKKKK = KKKK.ArtinSchreierExtension();
+	cputime += NTL::GetTime();
+	cout << KKKKK << " in " << cputime << endl;
 }

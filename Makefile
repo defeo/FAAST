@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT=-g -pg -Wall -DAS_DEBUG=2
+OPT=-g -pg -Wall -DAS_DEBUG=3
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
@@ -39,10 +39,19 @@ TEST := $(TEST:%=$(BIN)/%)
 test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
+TESTCYCLO := testCyclotomic.o
+TESTCYCLO := $(TESTCYCLO:%=$(BIN)/%)
+testCyclotomic: $(COMMONOBJS) $(TESTCYCLO)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTCYCLO) $(LIB) -o $(BIN)/testCyclotomic
+
 ########## .o files
 
 $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
+
+$(BIN)/testCyclotomic.o: $(SRC)/testCyclotomic.c++ $(INC)/Types.hpp \
+	$(INC)/Field.hpp $(INC)/utilities.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testCyclotomic.c++ -o $(BIN)/testCyclotomic.o
 
 ########## other files
 
@@ -73,7 +82,7 @@ $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 
 ######################################################################
 .PHONY: all
-all: createbin test
+all: createbin test testCyclotomic
 
 .PHONY: clean
 clean:

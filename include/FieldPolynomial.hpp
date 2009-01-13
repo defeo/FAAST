@@ -127,10 +127,12 @@ namespace AS {
 		bool isCoercible(const Field<T>&) const throw();
 		
 	/****************** Comparison ******************/
-		bool operator==(const FieldPolynomial<T>&);
-		bool operator!=(const FieldPolynomial<T>& e) { return !this==e; }
-		bool IsZero() const throw();
-		bool IsOne() const throw();
+		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
+		bool operator!=(const FieldPolynomial<T>& e)
+		const throw(NotInSameFieldException)
+		{ return !this==e; }
+		bool isZero() const throw();
+		bool isOne() const throw();
 
 	/****************** Infrastructure ******************/
 		/* Interface with infrastructure. Use this only if you are
@@ -166,7 +168,7 @@ namespace AS {
 	private:
 	/****************** Internal Constructors ******************/
 		/* Construct an element with given representation and parent.
-		 * Reserved for used by Field<T>
+		 * Reserved for use by Field<T>
 		 */
 		FieldPolynomial(const Field<T>* p, const GFpX& PBase, const GFpEX& PExt, const bool b) throw() :
 			parent_field(p), repBase(PBase), repExt(PExt), base(b) {}

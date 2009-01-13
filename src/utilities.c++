@@ -5,7 +5,7 @@ namespace AS {
 		else {
 			if (n == 0) return 0;
 			if (n < 0) n = -n;
-			long k = floor(log(n) / log(p)) + 1;
+			long k = long(floor(log(n) / log(p)) + 1);
 			long pk = power_long(p, k);
 			if (pk <= n) {
 				long i = 0;
@@ -37,7 +37,7 @@ namespace AS {
 		long degR = max(deg(R),0);
 		long k = NumPits(p, degree);
 		if (k > 0) {
-			res = 0;
+			GFpX restmp;
 			long splitdegree = power_long(p, k-1);
 			for (long i = splitdegree * (degree / splitdegree) ; i >= 0 ; i -= splitdegree) {
 				GFpX Q1;
@@ -47,14 +47,15 @@ namespace AS {
 				GFpX Q1X; compose<T>(Q1X, Q1, R, p);
 				// Horner's rule
 				GFpX shifted;
-				if (res != 0) {
+				if (restmp != 0) {
 					for (long h = 0 ; h <= degR ; h++) {
 						if (coeff(R, h) != 0)
-							shifted += coeff(R, h) * LeftShift(res, splitdegree*h);
+							shifted += coeff(R, h) * LeftShift(restmp, splitdegree*h);
 					}
 				}
-				res = Q1X + shifted;
+				restmp = Q1X + shifted;
 			}
+			res = restmp;
 		} else {
 			res = Q;
 		}

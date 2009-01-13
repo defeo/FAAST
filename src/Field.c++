@@ -215,12 +215,12 @@ namespace AS {
 	 */
 	template <class T> FieldPolynomial<T> Field<T>::generatingPolynomial()
 	const throw() {
-		switchContext();
 		// if this is GF(p) or a base field, this is the same as 
 		// the primitive polynomial
 		if (height == 0) return primitivePolynomial();
 		// else, it is X^p - X - alpha
 		else {
+			switchContext();
 			FieldPolynomial<T> res(-alpha);
 			res.setCoeff(1, -1);
 			res.setCoeff(to_long(p));
@@ -240,7 +240,7 @@ namespace AS {
 			return res;
 		}
 		// else, return the modulus
-		else return fromInfrastructure(GFpE::modulus().val());
+		else return FieldPolynomial<T>(this, GFpE::modulus().val());
 	}
 
 /****************** Field Elements ******************/

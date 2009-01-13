@@ -43,20 +43,38 @@ namespace AS {
 		{ return parent_field; }
 		
 	/****************** Copy ******************/
-//		FieldElement(const FieldElement<T>&) throw();
-//		FieldElement<T>& operator=(const FieldElement<T> &) throw();
+		FieldElement(const FieldElement<T>& e) throw();
+		FieldElement<T>& operator=(const FieldElement<T>& e) throw();
+		FieldElement<T>& operator=(const BigInt& i)
+		throw(UndefinedFieldException);
 		
 	/****************** Arithmetics ******************/
 		/* Binary operations */
-		FieldElement<T> operator+(const FieldElement<T>&)
-			const throw(NotInSameFieldException);
-		FieldElement<T> operator-(const FieldElement<T>&)
-			const throw(NotInSameFieldException);
-		FieldElement<T> operator*(const FieldElement<T>&)
-			const throw(NotInSameFieldException);
-		FieldElement<T> operator/(const FieldElement<T>&)
-			const throw(NotInSameFieldException, DivisionByZeroException);
-			
+		FieldElement<T> operator+(const FieldElement<T>& e)
+		const throw(NotInSameFieldException) {
+			FieldElement<T> tmp = *this;
+			tmp += e;
+			return tmp;
+		}
+		FieldElement<T> operator-(const FieldElement<T>& e)
+		const throw(NotInSameFieldException) {
+			FieldElement<T> tmp = *this;
+			tmp -= e;
+			return tmp;
+		}
+		FieldElement<T> operator*(const FieldElement<T>& e)
+		const throw(NotInSameFieldException) {
+			FieldElement<T> tmp = *this;
+			tmp *= e;
+			return tmp;
+		}
+		FieldElement<T> operator/(const FieldElement<T>& e)
+		const throw(NotInSameFieldException, DivisionByZeroException) {
+			FieldElement<T> tmp = *this;
+			tmp /= e;
+			return tmp;
+		}
+		
 		/* Self-incrementing binary operations. */
 		void operator+=(const FieldElement<T>&)
 			throw(NotInSameFieldException);
@@ -82,25 +100,58 @@ namespace AS {
 		void division(const FieldElement<T>& a, const FieldElement<T>& b)
 			throw(NotInSameFieldException, DivisionByZeroException)
 		{ operator=(a); operator/=(b); }
-			
+		
 		/* Unary operations */
-		FieldElement<T> operator-() const throw();
-		FieldElement<T> inv() const throw(DivisionByZeroException);
-		FieldElement<T> operator^(const ZZ&) const throw();
-		FieldElement<T> operator^(const long) const throw();
+		FieldElement<T> operator-() const throw() {
+			FieldElement<T> tmp = *this;
+			tmp.negate();
+			return tmp;
+		}
+		FieldElement<T> inv() const throw(DivisionByZeroException) {
+			FieldElement<T> tmp = *this;
+			tmp.self_inv();
+			return tmp;
+		}
+		FieldElement<T> operator^(const ZZ& i) const throw() {
+			FieldElement<T> tmp = *this;
+			tmp ^= i;
+			return tmp;
+		}
+		FieldElement<T> operator^(const long i) const throw() {
+			FieldElement<T> tmp = *this;
+			tmp ^= i;
+			return tmp;
+		}
 		/* Frobenius and iterated frobenius */
-		FieldElement<T> frobenius() const throw();
-		FieldElement<T> frobenius(const long) const throw();
+		FieldElement<T> frobenius() const throw() {
+			FieldElement<T> tmp = *this;
+			tmp.self_frobenius();
+			return tmp;
+		}
+		FieldElement<T> frobenius(const long n) const throw() {
+			FieldElement<T> tmp = *this;
+			tmp.self_frobenius(n);
+			return tmp;
+		}
 		/* Trace over the field F.
 		 * 
 		 * throws : NotASubFieldException if this does not belong to
 		 *          an overfield of F.
 		 */
-		FieldElement<T> trace(const Field<T> F) const throw(NotASubFieldException);
+		FieldElement<T> trace(const Field<T> F)
+		const throw(NotASubFieldException) {
+			FieldElement<T> tmp = *this;
+			tmp.self_trace(F);
+			return tmp;
+		}
 		/* Absolute trace over GF(p) */
 		FieldElement<T> trace() const throw();
 		/* n-th pseudotrace */
-		FieldElement<T> pseudotrace(const long n) const throw();
+		FieldElement<T> pseudotrace(const long n) const throw() {
+			FieldElement<T> tmp = *this;
+			tmp.self_pseudotrace(n);
+			return tmp;
+		}
 		
 		/* Self-incrementing Unary operations */
 	 	void negate() throw();
@@ -120,12 +171,19 @@ namespace AS {
 		bool isCoercible(const Field<T>&) const throw();
 		
 	/****************** Comparison ******************/
-		bool operator==(const FieldElement<T>&);
-		bool operator==(const BigInt&);
-		bool operator!=(const FieldElement<T>& e) { return !this==e; }
-		bool operator!=(const BigInt& i) { return !this==i; }
-		bool IsZero() const throw();
-		bool IsOne() const throw();
+		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);
+		bool operator==(const BigInt&) const throw();
+		bool operator!=(const FieldElement<T>& e) const throw(NotInSameFieldException)
+		{ return !this==e; }
+		bool operator!=(const BigInt& i) const throw() { return !this==i; }
+		bool isZero() const throw() {
+			return !parent_field ||
+				(base ? IsZero(repBase) : IsZero(repExt));
+		}
+		bool isOne() const throw()  {
+			return parent_field && 
+				(base ? IsOne(repBase) : IsOne(repExt));
+		}
 
 	/****************** Infrastructure ******************/
 		/* Interface with infrastructure. Use this only if you are
@@ -168,8 +226,19 @@ namespace AS {
 			repExt(P), base(false), parent_field(p) {}
 		FieldElement(const Field<T>* p, const GFp& P) throw() :
 			repBase(P), base(true), parent_field(p) {}
-
+	/****************** Utility Routines ******************/
+		void sameLevel(const FieldElement<T>& e)
+		throw(NotInSameFieldException) {
+			if (parent_field != e.parent_field)
+			throw NotInSameFieldException();
+		}
 	};
+	
+/****************** Printing ******************/
+	template <class T> ostream&
+	operator<<(ostream& o, const FieldElement<T>& e) {
+		return e.print(o);
+	}
 
 /****************** Level embedding ******************/
 	/* Push the element e down along the stem and store
@@ -195,5 +264,7 @@ namespace AS {
 	void liftUp(vector<FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException);
 }
+
+#include "../src/FieldElement.c++"
 
 #endif /*FIELDELEMENT_H_*/

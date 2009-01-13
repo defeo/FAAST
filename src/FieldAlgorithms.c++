@@ -23,8 +23,7 @@ namespace AS {
 		GFpE omega; GFpX omegaX;
 		SetX(omegaX); conv(omega, omegaX);
 		// prepare the values X^i for i in [0..2p-2]
-		vector<GFpE> omegas;
-		omegas.reserve(2*p-1);
+		GFpE omegas[2*p-1];
 		omegas[0] = 1;
 		for (long i = 1; i <= 2*p-2 ; i++)
 			omegas[i] = omegas[i-1]*omega;
@@ -36,14 +35,14 @@ namespace AS {
 		// approach
 		for (long i = 1 ; i <= 2*p-2 ; i++) {
 			long c = 0;
-			for (long j = 0 ; j < deg(Q) ; j++) {
+			for (long j = 0 ; j <= deg(Q) ; j++) {
 				SetCoeff(Qtmp, j,
 					coeff(Q, j) * omegas[c]);
 				c += i; c %= 2*p - 1;
 			}
 			Qstar *= Qtmp; 
 		}
-		
+
 		// qstar( X^(2p-1) ) = Qstar
 		GFpX qstar;
 		long c = 0;
@@ -168,6 +167,10 @@ namespace AS {
 			*alpha ^= long(2)*p - 1;
 		}
 		
+#if AS_DEBUG >= 3
+		if (!IterIrredTest(Q))
+			throw ASException("The defining polynomial of the extension is not irreducible.");
+#endif
 		// prepare the new context
 		GFpE::init(Q);
 		Context ctxt = baseField().context;
