@@ -11,9 +11,9 @@ typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
 	const GFp& L = GFp::createField(to_ZZ(3),5);
-	const gfp& k = gfp::createField(2,9);
-	const GFp2& K = GFp2::createField(2,9);
-	const GFp2& base = K.baseField();
+	const gfp& K = gfp::createField(2,9);
+	const GFp2& k = GFp2::createField(2,9);
+	const gfp& base = K.baseField();
 
 	cout << K.characteristic() << " " << K.degree() << endl 
 		<< k.characteristic() << " " << k.degree() << endl
@@ -23,22 +23,22 @@ int main(int argv, char* argc[]) {
 	cout << K.isOverFieldOf(base) << K.isIsomorphic(K) << (K==K) << endl;
 	
 	double cputime = -NTL::GetTime();
-	const GFp2& KK = K.ArtinSchreierExtension();
+	const gfp& KK = K.ArtinSchreierExtension();
 	cputime += NTL::GetTime();
 	cout << KK << " in " << cputime << endl;
 	
 	cputime = -NTL::GetTime();
-	const GFp2& KKK = KK.ArtinSchreierExtension();
+	const gfp& KKK = KK.ArtinSchreierExtension();
 	cputime += NTL::GetTime();
 	cout << KKK << " in " << cputime << endl;
 	
 	cputime = -NTL::GetTime();
-	const GFp2& KKKK = KKK.ArtinSchreierExtension();
+	const gfp& KKKK = KKK.ArtinSchreierExtension();
 	cputime += NTL::GetTime();
 	cout << KKKK << " in " << cputime << endl;
 	
 	cputime = -NTL::GetTime();
-	const GFp2& KKKKK = KKKK.ArtinSchreierExtension();
+	const gfp& KKKKK = KKKK.ArtinSchreierExtension();
 	cputime += NTL::GetTime();
 	cout << KKKKK << " in " << cputime << endl;
 }
