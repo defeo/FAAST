@@ -49,7 +49,10 @@ namespace AS {
 			zz_pEContext P;
 		}                    Context;
 		typedef zz_pXModulus GFpXModulus;
+
+		static char const * const name;
 	};
+	char const * const zz_p_Algebra::name = "zz_p";
 
 	struct ZZ_p_Algebra {
 		typedef ZZ_p         GFp;
@@ -63,7 +66,10 @@ namespace AS {
 			ZZ_pEContext P;
 		}                    Context;
 		typedef ZZ_pXModulus GFpXModulus;
+
+		static char const * const name;
 	};
+	char const * const ZZ_p_Algebra::name = "ZZ_p";
 
 	struct GF2_Algebra {
 		typedef GF2         GFp;
@@ -76,7 +82,10 @@ namespace AS {
 			GF2EContext P;
 		}                   Context;
 		typedef GF2XModulus GFpXModulus;
+
+		static char const * const name;
 	};
+	char const * const GF2_Algebra::name = "GF2";
 }
 
 #endif /*TYPES_H_*/

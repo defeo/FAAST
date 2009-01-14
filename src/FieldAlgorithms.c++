@@ -19,6 +19,9 @@ namespace AS {
 		typedef typename T::GFpE  GFpE;
 		typedef typename T::GFpEX GFpEX;
 		
+#ifdef AS_TIMINGS
+		Field<T>::TIME.C89PRE = -GetTime();
+#endif
 		// X mod Phi(X), the (2p-1)th root of unity
 		GFpE omega; GFpX omegaX;
 		SetX(omegaX); conv(omega, omegaX);
@@ -27,6 +30,10 @@ namespace AS {
 		omegas[0] = 1;
 		for (long i = 1; i <= 2*p-2 ; i++)
 			omegas[i] = omegas[i-1]*omega;
+#ifdef AS_TIMINGS
+		Field<T>::TIME.C89PRE += GetTime();
+		Field<T>::TIME.C89Qstar = -GetTime();
+#endif
 
 		// Qstar = prod_i Q(omega^i Y)
 		GFpEX Qstar; conv(Qstar, Q);
@@ -35,6 +42,7 @@ namespace AS {
 		// approach
 		for (long i = 1 ; i <= 2*p-2 ; i++) {
 			long c = 0;
+			SetCoeff(Qtmp, deg(Q));  // hack to speed up GF2
 			for (long j = 0 ; j <= deg(Q) ; j++) {
 				SetCoeff(Qtmp, j,
 					coeff(Q, j) * omegas[c]);
@@ -42,7 +50,10 @@ namespace AS {
 			}
 			Qstar *= Qtmp; 
 		}
-
+#ifdef AS_TIMINGS
+		Field<T>::TIME.C89Qstar += GetTime();
+		Field<T>::TIME.C89qstar = -GetTime();
+#endif
 		// qstar( X^(2p-1) ) = Qstar
 		GFpX qstar;
 		long c = 0;
@@ -58,12 +69,19 @@ namespace AS {
 			}
 #endif
 		}
+#ifdef AS_TIMINGS
+		Field<T>::TIME.C89qstar += GetTime();
+		Field<T>::TIME.C89compose = -GetTime();
+#endif
 		
 		// result = qstar(X^p - X)
 		GFpX xpminusx;
 		SetCoeff(xpminusx, p, 1);
 		SetCoeff(xpminusx, 1, -1);
 		compose<T>(res, qstar, xpminusx, p);
+#ifdef AS_TIMINGS
+		Field<T>::TIME.C89compose += GetTime();
+#endif
 	}
 
 
@@ -153,7 +171,13 @@ namespace AS {
 			// polynomial
 			if ( !(baseField().Phi.get()) ) {
 				GFpX phi;
+#ifdef AS_TIMINGS
+				TIME.CYCLOTOMIC = -GetTime();
+#endif
 				cyclotomic<T>(phi, 2*long(p)-1, p);
+#ifdef AS_TIMINGS
+				TIME.CYCLOTOMIC += GetTime();
+#endif
 				GFpE::init(phi);
 				Context* ctxt = new Context();
 				ctxt->P.save();
@@ -161,7 +185,13 @@ namespace AS {
 			} else baseField().Phi->P.restore();
 			// apply Cantor's algorithm to compute the
 			// minimal polynomial
+#ifdef AS_TIMINGS
+				TIME.CANTOR89 = -GetTime();
+#endif
 			cantor89<T>(Q, Q0, p);
+#ifdef AS_TIMINGS
+				TIME.CANTOR89 += GetTime();
+#endif
 			// alpha = x1^(2p-1)
 			alpha = new FieldElement<T>(*primitive);
 			*alpha ^= long(2)*p - 1;

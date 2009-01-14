@@ -9,6 +9,9 @@ namespace AS {
 	template <class T> class Field;
 	
 	template <class T> class FieldPolynomial {
+	public:
+		typedef T Infrastructure;
+		
 	private:
 		typedef typename T::GFp     GFp;
 		typedef typename T::MatGFp  MatGFp;

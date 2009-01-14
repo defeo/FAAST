@@ -10,35 +10,48 @@ typedef Field<zz_p_Algebra> gfp;
 typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
-	const GFp& L = GFp::createField(to_ZZ(3),5);
-	const gfp& K = gfp::createField(2,9);
-	const GFp2& k = GFp2::createField(2,9);
-	const gfp& base = K.baseField();
+	double cputime;
+	
+	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 
-	cout << K.characteristic() << " " << K.degree() << endl 
-		<< k.characteristic() << " " << k.degree() << endl
-		<< L << ", " << base << endl
-		<< L.cardinality() << " " << K.cardinality() << " "
-		<< base.cardinality() << " " << k.cardinality() << endl;
-	cout << K.isOverFieldOf(base) << K.isIsomorphic(K) << (K==K) << endl;
-	
-	double cputime = -NTL::GetTime();
-	const gfp& KK = K.ArtinSchreierExtension();
-	cputime += NTL::GetTime();
-	cout << KK << " in " << cputime << endl;
-	
 	cputime = -NTL::GetTime();
-	const gfp& KKK = KK.ArtinSchreierExtension();
+	const gfp* K = &(gfp::createField(2,99999));
 	cputime += NTL::GetTime();
-	cout << KKK << " in " << cputime << endl;
+	cout << *K << " in " << cputime << endl;
+	cout << "Time spent building the irreducible polynomial : "
+		<< gfp::TIME.BUILDIRRED << endl << endl;
 	
-	cputime = -NTL::GetTime();
-	const gfp& KKKK = KKK.ArtinSchreierExtension();
-	cputime += NTL::GetTime();
-	cout << KKKK << " in " << cputime << endl;
+	for (int i = 1 ; i <= 4 ; i++) {
+		cputime = -NTL::GetTime();
+		K = &(K->ArtinSchreierExtension());
+		cputime += NTL::GetTime();
+		cout << *K << " in " << cputime << endl;
+	}
 	
+	cout << endl << "Time spent building the cyclotomic polynomial : "
+		<< gfp::TIME.CYCLOTOMIC << endl;
+
+
+	cout << endl << endl;
+
+
+	cout << "Using " << GFp2::Infrastructure::name << endl << endl;
+
 	cputime = -NTL::GetTime();
-	const gfp& KKKKK = KKKK.ArtinSchreierExtension();
+	const GFp2* L = &(GFp2::createField(2,99999));
 	cputime += NTL::GetTime();
-	cout << KKKKK << " in " << cputime << endl;
+	cout << *L << " in " << cputime << endl;
+	cout << "Time spent building the irreducible polynomial : "
+		<< GFp2::TIME.BUILDIRRED << endl << endl;
+	
+	for (int i = 1 ; i <= 4 ; i++) {
+		cputime = -NTL::GetTime();
+		L = &(L->ArtinSchreierExtension());
+		cputime += NTL::GetTime();
+		cout << *L << " in " << cputime << endl;
+	}
+	
+	cout << endl << "Time spent building the cyclotomic polynomial : "
+		<< GFp2::TIME.CYCLOTOMIC << endl;
+
 }

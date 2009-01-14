@@ -8,6 +8,45 @@
 
 namespace AS {
 	template <class T> class Field {
+	public:
+		typedef T Infrastructure;
+		
+	/* Timings for various computations */
+#ifdef AS_TIMINGS
+	public:
+		typedef struct t {
+			double CYCLOTOMIC;
+			double PSEUDOTRACES;
+			double LIFTUP;
+			double BUILDIRRED;
+			double IRREDTEST;
+			double PRIMETEST;
+			double ARTINMATRIX;
+			double CANTOR89;
+			double C89PRE;
+			double C89Qstar;
+			double C89qstar;
+			double C89compose;
+			
+			t() :
+				CYCLOTOMIC(-1), 
+				PSEUDOTRACES(-1),
+				LIFTUP(-1),
+				BUILDIRRED(-1),
+				IRREDTEST(-1),
+				PRIMETEST(-1),
+				ARTINMATRIX(-1),
+				CANTOR89(-1),
+				C89PRE(-1),
+				C89Qstar(-1),
+				C89qstar(-1),
+				C89compose(-1)
+				{}
+		} TIMINGS;
+		
+		static TIMINGS TIME;
+#endif
+		
 	private:
 		typedef typename T::GFp         GFp;
 		typedef typename T::MatGFp      MatGFp;
@@ -35,11 +74,11 @@ namespace AS {
 		/* The inverse matrix of the d-1 minor of the
 		 * linear application X^p-X
 		 */
-		const MatGFp artin;
+		mutable MatGFp artin;
 		/* The line we took away from X^p-X to make
 		 * it invertible
 		 */
-		const long artinLine;
+		mutable long artinLine;
 		/* Flags related to the construction of the extension */
 		const bool plusone;
 		const bool twopminusone;
@@ -295,7 +334,7 @@ namespace AS {
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
 		liftuphelper(),
-		artin(), artinLine(),
+		artin(), artinLine(-1),
 		plusone(false), twopminusone(false),
 		Phi(),
 		stem(this), vsubfield(),

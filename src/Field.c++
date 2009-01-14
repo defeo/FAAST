@@ -7,6 +7,7 @@
 #include <sstream>
 
 namespace AS {
+	template <class T> typename Field<T>::TIMINGS Field<T>::TIME;
 	
 	template <class T> typename T::MatGFp artinMatrix
 	(const typename T::BigInt& p, const long line, const typename T::GFpXModulus& P) {
@@ -60,14 +61,25 @@ namespace AS {
 		long d = deg(P);
 		Context context; context.p.save(); context.P.save();
 		// test primality
+#ifdef AS_TIMINGS
+		TIME.PRIMETEST = -GetTime();
+#endif
 		if ( p <= long(1) || (test && !ProbPrime(p)) ) {
 			throw NotPrimeException();
 		}
+#ifdef AS_TIMINGS
+		TIME.PRIMETEST += GetTime();
+#endif
 		// test irreducibility
+#ifdef AS_TIMINGS
+		TIME.IRREDTEST = -GetTime();
+#endif
 		if (d > 1 && test && !DetIrredTest(P)) {
 			throw NotIrreducibleException();
 		}
-		
+#ifdef AS_TIMINGS
+		TIME.IRREDTEST += GetTime();
+#endif		
 		// build GF(p^d)
 		if (d >= 2) {
 			// build GF(p)
@@ -77,11 +89,14 @@ namespace AS {
 			GFpE primitive; conv(primitive, GFpX(1,1));
 			// compute the inverse matrix of X^p-X
 			GFpXModulus Pmod; build(Pmod, P);
+			// WARNING : No more precomputation at this point,
+			// it is too expensive !
+			//
 			// We pick a redundant line : it corresponds
 			// to a power of x of trace different from 0.
 			// The residue formula tells us that Tr(x^dep) != 0
-			long line = d - 1 - deg(diff(P));
-			MatGFp artin = artinMatrix<T>(p,line,Pmod);
+			long line = -1; //d - 1 - deg(diff(P));
+			MatGFp artin; // = artinMatrix<T>(p,line,Pmod);
 			// build the field
 			Field<T>* K = new Field<T>(baseField, context, primitive,
 			                           artin, line, p, d, primitive);
@@ -104,9 +119,15 @@ namespace AS {
 		long d = deg(P);
 		Context context; context.P.save();
 		// test irreducibility
+#ifdef AS_TIMINGS
+		TIME.IRREDTEST = -GetTime();
+#endif
 		if (d > 1 && test && !IterIrredTest(P)) {
 			throw NotIrreducibleException();
 		}
+#ifdef AS_TIMINGS
+		TIME.IRREDTEST += GetTime();
+#endif
 		
 		// build GF(p^d)
 		if (d >= 2) {
@@ -117,11 +138,14 @@ namespace AS {
 			GFpE primitive; conv(primitive, GFpX(1,1));
 			// compute the inverse matrix of X^p-X
 			GFpXModulus Pmod; build(Pmod, P);
+			// WARNING : No more precomputation at this point,
+			// it is too expensive !
+			//
 			// We pick a redundant line : it corresponds
 			// to a power of x of trace different from 0.
 			// The residue formula tells us that Tr(x^dep) != 0
-			long line = d - 1 - deg(diff(P));
-			MatGFp artin = artinMatrix<GF2_Algebra>(p,line,Pmod);
+			long line = -1; //d - 1 - deg(diff(P));
+			MatGFp artin;// = artinMatrix<GF2_Algebra>(p,line,Pmod);
 			// build the field
 			Field<GF2_Algebra>* K =
 				new Field<GF2_Algebra>(baseField, context, primitive,
@@ -174,14 +198,26 @@ namespace AS {
 		if (p <= long(1)) {
 			throw NotPrimeException();
 		}
+#ifdef AS_TIMINGS
+		TIME.PRIMETEST = -GetTime();
+#endif
 		if (test && !ProbPrime(p)) {
 			throw NotPrimeException();
 		}
+#ifdef AS_TIMINGS
+		TIME.PRIMETEST += GetTime();
+#endif
 		
 		GFp::init(p);
 		GFpX P;
+#ifdef AS_TIMINGS
+		TIME.BUILDIRRED = -GetTime();
+#endif
 		if (d >= 2) BuildIrred(P, d);
 		else SetX(P);
+#ifdef AS_TIMINGS
+		TIME.BUILDIRRED += GetTime();
+#endif
 		return createField(P, false);
 	}
 	
@@ -198,8 +234,14 @@ namespace AS {
 		}
 		
 		GFpX P;
+#ifdef AS_TIMINGS
+		TIME.BUILDIRRED = -GetTime();
+#endif
 		if (d >= 2) BuildIrred(P, d);
 		else SetX(P);
+#ifdef AS_TIMINGS
+		TIME.BUILDIRRED += GetTime();
+#endif
 		return createField(P, false);
 	}
 	

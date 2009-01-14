@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT=-g -pg -Wall -DAS_DEBUG=3
+OPT=-g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,

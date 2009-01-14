@@ -12,6 +12,9 @@ namespace AS {
 	
 	friend class Field<T>;
 	
+	public:
+		typedef T Infrastructure;
+		
 	private:
 		typedef typename T::GFp     GFp;
 		typedef typename T::MatGFp  MatGFp;
@@ -266,5 +269,6 @@ namespace AS {
 }
 
 #include "../src/FieldElement.c++"
+#include "../src/FieldElementAlgorithms.c++"
 
 #endif /*FIELDELEMENT_H_*/
