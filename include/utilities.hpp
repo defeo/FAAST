@@ -16,6 +16,9 @@ namespace AS {
 	const bool trial = true, const int multiplicity = 1);
 	/* return the gratest power of p less than or equal to n */
 	long NumPits(const long p, const long n);
+	/* Computes P(X^n) */
+	template <class T> void expand(typename T::GFpX& res,
+	const typename T::GFpX& P, const long n);
 	/* Store in res the composition Q(R).
 	 * Q and R are two polynomials over GF(p).
 	 * See also section 3.

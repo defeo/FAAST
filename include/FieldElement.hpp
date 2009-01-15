@@ -7,10 +7,39 @@
 
 namespace AS {
 	template <class T> class Field;
+	template <class T> class FieldElement;
 	
+/****************** Level embedding ******************/
+	/* Push the element e down along the stem and store
+	 * the result in v.
+	 * 
+	 * throw : NoSubFieldException if e belongs to GF(p)
+	 */
+	template <class T>
+	void pushDown(const FieldElement<T>& e, vector<FieldElement<T> >& v)
+	throw(NoSubFieldException);
+		
+	/* Lift the elements in v up along the stem and store
+	 * the result in e.
+	 * If v is too short, it is filled with zeros.
+	 * If v is too long, the unnecessary elements are ignored.
+	 * 
+	 * throw : NotInSameFieldException if the elements of v do not
+	 *         belong all to the same field.
+	 * throw : NoOverFieldException if there's no extension to lift
+	 *         up to.
+	 */
+	template <class T>
+	void liftUp(const vector<const FieldElement<T> >& v, FieldElement<T>& e)
+	throw(NotInSameFieldException, NoOverFieldException);
+
+
+/****************** Class FieldElement ******************/
 	template <class T> class FieldElement {
 	
 	friend class Field<T>;
+	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
+	friend void liftUp<T>(const vector<const FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
 	
 	public:
 		typedef T Infrastructure;
@@ -242,30 +271,6 @@ namespace AS {
 	operator<<(ostream& o, const FieldElement<T>& e) {
 		return e.print(o);
 	}
-
-/****************** Level embedding ******************/
-	/* Push the element e down along the stem and store
-	 * the result in v.
-	 * 
-	 * throw : NoSubFieldException if e belongs to GF(p)
-	 */
-	template <class T>
-	void pushDown(FieldElement<T>& e, vector<FieldElement<T> >& v)
-	throw(NoSubFieldException);
-		
-	/* Lift the elements in v up along the stem and store
-	 * the result in e.
-	 * If v is too short, it is filled with zeros.
-	 * If v is too long, the unnecessary elements are ignored.
-	 * 
-	 * throw : NotInSameFieldException if the elements of v do not
-	 *         belong all to the same field.
-	 * throw : NoOverFieldException if there's no extension to lift
-	 *         up to.
-	 */
-	template <class T>
-	void liftUp(vector<FieldElement<T> >& v, FieldElement<T>& e)
-	throw(NotInSameFieldException, NoOverFieldException);
 }
 
 #include "../src/FieldElement.c++"

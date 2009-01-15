@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT=-g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
+OPT=-g -pg -Wall -DAS_DEBUG=3 -DAS_TIMINGS
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
@@ -59,7 +59,8 @@ $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++
 	touch $(INC)/Field.hpp
 
-$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldElement.c++
+$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
+	$(SRC)/FieldElement.c++ $(SRC)/FieldElementAlgorithms.c++ 
 	touch $(INC)/FieldElement.hpp
 
 $(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
@@ -79,6 +80,9 @@ $(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
 
 $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 	touch $(SRC)/FieldAlgorithms.c++
+
+$(SRC)/FieldElementAlgorithms.c++: $(INC)/utilities.hpp
+	touch $(SRC)/FieldElementAlgorithms.c++
 
 ######################################################################
 .PHONY: all

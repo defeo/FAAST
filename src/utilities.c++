@@ -25,6 +25,15 @@ namespace AS {
 		}
 	}
 
+	/* Computes P(X^n) */
+	template <class T> void expand(typename T::GFpX& res,
+	const typename T::GFpX& P, const long n) {
+		res = 0;
+		for (long i = deg(P) ; i >= 0 ; i--)
+			SetCoeff(res, i*n, coeff(P, i));
+	}
+	
+	
 	/* Store in res the composition Q(R).
 	 * Q and R are two polynomials over GF(p)
 	 */
@@ -41,10 +50,11 @@ namespace AS {
 			long splitdegree = power_long(p, k-1);
 			for (long i = splitdegree * (degree / splitdegree) ; i >= 0 ; i -= splitdegree) {
 				GFpX Q1;
-				for (long j = 0 ; j < splitdegree && i+j <= degree ; j++) {
+				SetCoeff(Q1, min(splitdegree - 1, deg(Q) - i)); // hack
+				for (long j = 0 ; j < splitdegree && i+j <= deg(Q) ; j++) {
 					SetCoeff(Q1, j, coeff(Q, i+j));
 				}
-				GFpX Q1X; compose<T>(Q1X, Q1, R, p);
+				compose<T>(Q1, Q1, R, p);
 				// Horner's rule
 				GFpX shifted;
 				if (restmp != 0) {
@@ -53,7 +63,7 @@ namespace AS {
 							shifted += coeff(R, h) * LeftShift(restmp, splitdegree*h);
 					}
 				}
-				restmp = Q1X + shifted;
+				restmp = Q1 + shifted;
 			}
 			res = restmp;
 		} else {
@@ -199,7 +209,7 @@ namespace AS {
 			for (it = factors.begin() ; it != factors.end() ; it++) {
 				m *= power_long(it->first, (it->second - 1));
 				long q = it->first;
-				GFpX Phip; compose<T>(Phip, Phi, GFpX(q,1), p);
+				GFpX Phip; expand<T>(Phip, Phi, q);
 #ifdef AS_DEBUG
 				if (Phip % Phi != 0)
 					throw ASException("Error : computing the cyclotomic polynomial.");
@@ -209,7 +219,7 @@ namespace AS {
 			
 			// now add the other factors
 			if (m > 1) {
-				compose<T>(res, Phi, GFpX(m,1), p);
+				expand<T>(res, Phi, m);
 			} else res = Phi;
 		}
 	}

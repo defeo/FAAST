@@ -8,6 +8,10 @@
 
 namespace AS {
 	template <class T> class Field {
+
+	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
+	friend void liftUp<T>(const vector<const FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
+
 	public:
 		typedef T Infrastructure;
 		

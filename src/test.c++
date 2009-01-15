@@ -11,11 +11,11 @@ typedef Field<GF2_Algebra>  GFp2;
 
 int main(int argv, char* argc[]) {
 	double cputime;
-	
+
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(2,99999));
+	const gfp* K = &(gfp::createField(3,10));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
@@ -38,7 +38,7 @@ int main(int argv, char* argc[]) {
 	cout << "Using " << GFp2::Infrastructure::name << endl << endl;
 
 	cputime = -NTL::GetTime();
-	const GFp2* L = &(GFp2::createField(2,99999));
+	const GFp2* L = &(GFp2::createField(2,99));
 	cputime += NTL::GetTime();
 	cout << *L << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
