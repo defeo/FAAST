@@ -36,13 +36,18 @@ createbin:
 
 TEST := test.o
 TEST := $(TEST:%=$(BIN)/%)
-test: $(COMMONOBJS) $(TEST)
+$(BIN)/test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
 TESTCYCLO := testCyclotomic.o
 TESTCYCLO := $(TESTCYCLO:%=$(BIN)/%)
-testCyclotomic: $(COMMONOBJS) $(TESTCYCLO)
+$(BIN)/testCyclotomic: $(COMMONOBJS) $(TESTCYCLO)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTCYCLO) $(LIB) -o $(BIN)/testCyclotomic
+
+TESTTMUL := testTmul.o
+TESTTMUL := $(TESTTMUL:%=$(BIN)/%)
+$(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTTMUL) $(LIB) -o $(BIN)/testTmul
 
 ########## .o files
 
@@ -52,6 +57,9 @@ $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 $(BIN)/testCyclotomic.o: $(SRC)/testCyclotomic.c++ $(INC)/Types.hpp \
 	$(INC)/Field.hpp $(INC)/utilities.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/testCyclotomic.c++ -o $(BIN)/testCyclotomic.o
+
+$(BIN)/testTmul.o: $(SRC)/testTmul.c++ $(INC)/Tmul.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testTmul.c++ -o $(BIN)/testTmul.o
 
 ########## other files
 
@@ -81,12 +89,12 @@ $(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
 $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 	touch $(SRC)/FieldAlgorithms.c++
 
-$(SRC)/FieldElementAlgorithms.c++: $(INC)/utilities.hpp
+$(SRC)/FieldElementAlgorithms.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp
 	touch $(SRC)/FieldElementAlgorithms.c++
 
 ######################################################################
 .PHONY: all
-all: createbin test testCyclotomic
+all: createbin $(BIN)/test $(BIN)/testCyclotomic $(BIN)/testTmul
 
 .PHONY: clean
 clean:

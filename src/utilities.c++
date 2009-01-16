@@ -28,10 +28,25 @@ namespace AS {
 	/* Computes P(X^n) */
 	template <class T> void expand(typename T::GFpX& res,
 	const typename T::GFpX& P, const long n) {
-		res = 0;
+		typedef typename T::GFpX GFpX;
+
+		GFpX restmp;
 		for (long i = deg(P) ; i >= 0 ; i--)
-			SetCoeff(res, i*n, coeff(P, i));
+			SetCoeff(restmp, i*n, coeff(P, i));
+		res = restmp;
 	}
+	
+	/* Transpostion of expand */
+	template <class T> void contract(typename T::GFpX& res,
+	const typename T::GFpX& P, const long n) {
+		typedef typename T::GFpX GFpX;
+
+		GFpX restmp;
+		for (long i = deg(P)/n ; i >= 0 ; i--)
+			SetCoeff(restmp, i, coeff(P, i*n));
+		res = restmp;
+	}
+	
 	
 	
 	/* Store in res the composition Q(R).

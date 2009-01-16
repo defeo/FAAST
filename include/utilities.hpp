@@ -19,6 +19,9 @@ namespace AS {
 	/* Computes P(X^n) */
 	template <class T> void expand(typename T::GFpX& res,
 	const typename T::GFpX& P, const long n);
+	/* Transposition of expand */
+	template <class T> void contract(typename T::GFpX& res,
+	const typename T::GFpX& P, const long n);
 	/* Store in res the composition Q(R).
 	 * Q and R are two polynomials over GF(p).
 	 * See also section 3.

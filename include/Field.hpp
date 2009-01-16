@@ -214,6 +214,15 @@ namespace AS {
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
 		const Field<T>& baseField() const throw();
+		const Field<T>& subField() const throw(NoSubFieldException) {
+			if (!subfield) throw NoSubFieldException();
+			return *subfield;
+		}
+		const Field<T>& overField() const throw(NoOverFieldException) {
+			if (!overfield) throw NoOverFieldException();
+			return *overfield;
+			
+		}
 
 	/****************** Level embedding ******************/
 		/* Push the element e down to this field and store

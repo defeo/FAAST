@@ -1,12 +1,10 @@
 #include "utilities.hpp"
+#include "Tmul.hpp"
 
 NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
 void ShiftAdd(zz_pX& c, const zz_pX& a, long n);
 void ShiftAdd(ZZ_pX& c, const ZZ_pX& a, long n);
-void TransMulMod(GF2X& x, const GF2X& a, const GF2XTransMultiplier& B, const GF2XModulus& F);
-//void TransMulMod(zz_pX& x, const zz_pX& a, const zz_pXTransMultiplier& B, const zz_pXModulus& F);
-//void TransMulMod(ZZ_pX& x, const ZZ_pX& a, const ZZ_pXTransMultiplier& B, const ZZ_pXModulus& F);
 NTL_CLOSE_NNS
 
 namespace AS {
@@ -18,14 +16,14 @@ namespace AS {
 	
 /****************** Level embedding ******************/
 	// The routine MulMod from Section 4
-	template <class T> void pushDownRec(
+	template <class T> void MulMod(
 	vector<typename T::GFpX>& W, const long n,
 	const typename T::BigInt& p) {
 		typedef typename T::GFpX   GFpX;
 		typedef typename T::BigInt BigInt;
 		
-		GFpX Lead = W[p-1];
-		for (BigInt i = p-1 ; i >= 0 ; i--) {
+		GFpX Lead = W[long(p)-1];
+		for (BigInt i = p-long(1) ; i >= long(0) ; i--) {
 			GFpX tmp = W[i];
 			W[i] = 0;
 			long shift = 1;
@@ -33,10 +31,32 @@ namespace AS {
 				ShiftAdd(W[i], tmp, shift);
 				shift *= p;
 			}
-			if (i > 0) W[i] += W[i-1];
+			if (i > long(0)) W[i] += W[long(i)-1];
 		}
 		W[1] += Lead;
 		ShiftAdd(W[0], Lead, 1);
+	}
+
+	// The routine MulMod* from Section 4
+	template <class T> void TransMulMod(
+	vector<typename T::GFpX>& W, const long n,
+	const typename T::BigInt& p) {
+		typedef typename T::GFpX   GFpX;
+		typedef typename T::BigInt BigInt;
+		
+		GFpX Lead = RightShift(W[0], 1);
+		Lead += W[1];
+		for (BigInt i = 0 ; i <= p-long(1) ; i++) {
+			if (i > long(0)) W[long(i)-1] += W[i];
+			GFpX tmp;
+			long shift = 1;
+			for (long j = 0 ; j < n ; j++) {
+				tmp += RightShift(W[i], shift);
+				shift *= p;
+			}
+			W[i] = tmp;
+		}
+		W[long(p)-1] += Lead;
 	}
 
 	// The routine Push-down-rec from Section 4
@@ -53,10 +73,10 @@ namespace AS {
 			vector<GFpX> Wtmp;
 			W.clear(); W.resize(p);
 			long splitdegree = power_long(p, k-1);
-			for (long i = splitdegree * (degree / splitdegree) ; i >= 0 ; i -= splitdegree) {
-				pushDownRec(V, i, min(i+splitdegree-1, deg(V)), Wtmp, p);
-				MulMod(W, k-1);
-				for (BigInt j = 0 ; j < p ; j++) W[i] += Wtmp[i];
+			for (long i = start + splitdegree * (degree / splitdegree) ; i >= start ; i -= splitdegree) {
+				pushDownRec<T>(V, i, min(i+splitdegree-1, deg(V)), Wtmp, p);
+				MulMod<T>(W, k-1, p);
+				for (BigInt j = 0 ; j < p ; j++) W[j] += Wtmp[j];
 			}
 		}
 		// if deg(V) < p, then
@@ -65,9 +85,64 @@ namespace AS {
 		else {
 			W.resize(p);
 			for (long i = start ; i <= end ; i++)
-				W[i] = coeff(V, i);
+				W[i-start] = coeff(V, i);
 		}
 	}
+
+	// The routine Push-down-rec* from Section 4
+	template <class T> void TransPushDownRec(
+	vector<typename T::GFpX>& W, typename T::GFpX& V,
+	long start, long end, const typename T::BigInt& p) {
+		typedef typename T::GFpX   GFpX;
+		typedef typename T::BigInt BigInt;
+
+		long degree = end - start;
+		long k = NumPits(p, degree);
+		// if deg(V) >= p, cut in p slices and apply recursively
+		if (k > 1) {
+			vector<GFpX> Wtmp; Wtmp.resize(p);
+			long splitdegree = power_long(p, k-1);
+			SetCoeff(V, end); // hack
+			for (long i = start ; i <= end ; i += splitdegree) {
+				for (BigInt j = 0 ; j < p ; j++) Wtmp[j] += W[j];
+				TransMulMod<T>(W, k-1, p);
+				TransPushDownRec<T>(Wtmp, V, i, min(i+splitdegree-1, deg(V)), p);
+			}
+		}
+		else {
+			for (long i = end ; i >= start ; i--)
+				SetCoeff(V, i, coeff(W[i-start], 0));
+		}
+	}
+
+	// The routine Push-down* from Section 4
+	template <class T> void PowerProjection(
+	vector<typename T::GFpX>& W, typename T::GFpX& V,
+	const typename T::GFpX& Q, long d, const typename T::BigInt& p) {
+		typedef typename T::GFpX   GFpX;
+		typedef typename T::BigInt BigInt;
+		
+		for (BigInt i = 0; i < p ; i++) TransMod(W[i], Q, 2*p-1);
+		
+		// if this extension was built modulo
+		//   X^p - X - xi^(2p-1)
+		if (twopminusone) {
+			for (BigInt i = 0 ; i < p ; i++)
+				contract<T>(W[i], W[i], 2*long(p) - 1);
+		}
+		
+		// if this extension was built modulo
+		//   X^p - X - x0 - 1
+		if (plusone) {
+			GFpX xplusone;
+			SetCoeff(xplusone, 1); SetCoeff(xplusone, 0);
+			for (BigInt i = 0 ; i < p ; i++)
+				TransCompose<T>(W[i], W[i], xplusone, p);
+		}
+		
+		TransPushDownRec<T>(W, V, 0, d, p);
+	}
+
 
 
 	/* Push the element e down along the stem and store
@@ -94,9 +169,9 @@ namespace AS {
 		// simply return the list of coefficients
 		if (e.parent_field->height == 0) {
 			v.resize(e.parent_field->d);
-			Field<T>* base = &(e.parent_field->baseField());
+			const Field<T>* base = &(e.parent_field->baseField());
 			const GFpX& eX = rep(e.repExt);
-			for (long i = 0 ; i <= e.parent_field->d ; i++) {
+			for (long i = 0 ; i < e.parent_field->d ; i++) {
 				v[i].base = true;
 				v[i].repBase = coeff(eX, i);
 				v[i].repExt = 0;
@@ -107,10 +182,10 @@ namespace AS {
 		else {
 			vector<GFpX> W;
 			BigInt p = e.parent_field->p;
-			pushDownRec(e.repExt, 0, deg(e.repExt), W, p);
+			pushDownRec<T>(rep(e.repExt), 0, deg(rep(e.repExt)), W, p);
 #if AS_DEBUG >= 2
 			for (BigInt i = 0 ; i < p ; i++) {
-				if (deg(W[i]) * p > deg(e.repExt))
+				if (deg(W[i]) * p > deg(rep(e.repExt)))
 					throw ASException("Problem in pushDownRec.");
 			}
 #endif

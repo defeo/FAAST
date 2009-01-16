@@ -302,10 +302,10 @@ namespace AS {
 	template <class T> FieldElement<T> Field<T>::random() const throw () {
 		switchContext();
 		if (d == 1) {
-			GFp x; random(x);
+			GFp x; NTL::random(x);
 			return FieldElement<T>(this, x);
 		} else {
-			GFpE x; random(x);
+			GFpE x; NTL::random(x);
 			return FieldElement<T>(this, x);
 		}
 	}
