@@ -5,6 +5,7 @@ NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
 void ShiftAdd(zz_pX& c, const zz_pX& a, long n);
 void ShiftAdd(ZZ_pX& c, const ZZ_pX& a, long n);
+void ComputeTraceVec(const GF2XModulus& F);
 NTL_CLOSE_NNS
 
 namespace AS {
@@ -115,35 +116,31 @@ namespace AS {
 		}
 	}
 
-	// The routine Push-down* from Section 4
-	template <class T> void PowerProjection(
-	vector<typename T::GFpX>& W, typename T::GFpX& V,
-	const typename T::GFpX& Q, long d, const typename T::BigInt& p) {
-		typedef typename T::GFpX   GFpX;
-		typedef typename T::BigInt BigInt;
+	/* The routine Transposed mul from Section 4
+	 * (step 2 of Lift-up)
+	 * Computes the transposed multiplication of the linear form
+	 *     (0, ..., 0, -form)
+	 * by the element
+	 *     (W[0], ..., W[p-1])
+	 * modulo Q
+	 */
+	template <class T> void TransposedMul(
+	vector<typename T::GFpX>& W, const typename T::GFpXModulus& Q,
+	const typename T::GFpX& form, const typename T::BigInt& p) {
+		typedef typename T::GFpX            GFpX;
+		typedef typename T::GFpXMultilplier GFpXMultiplier;
+		typedef typename T::BigInt          BigInt;
+
+		vector<GFpXMultiplier> Trans; Trans.resize(p);
 		
-		for (BigInt i = 0; i < p ; i++) TransMod(W[i], Q, 2*p-1);
+		build(Trans[p-1], W[0] + W[long(p)-1], Q);
+		for (BigInt i = 1; i < p ; i++)
+			build(Trans[p-i-1], W[i], Q);
 		
-		// if this extension was built modulo
-		//   X^p - X - xi^(2p-1)
-		if (twopminusone) {
-			for (BigInt i = 0 ; i < p ; i++)
-				contract<T>(W[i], W[i], 2*long(p) - 1);
-		}
-		
-		// if this extension was built modulo
-		//   X^p - X - x0 - 1
-		if (plusone) {
-			GFpX xplusone;
-			SetCoeff(xplusone, 1); SetCoeff(xplusone, 0);
-			for (BigInt i = 0 ; i < p ; i++)
-				TransCompose<T>(W[i], W[i], xplusone, p);
-		}
-		
-		TransPushDownRec<T>(W, V, 0, d, p);
+		GFpX formtmp = -form;
+		for (BigInt i = 0 ; i < p ; i++)
+			TransMulMod(W[i], formtmp, Trans[i], Q);
 	}
-
-
 
 	/* Push the element e down along the stem and store
 	 * the result in v.
@@ -160,7 +157,7 @@ namespace AS {
 			throw NoSubFieldException();
 		if (e.parent_field->stem != e.parent_field)
 			throw NoSubFieldException();
-		if (e.parent_field->d == 1)
+		if (!e.parent_field->subfield)
 			throw NoSubFieldException();
 		
 		e.parent_field->switchContext();
@@ -191,8 +188,8 @@ namespace AS {
 #endif
 			// if this extension was built modulo
 			//   X^p - X - x0 - 1
-			// (could do better implenting this directly
-			// into pushDownRec)
+			// the result lies in GF(p)[x0+1].
+			// This brings the elements back to GF(p)[x0]
 			if (e.parent_field->plusone) {
 				GFpX xplusone;
 				SetCoeff(xplusone, 1); SetCoeff(xplusone, 0);
@@ -207,21 +204,23 @@ namespace AS {
 			}
 			
 			// prepare to work in the subfield
-#ifdef AS_DEBUG
-			if (!e.parent_field->subfield)
-				throw ASException("In pushDown : no subfield.");
-#endif
 			e.parent_field->subfield->switchContext();
 			
 			// convert the result of push-down-rec to elements
 			// of the subfield
 			v.resize(p);
+			bool base = e.parent_field->subfield->d == 1;
 			for (BigInt i = 0 ; i < p ; i++) {
-				v[i].base = false;
-				v[i].repBase = 0;
+				v[i].base = base;
 				// this automatically reduces modulo
-				// the defining polynomial
-				conv(v[i].repExt, W[i]);
+				// the defining polynomial if needed
+				if (base) {
+					v[i].repBase = coeff(W[i], 0);
+					v[i].repExt = 0;
+				} else {
+					v[i].repBase = 0;
+					conv(v[i].repExt, W[i]);
+				}
 				v[i].parent_field = e.parent_field->subfield;
 			}
 		}
@@ -240,8 +239,96 @@ namespace AS {
 	template <class T>
 	void liftUp(const vector<const FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException) {
-		typedef typename T::GFpX GFpX;
+		typedef typename T::GFpX        GFpX;
+		typedef typename T::GFpE        GFpE;
+		typedef typename T::GFpXModulus GFpXModulus;
+		typedef typename T::BigInt      BigInt;
 
+		// if v is empty, return the generic 0
+		if (v.size() == 0) {
+			e = FieldElement<T>();
+			return;
+		}
+		// check all elements of v belong to the same field
+		// and save this field into parent
+		const Field<T>* parent = v[0].parent_field;
+		for (long i = 0 ; i < v.size() ; i++) {
+			if (!parent) parent = v[i].parent_field;
+			else if (v[i].parent_field != parent)
+				throw NotInSameFieldException();
+		}
+		// standard checks
+		if (!parent) throw NoOverFieldException();
+		if (parent->stem != parent) throw NoOverFieldException();
+		if (!parent->overfield) throw NoOverFieldException();
 		
+		parent->switchContext();
+		
+		// if this is the prime field of a base field
+		// simply merge the coefficients
+		if (parent->overfiled->height == 0) {
+			GFpX eX;
+			for (long i = min(parent->overfield->d, v.size()) - 1 ; i >=0 ; i--) {
+				if (!v[i].isZero())
+					SetCoeff(eX, i, v[i].repBase());
+			}
+			parent->overfield->switchContext();
+			e.base = false;
+			e.repBase = 0;
+			conv(e.repExt, eX);
+			e.parent_field = parent->overfield;
+		}
+		// the real lift-up algorithm from Section 4
+		else {
+			bool base = parent->d == 1;
+			BigInt p = parent->p;
+
+			// take the elements out of v
+			vector<GFpX> W; W.resize(p);
+			for (BigInt i = 0 ; i < p ; i++) {
+				if (!v[i].isZero()) {
+					if (base) W[i] = v[i].repBase;
+					else W[i] = rep(v[i].repExt());
+				}
+			}
+			
+			// The input lies in GF(p)[x0].
+			// If this extension was built modulo
+			//   X^p - X - x0 - 1
+			// this brings the elements into GF(p)[x0+1]
+			if (parent->overfield->plusone) {
+				GFpX xminusone;
+				SetCoeff(xminusone, 1); SetCoeff(xminusone, 0, -1);
+				for (BigInt i = 0 ; i < p ; i++)
+					compose<T>(W[i], W[i], xminusone, p);
+			}
+
+			// get the trace form
+			const GFpXModulus& Q = GFpE::modulus();
+			if (Q.tracevec.length() == 0)
+				ComputeTraceVec(Q);
+			GFpX trace; conv(trace, Q.tracevec);
+			// TransposedMul (step 2 of lift-up)
+			TransposedMul<T>(W, Q, trace, p);
+
+			// if this extension was built modulo
+			//   X^p - X - xi^(2p-1)
+			// apply mod* and evaluate*
+			// (steps 2 and 3 of push-down*)
+			if (parent->overfield->twopminusone) {
+				// mod*
+				
+				
+				// evaluate*
+				for (BigInt i = 0 ; i < p ; i++)
+					contract<T>(W[i], W[i], 2*long(p) - 1);
+			}
+			
+			// step 4 of push-down*
+			//TransPushDownRec();
+			
+			//
+		}
 	}
+	
 }

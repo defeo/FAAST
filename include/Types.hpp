@@ -38,50 +38,53 @@ namespace AS {
 	};
 
 	struct zz_p_Algebra {
-		typedef zz_p         GFp;
-		typedef mat_zz_p     MatGFp;
-		typedef zz_pX        GFpX;
-		typedef zz_pE        GFpE;
-		typedef zz_pEX       GFpEX;
-		typedef long         BigInt;
+		typedef zz_p            GFp;
+		typedef mat_zz_p        MatGFp;
+		typedef zz_pX           GFpX;
+		typedef zz_pE           GFpE;
+		typedef zz_pEX          GFpEX;
+		typedef long            BigInt;
 		typedef struct {
 			zz_pContext  p;
 			zz_pEContext P;
-		}                    Context;
-		typedef zz_pXModulus GFpXModulus;
+		}                       Context;
+		typedef zz_pXModulus    GFpXModulus;
+		typedef zz_pXMultiplier GFpXMultiplier;
 
 		static char const * const name;
 	};
 	char const * const zz_p_Algebra::name = "zz_p";
 
 	struct ZZ_p_Algebra {
-		typedef ZZ_p         GFp;
-		typedef mat_ZZ_p     MatGFp;
-		typedef ZZ_pX        GFpX;
-		typedef ZZ_pE        GFpE;
-		typedef ZZ_pEX       GFpEX;
-		typedef ZZ_auto      BigInt;
+		typedef ZZ_p            GFp;
+		typedef mat_ZZ_p        MatGFp;
+		typedef ZZ_pX           GFpX;
+		typedef ZZ_pE           GFpE;
+		typedef ZZ_pEX          GFpEX;
+		typedef ZZ_auto         BigInt;
 		typedef struct {
 			ZZ_pContext  p;
 			ZZ_pEContext P;
-		}                    Context;
-		typedef ZZ_pXModulus GFpXModulus;
+		}                       Context;
+		typedef ZZ_pXModulus    GFpXModulus;
+		typedef ZZ_pXMultiplier GFpXMultiplier;
 
 		static char const * const name;
 	};
 	char const * const ZZ_p_Algebra::name = "ZZ_p";
 
 	struct GF2_Algebra {
-		typedef GF2         GFp;
-		typedef mat_GF2     MatGFp;
-		typedef GF2X        GFpX;
-		typedef GF2E        GFpE;
-		typedef GF2EX       GFpEX;
-		typedef int          BigInt;
+		typedef GF2                 GFp;
+		typedef mat_GF2             MatGFp;
+		typedef GF2X                GFpX;
+		typedef GF2E                GFpE;
+		typedef GF2EX               GFpEX;
+		typedef int                 BigInt;
 		typedef struct {
 			GF2EContext P;
-		}                   Context;
-		typedef GF2XModulus GFpXModulus;
+		}                           Context;
+		typedef GF2XModulus         GFpXModulus;
+		typedef GF2XTransMultiplier GFpXMultiplier;
 
 		static char const * const name;
 	};

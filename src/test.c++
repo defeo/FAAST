@@ -41,6 +41,7 @@ cout << gfp::Infrastructure::GFpE::modulus() << endl;
 		vector<gfp_E> down;
 		cputime = -GetTime();
 		pushDown(a, down);
+		liftUp(down, a);
 		cputime += GetTime();
 	
 		cout << a << endl;
