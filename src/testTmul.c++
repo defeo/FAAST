@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <NTL/ZZ_pXFactoring.h>
 
+NTL_CLIENT
+
 // to check
 zz_p cnv(ZZ_p a){
   return to_zz_p(to_long(a._ZZ_p__rep));

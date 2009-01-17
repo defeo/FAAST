@@ -127,21 +127,43 @@ namespace AS {
 	template <class T> void TransposedMul(
 	vector<typename T::GFpX>& W, const typename T::GFpXModulus& Q,
 	const typename T::GFpX& form, const typename T::BigInt& p) {
-		typedef typename T::GFpX            GFpX;
-		typedef typename T::GFpXMultilplier GFpXMultiplier;
-		typedef typename T::BigInt          BigInt;
+		typedef typename T::GFpX           GFpX;
+		typedef typename T::GFpXMultiplier GFpXMultiplier;
+		typedef typename T::BigInt         BigInt;
 
 		vector<GFpXMultiplier> Trans; Trans.resize(p);
 		
-		build(Trans[p-1], W[0] + W[long(p)-1], Q);
+		build(Trans[long(p)-1], W[0] + W[long(p)-1], Q);
 		for (BigInt i = 1; i < p ; i++)
-			build(Trans[p-i-1], W[i], Q);
+			build(Trans[long(p)-long(i)-1], W[i], Q);
 		
 		GFpX formtmp = -form;
 		for (BigInt i = 0 ; i < p ; i++)
 			TransMulMod(W[i], formtmp, Trans[i], Q);
 	}
 
+	template <class T> void TransMod(typename T::GFpX W,
+	const typename T::GFpXModulus& Q, const typename T::BigInt& p) {
+		typedef typename T::GFpX           GFpX;
+		typedef typename T::GFpXMultiplier GFpXMultiplier;
+		typedef typename T::BigInt         BigInt;
+		
+		long d = deg(Q);
+		// Xn = X^d mod Q
+		GFpX Xn = -Q; SetCoeff(Xn, d, 0);
+		GFpXMultiplier Trans; build(Trans, Xn, Q);
+
+		GFpX tmp = W;
+		long shift = 0;
+		for (BigInt i = 1 ; i < 2*long(p)-1 ; i++) {
+			TransMulMod(tmp, tmp, Trans, Q);
+			shift += d;
+			ShiftAdd(W, tmp, shift);
+		}
+	}
+	
+	
+	
 	/* Push the element e down along the stem and store
 	 * the result in v.
 	 * 
@@ -237,7 +259,7 @@ namespace AS {
 	 *         up to.
 	 */
 	template <class T>
-	void liftUp(const vector<const FieldElement<T> >& v, FieldElement<T>& e)
+	void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException) {
 		typedef typename T::GFpX        GFpX;
 		typedef typename T::GFpE        GFpE;
@@ -245,16 +267,17 @@ namespace AS {
 		typedef typename T::BigInt      BigInt;
 
 		// if v is empty, return the generic 0
-		if (v.size() == 0) {
+		typename vector<FieldElement<T> >::const_iterator it = v.begin();
+		if (it == v.end()) {
 			e = FieldElement<T>();
 			return;
 		}
 		// check all elements of v belong to the same field
 		// and save this field into parent
-		const Field<T>* parent = v[0].parent_field;
-		for (long i = 0 ; i < v.size() ; i++) {
-			if (!parent) parent = v[i].parent_field;
-			else if (v[i].parent_field != parent)
+		const Field<T>* parent = it->parent_field;
+		for (it++ ; it != v.end() ; it++) {
+			if (!parent) parent = it->parent_field;
+			else if (it->parent_field != parent)
 				throw NotInSameFieldException();
 		}
 		// standard checks
@@ -266,11 +289,11 @@ namespace AS {
 		
 		// if this is the prime field of a base field
 		// simply merge the coefficients
-		if (parent->overfiled->height == 0) {
+		if (parent->overfield->height == 0) {
 			GFpX eX;
-			for (long i = min(parent->overfield->d, v.size()) - 1 ; i >=0 ; i--) {
+			for (long i = min(parent->overfield->d, long(v.size())) - 1 ; i >=0 ; i--) {
 				if (!v[i].isZero())
-					SetCoeff(eX, i, v[i].repBase());
+					SetCoeff(eX, i, v[i].repBase);
 			}
 			parent->overfield->switchContext();
 			e.base = false;
@@ -286,9 +309,9 @@ namespace AS {
 			// take the elements out of v
 			vector<GFpX> W; W.resize(p);
 			for (BigInt i = 0 ; i < p ; i++) {
-				if (!v[i].isZero()) {
+				if (i < long(v.size()) && !v[i].isZero()) {
 					if (base) W[i] = v[i].repBase;
-					else W[i] = rep(v[i].repExt());
+					else W[i] = rep(v[i].repExt);
 				}
 			}
 			
@@ -317,17 +340,42 @@ namespace AS {
 			// (steps 2 and 3 of push-down*)
 			if (parent->overfield->twopminusone) {
 				// mod*
-				
-				
+				for (BigInt i = 0 ; i < p ; i++)
+					TransMod<T>(W[i], Q, p);
 				// evaluate*
 				for (BigInt i = 0 ; i < p ; i++)
 					contract<T>(W[i], W[i], 2*long(p) - 1);
 			}
 			
 			// step 4 of push-down*
-			//TransPushDownRec();
+			GFpX V;
+			TransPushDownRec<T>(W, V, 0, parent->overfield->d - 1, p);
 			
-			//
+			// now get ready to work in the overfield
+			parent->overfield->switchContext();
+			
+			// step 4 of lift-up
+			const GFpXModulus& QQ = GFpE::modulus();
+			GFpX revQ; reverse(revQ, QQ);
+			MulTrunc(V, V, revQ, deg(QQ));
+			
+			// step 5 of lift-up
+			reverse(V, V, deg(QQ) - 1);
+			e.base = false;
+			e.repBase = 0;
+			conv(e.repExt, V);
+			e.parent_field = parent->overfield;
+			if ( !(parent->overfield->liftuphelper.get()) ) {
+				Field<T>::TIME.LIFTUP = -GetTime();
+				GFpX diffQ; diff(diffQ, Q);
+				GFpE Q1; conv(Q1, diffQ);
+				FieldElement<T>* helper = new FieldElement<T>();
+				inv(helper->repExt, Q1);
+				helper->parent_field = parent->overfield;
+				parent->overfield->liftuphelper.reset(helper);
+				Field<T>::TIME.LIFTUP += GetTime();
+			}
+			e *= *(parent->overfield->liftuphelper);
 		}
 	}
 	

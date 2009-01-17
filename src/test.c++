@@ -20,7 +20,6 @@ int main(int argv, char* argc[]) {
 	cputime = -NTL::GetTime();
 	const gfp* K = &(gfp::createField(3,2));
 	cputime += NTL::GetTime();
-cout << gfp::Infrastructure::GFpE::modulus() << endl;
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
@@ -30,24 +29,35 @@ cout << gfp::Infrastructure::GFpE::modulus() << endl;
 		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
 		cout << *K << " in " << cputime << endl;
-cout << gfp::Infrastructure::GFpE::modulus() << endl;
+
+		for (int i = 1 ; i <= 3 ; i++) {
+			gfp_E a = K->random(), b;
+			vector<gfp_E> down;
+	
+			cputime = -GetTime();
+			pushDown(a, down);
+			cputime += GetTime();
+			cout << "Push-down computed in " << cputime << endl;
+	
+			cputime = -GetTime();
+			liftUp(down, b);
+			cputime += GetTime();
+			cout << "Lift-up computed in " << cputime << endl;
+			cout << "Time spent in Lift-up precomputation : " <<
+				gfp::TIME.LIFTUP << endl;
+	
+			if (a != b) {
+				cout << "ERROR : Results don't match" << endl;
+				cout << a << endl << b << endl;
+				vector<gfp_E>::iterator it;
+				for (it = down.begin() ; it != down.end() ; it++)
+					cout << *it << " ";
+				cout << endl;
+			}
+			cout << endl;
+		}
 	}
 	
 	cout << endl << "Time spent building the cyclotomic polynomial : "
 		<< gfp::TIME.CYCLOTOMIC << endl << endl;
-	
-	for (int i = 1 ; i <= 10 ; i++) {
-		gfp_E a = K->subField().random();
-		vector<gfp_E> down;
-		cputime = -GetTime();
-		pushDown(a, down);
-		liftUp(down, a);
-		cputime += GetTime();
-	
-		cout << a << endl;
-		vector<gfp_E>::iterator it;
-		for (it = down.begin() ; it != down.end(); it++)
-			cout << *it << " ";
-		cout << endl << "Pushdown computed in " << cputime << endl << endl;
-	}
 }

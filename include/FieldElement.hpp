@@ -30,7 +30,7 @@ namespace AS {
 	 *         up to.
 	 */
 	template <class T>
-	void liftUp(const vector<const FieldElement<T> >& v, FieldElement<T>& e)
+	void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException);
 
 
@@ -39,7 +39,7 @@ namespace AS {
 	
 	friend class Field<T>;
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
-	friend void liftUp<T>(const vector<const FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
+	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
 	
 	public:
 		typedef T Infrastructure;
@@ -206,8 +206,8 @@ namespace AS {
 		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);
 		bool operator==(const BigInt&) const throw();
 		bool operator!=(const FieldElement<T>& e) const throw(NotInSameFieldException)
-		{ return !this==e; }
-		bool operator!=(const BigInt& i) const throw() { return !this==i; }
+		{ return !(*this==e); }
+		bool operator!=(const BigInt& i) const throw() { return !(*this==i); }
 		bool isZero() const throw() {
 			return !parent_field ||
 				(base ? IsZero(repBase) : IsZero(repExt));
@@ -259,7 +259,7 @@ namespace AS {
 		FieldElement(const Field<T>* p, const GFp& P) throw() :
 			repBase(P), base(true), parent_field(p) {}
 	/****************** Utility Routines ******************/
-		void sameLevel(const FieldElement<T>& e)
+		void sameLevel(const FieldElement<T>& e) const
 		throw(NotInSameFieldException) {
 			if (parent_field != e.parent_field)
 			throw NotInSameFieldException();

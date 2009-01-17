@@ -133,7 +133,7 @@ namespace AS {
 		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
 		bool operator!=(const FieldPolynomial<T>& e)
 		const throw(NotInSameFieldException)
-		{ return !this==e; }
+		{ return !(*this==e); }
 		bool isZero() const throw();
 		bool isOne() const throw();
 

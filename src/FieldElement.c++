@@ -173,7 +173,7 @@ namespace AS {
 		if (!parent_field) return e.isZero();
 		if (!e.parent_field) return isZero();
 		sameLevel(e);
-		return base ? repBase == e.repBase : repExt == repExt;
+		return base ? repBase == e.repBase : repExt == e.repExt;
 	}
 	template <class T> bool FieldElement<T>::operator==(const BigInt& i)
 	const throw() {
