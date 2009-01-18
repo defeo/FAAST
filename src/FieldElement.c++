@@ -50,7 +50,7 @@ namespace AS {
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase += e.repBase;
-		else repExt += repExt;
+		else repExt += e.repExt;
 	}
 
 	template <class T> void
@@ -65,7 +65,7 @@ namespace AS {
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase -= e.repBase;
-		else repExt -= repExt;
+		else repExt -= e.repExt;
 	}
 
 	template <class T> void
@@ -83,7 +83,7 @@ namespace AS {
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase *= e.repBase;
-		else repExt *= repExt;
+		else repExt *= e.repExt;
 	}
 
 	template <class T> void
@@ -97,7 +97,7 @@ namespace AS {
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase *= e.repBase;
-		else repExt *= repExt;
+		else repExt *= e.repExt;
 	}
 
 	/* Unary operations */
@@ -121,7 +121,7 @@ namespace AS {
  		if (!parent_field) return;
  		parent_field->switchContext();
  		if (base) negate(repBase, repBase);
- 		else negare(repExt, repExt);
+ 		else negate(repExt, repExt);
  	}
  	
 	template <class T> void FieldElement<T>::self_inv()

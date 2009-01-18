@@ -1,5 +1,6 @@
 #include "utilities.hpp"
 #include "Tmul.hpp"
+#include "Shifts.hpp"
 
 NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
@@ -45,7 +46,7 @@ namespace AS {
 		typedef typename T::GFpX   GFpX;
 		typedef typename T::BigInt BigInt;
 		
-		GFpX Lead = RightShift(W[0], 1);
+		GFpX Lead; RightShift(Lead, W[0], 1);
 		Lead += W[1];
 		for (BigInt i = 0 ; i <= p-long(1) ; i++) {
 			if (i > long(0)) W[long(i)-1] += W[i];
@@ -75,7 +76,7 @@ namespace AS {
 			W.clear(); W.resize(p);
 			long splitdegree = power_long(p, k-1);
 			for (long i = start + splitdegree * (degree / splitdegree) ; i >= start ; i -= splitdegree) {
-				pushDownRec<T>(V, i, min(i+splitdegree-1, deg(V)), Wtmp, p);
+				pushDownRec<T>(V, i, min(i+splitdegree-1, end), Wtmp, p);
 				MulMod<T>(W, k-1, p);
 				for (BigInt j = 0 ; j < p ; j++) W[j] += Wtmp[j];
 			}
@@ -105,9 +106,10 @@ namespace AS {
 			long splitdegree = power_long(p, k-1);
 			SetCoeff(V, end); // hack
 			for (long i = start ; i <= end ; i += splitdegree) {
-				for (BigInt j = 0 ; j < p ; j++) Wtmp[j] += W[j];
+				for (BigInt j = 0 ; j < p ; j++)
+					Wtmp[j] = trunc(W[j], splitdegree/p);
 				TransMulMod<T>(W, k-1, p);
-				TransPushDownRec<T>(Wtmp, V, i, min(i+splitdegree-1, deg(V)), p);
+				TransPushDownRec<T>(Wtmp, V, i, min(i+splitdegree-1, end), p);
 			}
 		}
 		else {
@@ -142,7 +144,7 @@ namespace AS {
 			TransMulMod(W[i], formtmp, Trans[i], Q);
 	}
 
-	template <class T> void TransMod(typename T::GFpX W,
+	template <class T> void TransMod(typename T::GFpX& W,
 	const typename T::GFpXModulus& Q, const typename T::BigInt& p) {
 		typedef typename T::GFpX           GFpX;
 		typedef typename T::GFpXMultiplier GFpXMultiplier;
@@ -153,12 +155,14 @@ namespace AS {
 		GFpX Xn = -Q; SetCoeff(Xn, d, 0);
 		GFpXMultiplier Trans; build(Trans, Xn, Q);
 
-		GFpX tmp = W;
+		GFpX tmp1 = W;
+		GFpX tmp2;
 		long shift = 0;
 		for (BigInt i = 1 ; i < 2*long(p)-1 ; i++) {
-			TransMulMod(tmp, tmp, Trans, Q);
+			TransMulMod(tmp2, tmp1, Trans, Q);
+			tmp1 = tmp2;
 			shift += d;
-			ShiftAdd(W, tmp, shift);
+			ShiftAdd(W, tmp1, shift);
 		}
 	}
 	
@@ -305,6 +309,7 @@ namespace AS {
 		else {
 			bool base = parent->d == 1;
 			BigInt p = parent->p;
+			GFpXModulus Q = GFpE::modulus();
 
 			// take the elements out of v
 			vector<GFpX> W; W.resize(p);
@@ -314,25 +319,33 @@ namespace AS {
 					else W[i] = rep(v[i].repExt);
 				}
 			}
-			
 			// The input lies in GF(p)[x0].
 			// If this extension was built modulo
 			//   X^p - X - x0 - 1
 			// this brings the elements into GF(p)[x0+1]
 			if (parent->overfield->plusone) {
+				Field<T>::TIME.LU_PLUSONE = -GetTime();
 				GFpX xminusone;
 				SetCoeff(xminusone, 1); SetCoeff(xminusone, 0, -1);
 				for (BigInt i = 0 ; i < p ; i++)
 					compose<T>(W[i], W[i], xminusone, p);
+				GFpX tmp;
+				compose<T>(tmp, Q.val(), xminusone, p);
+				build(Q, tmp);
+				Field<T>::TIME.LU_PLUSONE += GetTime();
 			}
 
 			// get the trace form
-			const GFpXModulus& Q = GFpE::modulus();
-			if (Q.tracevec.length() == 0)
+			if (Q.tracevec.length() == 0) {
+				Field<T>::TIME.TRACEVEC = -GetTime();
 				ComputeTraceVec(Q);
+				Field<T>::TIME.TRACEVEC += GetTime();
+			}
 			GFpX trace; conv(trace, Q.tracevec);
 			// TransposedMul (step 2 of lift-up)
+			Field<T>::TIME.LU_TRANSMUL = -GetTime();
 			TransposedMul<T>(W, Q, trace, p);
+			Field<T>::TIME.LU_TRANSMUL += GetTime();
 
 			// if this extension was built modulo
 			//   X^p - X - xi^(2p-1)
@@ -340,42 +353,56 @@ namespace AS {
 			// (steps 2 and 3 of push-down*)
 			if (parent->overfield->twopminusone) {
 				// mod*
+				Field<T>::TIME.LU_TRANSMOD = -GetTime();
 				for (BigInt i = 0 ; i < p ; i++)
 					TransMod<T>(W[i], Q, p);
+				Field<T>::TIME.LU_TRANSMOD += GetTime();
 				// evaluate*
+				Field<T>::TIME.LU_TRANSEVAL = -GetTime();
 				for (BigInt i = 0 ; i < p ; i++)
 					contract<T>(W[i], W[i], 2*long(p) - 1);
+				Field<T>::TIME.LU_TRANSEVAL += GetTime();
 			}
 			
 			// step 4 of push-down*
 			GFpX V;
+			Field<T>::TIME.LU_TRANSPUSHDOWN = -GetTime();
 			TransPushDownRec<T>(W, V, 0, parent->overfield->d - 1, p);
+			Field<T>::TIME.LU_TRANSPUSHDOWN += GetTime();
 			
 			// now get ready to work in the overfield
 			parent->overfield->switchContext();
 			
 			// step 4 of lift-up
 			const GFpXModulus& QQ = GFpE::modulus();
+			Field<T>::TIME.LU_STEP4 = -GetTime();
 			GFpX revQ; reverse(revQ, QQ);
 			MulTrunc(V, V, revQ, deg(QQ));
+			Field<T>::TIME.LU_STEP4 += GetTime();
 			
 			// step 5 of lift-up
+			Field<T>::TIME.LU_STEP5 = -GetTime();
 			reverse(V, V, deg(QQ) - 1);
 			e.base = false;
 			e.repBase = 0;
 			conv(e.repExt, V);
 			e.parent_field = parent->overfield;
+			Field<T>::TIME.LU_STEP5 += GetTime();
 			if ( !(parent->overfield->liftuphelper.get()) ) {
 				Field<T>::TIME.LIFTUP = -GetTime();
-				GFpX diffQ; diff(diffQ, Q);
-				GFpE Q1; conv(Q1, diffQ);
+				GFpX diffQ; diff(diffQ, QQ);
 				FieldElement<T>* helper = new FieldElement<T>();
-				inv(helper->repExt, Q1);
+				helper->base = false;
+				conv(helper->repExt, diffQ);
 				helper->parent_field = parent->overfield;
+				
+				helper->self_inv();
 				parent->overfield->liftuphelper.reset(helper);
 				Field<T>::TIME.LIFTUP += GetTime();
 			}
+			Field<T>::TIME.LU_STEP5 -= GetTime();
 			e *= *(parent->overfield->liftuphelper);
+			Field<T>::TIME.LU_STEP5 += GetTime();
 		}
 	}
 	

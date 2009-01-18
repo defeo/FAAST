@@ -20,7 +20,7 @@ namespace AS {
 		typedef typename T::GFpEX GFpEX;
 		
 #ifdef AS_TIMINGS
-		Field<T>::TIME.C89PRE = -GetTime();
+		Field<T>::TIME.C89_PRE = -GetTime();
 #endif
 		// X mod Phi(X), the (2p-1)th root of unity
 		GFpE omega; GFpX omegaX;
@@ -31,8 +31,8 @@ namespace AS {
 		for (long i = 1; i <= 2*p-2 ; i++)
 			omegas[i] = omegas[i-1]*omega;
 #ifdef AS_TIMINGS
-		Field<T>::TIME.C89PRE += GetTime();
-		Field<T>::TIME.C89Qstar = -GetTime();
+		Field<T>::TIME.C89_PRE += GetTime();
+		Field<T>::TIME.C89_Qstar = -GetTime();
 #endif
 
 		// Qstar = prod_i Q(omega^i Y)
@@ -51,8 +51,8 @@ namespace AS {
 			Qstar *= Qtmp; 
 		}
 #ifdef AS_TIMINGS
-		Field<T>::TIME.C89Qstar += GetTime();
-		Field<T>::TIME.C89qstar = -GetTime();
+		Field<T>::TIME.C89_Qstar += GetTime();
+		Field<T>::TIME.C89_qstar = -GetTime();
 #endif
 		// qstar( X^(2p-1) ) = Qstar
 		GFpX qstar;
@@ -70,8 +70,8 @@ namespace AS {
 #endif
 		}
 #ifdef AS_TIMINGS
-		Field<T>::TIME.C89qstar += GetTime();
-		Field<T>::TIME.C89compose = -GetTime();
+		Field<T>::TIME.C89_qstar += GetTime();
+		Field<T>::TIME.C89_compose = -GetTime();
 #endif
 		
 		// result = qstar(X^p - X)
@@ -80,7 +80,7 @@ namespace AS {
 		SetCoeff(xpminusx, 1, -1);
 		compose<T>(res, qstar, xpminusx, p);
 #ifdef AS_TIMINGS
-		Field<T>::TIME.C89compose += GetTime();
+		Field<T>::TIME.C89_compose += GetTime();
 #endif
 	}
 

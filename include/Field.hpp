@@ -22,29 +22,45 @@ namespace AS {
 			double CYCLOTOMIC;
 			double PSEUDOTRACES;
 			double LIFTUP;
+			double TRACEVEC;
 			double BUILDIRRED;
 			double IRREDTEST;
 			double PRIMETEST;
 			double ARTINMATRIX;
 			double CANTOR89;
-			double C89PRE;
-			double C89Qstar;
-			double C89qstar;
-			double C89compose;
+			double C89_PRE;
+			double C89_Qstar;
+			double C89_qstar;
+			double C89_compose;
+			double LU_PLUSONE;
+			double LU_TRANSMUL;
+			double LU_TRANSMOD;
+			double LU_TRANSEVAL;
+			double LU_TRANSPUSHDOWN;
+			double LU_STEP4;
+			double LU_STEP5;
 			
 			t() :
 				CYCLOTOMIC(-1), 
 				PSEUDOTRACES(-1),
 				LIFTUP(-1),
+				TRACEVEC(-1),
 				BUILDIRRED(-1),
 				IRREDTEST(-1),
 				PRIMETEST(-1),
 				ARTINMATRIX(-1),
 				CANTOR89(-1),
-				C89PRE(-1),
-				C89Qstar(-1),
-				C89qstar(-1),
-				C89compose(-1)
+				C89_PRE(-1),
+				C89_Qstar(-1),
+				C89_qstar(-1),
+				C89_compose(-1),
+				LU_PLUSONE(-1),
+				LU_TRANSMUL(-1),
+				LU_TRANSMOD(-1),
+				LU_TRANSEVAL(-1),
+				LU_TRANSPUSHDOWN(-1),
+				LU_STEP4(-1),
+				LU_STEP5(-1)
 				{}
 		} TIMINGS;
 		
