@@ -1,6 +1,5 @@
 #include "utilities.hpp"
 #include "Tmul.hpp"
-#include "Shifts.hpp"
 
 NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
@@ -10,12 +9,6 @@ void ComputeTraceVec(const GF2XModulus& F);
 NTL_CLOSE_NNS
 
 namespace AS {
-/****************** Arithmetics ******************/
-//	void self_frobenius() throw();
-//	void self_frobenius(const long) throw();
-//	void self_trace(const Field<T> F) throw(NotASubFieldException);
-//	void self_pseudotrace(const long n) throw();
-	
 /****************** Level embedding ******************/
 	// The routine MulMod from Section 4
 	template <class T> void MulMod(
@@ -188,9 +181,9 @@ namespace AS {
 		
 		e.parent_field->switchContext();
 		
-		// if this is a (non-prime) base field
+		// if the subfield is prime
 		// simply return the list of coefficients
-		if (e.parent_field->height == 0) {
+		if (e.parent_field->subfield->d == 1) {
 			v.resize(e.parent_field->d);
 			const Field<T>* base = &(e.parent_field->baseField());
 			const GFpX& eX = rep(e.repExt);
@@ -291,9 +284,9 @@ namespace AS {
 		
 		parent->switchContext();
 		
-		// if this is the prime field of a base field
+		// if this is a prime field
 		// simply merge the coefficients
-		if (parent->overfield->height == 0) {
+		if (parent->d == 1) {
 			GFpX eX;
 			for (long i = min(parent->overfield->d, long(v.size())) - 1 ; i >=0 ; i--) {
 				if (!v[i].isZero())

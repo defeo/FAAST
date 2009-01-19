@@ -68,7 +68,8 @@ $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 	touch $(INC)/Field.hpp
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
-	$(SRC)/FieldElement.c++ $(SRC)/FieldElementAlgorithms.c++ 
+	$(SRC)/FieldElement.c++ $(SRC)/FE-Liftup-Pushdown.c++ \
+	$(SRC)/FE-Trace-Frob.c++
 	touch $(INC)/FieldElement.hpp
 
 $(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
@@ -89,9 +90,8 @@ $(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
 $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 	touch $(SRC)/FieldAlgorithms.c++
 
-$(SRC)/FieldElementAlgorithms.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp \
-	$(INC)/Shifts.hpp
-	touch $(SRC)/FieldElementAlgorithms.c++
+$(SRC)/FE-Liftup-Pushdown.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp
+	touch $(SRC)/FE-Liftup-Pushdown.c++
 
 ######################################################################
 .PHONY: all

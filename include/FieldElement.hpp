@@ -274,6 +274,7 @@ namespace AS {
 }
 
 #include "../src/FieldElement.c++"
-#include "../src/FieldElementAlgorithms.c++"
+#include "../src/FE-Liftup-Pushdown.c++"
+#include "../src/FE-Trace-Frob.c++"
 
 #endif /*FIELDELEMENT_H_*/
