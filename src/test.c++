@@ -17,7 +17,7 @@ int main(int argv, char* argc[]) {
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(3,10));
+	const gfp* K = &(gfp::createField(2,11));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
@@ -44,15 +44,15 @@ int main(int argv, char* argc[]) {
 			cout << "Lift-up computed in " << cputime << endl;
 			cout << "Time spent in Lift-up precomputation : " <<
 				gfp::TIME.LIFTUP << endl;
-			cout << "Time spent il Lift-up Transposed Multiplication : " <<
+			cout << "Time spent in Lift-up Transposed Multiplication : " <<
 				gfp::TIME.LU_TRANSMUL << endl;
-			cout << "Time spent il Lift-up Mod* : " <<
+			cout << "Time spent in Lift-up Mod* : " <<
 				gfp::TIME.LU_TRANSMOD << endl;
-			cout << "Time spent il Lift-up Push-down-rec* : " <<
+			cout << "Time spent in Lift-up Push-down-rec* : " <<
 				gfp::TIME.LU_TRANSPUSHDOWN << endl;
-			cout << "Time spent il Lift-up step 4 : " <<
+			cout << "Time spent in Lift-up step 4 : " <<
 				gfp::TIME.LU_STEP4 << endl;
-			cout << "Time spent il Lift-up step 5 : " <<
+			cout << "Time spent in Lift-up step 5 : " <<
 				gfp::TIME.LU_STEP5 << endl;
 	
 			if (a != b) {

@@ -193,7 +193,7 @@ namespace AS {
 	}
 	template <class T> void FieldElement<T>::toInfrastructure(GFpE& i)
 	const throw(IllegalCoercionException) {
-		if (!parent_field || !base) throw IllegalCoercionException();
+		if (!parent_field || base) throw IllegalCoercionException();
 		parent_field->switchContext();
 		i = repExt;
 	}
