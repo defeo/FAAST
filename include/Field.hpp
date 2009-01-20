@@ -230,7 +230,7 @@ namespace AS {
 	
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
-		const Field<T>& baseField() const throw();
+		const Field<T>& primeField() const throw();
 		const Field<T>& subField() const throw(NoSubFieldException) {
 			if (!subfield) throw NoSubFieldException();
 			return *subfield;
@@ -278,6 +278,8 @@ namespace AS {
 		bool isSubFieldOf(const Field<T>& f) const throw ();
 		bool isOverFieldOf(const Field<T>& f) const throw ()
 		{ return f.isSubFieldOf(*this); }
+		bool isPrimeField() const throw ()
+		{ return subfield == NULL; }
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
 	/****************** Destructor ******************/

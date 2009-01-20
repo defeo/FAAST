@@ -174,20 +174,19 @@ namespace AS {
 
 		if (!e.parent_field)
 			throw NoSubFieldException();
-		if (e.parent_field->stem != e.parent_field)
-			throw NoSubFieldException();
 		if (!e.parent_field->subfield)
 			throw NoSubFieldException();
 		
-		e.parent_field->switchContext();
+		const Field<T>* parent = e.parent_field->stem;
+		parent->switchContext();
 		
 		// if the subfield is prime
 		// simply return the list of coefficients
-		if (e.parent_field->subfield->d == 1) {
-			v.resize(e.parent_field->d);
-			const Field<T>* base = &(e.parent_field->baseField());
+		if (parent->subfield->d == 1) {
+			v.resize(parent->d);
+			const Field<T>* base = &(parent->primeField());
 			const GFpX& eX = rep(e.repExt);
-			for (long i = 0 ; i < e.parent_field->d ; i++) {
+			for (long i = 0 ; i < parent->d ; i++) {
 				v[i].base = true;
 				v[i].repBase = coeff(eX, i);
 				v[i].repExt = 0;
@@ -197,7 +196,7 @@ namespace AS {
 		// the real push-down algorithm from Section 4
 		else {
 			vector<GFpX> W;
-			BigInt p = e.parent_field->p;
+			BigInt p = parent->p;
 			pushDownRec<T>(rep(e.repExt), 0, deg(rep(e.repExt)), W, p);
 #if AS_DEBUG >= 2
 			for (BigInt i = 0 ; i < p ; i++) {
@@ -209,7 +208,7 @@ namespace AS {
 			//   X^p - X - x0 - 1
 			// the result lies in GF(p)[x0+1].
 			// This brings the elements back to GF(p)[x0]
-			if (e.parent_field->plusone) {
+			if (parent->plusone) {
 				GFpX xplusone;
 				SetCoeff(xplusone, 1); SetCoeff(xplusone, 0);
 				for (BigInt i = 0 ; i < p ; i++)
@@ -217,18 +216,18 @@ namespace AS {
 			}
 			// if this extension was built modulo
 			//   X^p - X - xi^(2p-1)
-			if (e.parent_field->twopminusone) {
+			if (parent->twopminusone) {
 				for (BigInt i = 0 ; i < p ; i++)
 					expand<T>(W[i], W[i], 2*long(p) - 1);
 			}
 			
 			// prepare to work in the subfield
-			e.parent_field->subfield->switchContext();
+			parent->subfield->switchContext();
 			
 			// convert the result of push-down-rec to elements
 			// of the subfield
 			v.resize(p);
-			bool base = e.parent_field->subfield->d == 1;
+			bool base = parent->subfield->d == 1;
 			for (BigInt i = 0 ; i < p ; i++) {
 				v[i].base = base;
 				// this automatically reduces modulo
@@ -240,7 +239,7 @@ namespace AS {
 					v[i].repBase = 0;
 					conv(v[i].repExt, W[i]);
 				}
-				v[i].parent_field = e.parent_field->subfield;
+				v[i].parent_field = parent->subfield;
 			}
 		}
 	}
@@ -279,9 +278,9 @@ namespace AS {
 		}
 		// standard checks
 		if (!parent) throw NoOverFieldException();
-		if (parent->stem != parent) throw NoOverFieldException();
 		if (!parent->overfield) throw NoOverFieldException();
 		
+		parent = parent->stem;
 		parent->switchContext();
 		
 		// if this is a prime field

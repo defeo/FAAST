@@ -111,7 +111,7 @@ namespace AS {
 			FieldElement<T> tmp;
 			NTL::trace(tmp.repBase, repExt);
 			tmp.base = true;
-			tmp.parent_field = &(parent_field->baseField());
+			tmp.parent_field = &(parent_field->primeField());
 			return tmp;
 		}
 	}

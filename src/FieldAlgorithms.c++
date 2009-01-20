@@ -169,7 +169,7 @@ namespace AS {
 			const GFpX& Q0 = GFpE::modulus().val();
 			// switch modulus to compute modulo the cyclotomic
 			// polynomial
-			baseField().getCyclotomic().P.restore();
+			primeField().getCyclotomic().P.restore();
 			// apply Cantor's algorithm to compute the
 			// minimal polynomial
 #ifdef AS_TIMINGS
@@ -190,7 +190,7 @@ namespace AS {
 #endif
 		// prepare the new context
 		GFpE::init(Q);
-		Context ctxt = baseField().context;
+		Context ctxt = primeField().context;
 		ctxt.P.save();
 		
 		// primitive element and generator

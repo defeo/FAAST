@@ -309,7 +309,7 @@ namespace AS {
 
 /****************** Field lattice navigation ******************/
 	/* The field GF(p) */
-	template <class T> const Field<T>& Field<T>::baseField() const throw() {
+	template <class T> const Field<T>& Field<T>::primeField() const throw() {
 		if (!stem->subfield) return *stem;
 		const Field<T>* result = stem->subfield;
 		while (result->subfield) result = result->subfield;
