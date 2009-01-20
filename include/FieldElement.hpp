@@ -248,6 +248,16 @@ namespace AS {
 	/*****************************************************/
 	
 	private:
+	/****************** Helpers for frobenius and trace ******************/
+		/* p^j-th iterated frobenius */
+		void BigFrob(const long j);
+		/* n-th iterated frobenius, n < d */
+		void SmallFrob(const long n);
+		/* p^j-th pseudotrace */
+		void BigPTrace(const long j);
+		/* n-th pseudotrace, n < d */
+		void SmallPTrace(const long n);
+	
 	/****************** Internal Constructors ******************/
 		/* Construct an element with given representation and parent.
 		 * Reserved for used by Field<T>

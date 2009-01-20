@@ -169,20 +169,7 @@ namespace AS {
 			const GFpX& Q0 = GFpE::modulus().val();
 			// switch modulus to compute modulo the cyclotomic
 			// polynomial
-			if ( !(baseField().Phi.get()) ) {
-				GFpX phi;
-#ifdef AS_TIMINGS
-				TIME.CYCLOTOMIC = -GetTime();
-#endif
-				cyclotomic<T>(phi, 2*long(p)-1, p);
-#ifdef AS_TIMINGS
-				TIME.CYCLOTOMIC += GetTime();
-#endif
-				GFpE::init(phi);
-				Context* ctxt = new Context();
-				ctxt->P.save();
-				baseField().Phi.reset(ctxt);
-			} else baseField().Phi->P.restore();
+			baseField().getCyclotomic().P.restore();
 			// apply Cantor's algorithm to compute the
 			// minimal polynomial
 #ifdef AS_TIMINGS
@@ -210,9 +197,12 @@ namespace AS {
 		GFpX priX; SetX(priX);
 		GFpE pri; conv(pri, priX);
 		
-		overfield = new Field<T>(this, ctxt, pri, po, tpmo,
-								 p, long(p)*d, height+1, alpha);
-		return *overfield;
+		// who generated this extension ?
+		const Field<T>* vsub = (stem == this)? NULL : this;
+		
+		stem->overfield = new Field<T>(this, ctxt, pri, po, tpmo, p,
+										long(p)*d, height+1, alpha, vsub);
+		return *(stem->overfield);
 	}
 	
 	/* Build the splitting field of the polynomial

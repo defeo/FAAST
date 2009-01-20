@@ -317,7 +317,9 @@ namespace AS {
 			//   X^p - X - x0 - 1
 			// this brings the elements into GF(p)[x0+1]
 			if (parent->overfield->plusone) {
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_PLUSONE = -GetTime();
+#endif
 				GFpX xminusone;
 				SetCoeff(xminusone, 1); SetCoeff(xminusone, 0, -1);
 				for (BigInt i = 0 ; i < p ; i++)
@@ -325,20 +327,30 @@ namespace AS {
 				GFpX tmp;
 				compose<T>(tmp, Q.val(), xminusone, p);
 				build(Q, tmp);
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_PLUSONE += GetTime();
+#endif
 			}
 
 			// get the trace form
 			if (Q.tracevec.length() == 0) {
+#ifdef AS_TIMINGS
 				Field<T>::TIME.TRACEVEC = -GetTime();
+#endif
 				ComputeTraceVec(Q);
+#ifdef AS_TIMINGS
 				Field<T>::TIME.TRACEVEC += GetTime();
+#endif
 			}
 			GFpX trace; conv(trace, Q.tracevec);
 			// TransposedMul (step 2 of lift-up)
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_TRANSMUL = -GetTime();
+#endif
 			TransposedMul<T>(W, Q, trace, p);
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_TRANSMUL += GetTime();
+#endif
 
 			// if this extension was built modulo
 			//   X^p - X - xi^(2p-1)
@@ -346,56 +358,70 @@ namespace AS {
 			// (steps 2 and 3 of push-down*)
 			if (parent->overfield->twopminusone) {
 				// mod*
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_TRANSMOD = -GetTime();
+#endif
 				for (BigInt i = 0 ; i < p ; i++)
 					TransMod<T>(W[i], Q, p);
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_TRANSMOD += GetTime();
+#endif
 				// evaluate*
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_TRANSEVAL = -GetTime();
+#endif
 				for (BigInt i = 0 ; i < p ; i++)
 					contract<T>(W[i], W[i], 2*long(p) - 1);
+#ifdef AS_TIMINGS
 				Field<T>::TIME.LU_TRANSEVAL += GetTime();
+#endif
 			}
 			
 			// step 4 of push-down*
 			GFpX V;
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_TRANSPUSHDOWN = -GetTime();
+#endif
 			TransPushDownRec<T>(W, V, 0, parent->overfield->d - 1, p);
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_TRANSPUSHDOWN += GetTime();
+#endif
 			
 			// now get ready to work in the overfield
 			parent->overfield->switchContext();
 			
 			// step 4 of lift-up
 			const GFpXModulus& QQ = GFpE::modulus();
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP4 = -GetTime();
+#endif
 			GFpX revQ; reverse(revQ, QQ);
 			MulTrunc(V, V, revQ, deg(QQ));
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP4 += GetTime();
+#endif
 			
 			// step 5 of lift-up
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 = -GetTime();
+#endif
 			reverse(V, V, deg(QQ) - 1);
 			e.base = false;
 			e.repBase = 0;
 			conv(e.repExt, V);
 			e.parent_field = parent->overfield;
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 += GetTime();
-			if ( !(parent->overfield->liftuphelper.get()) ) {
-				Field<T>::TIME.LIFTUP = -GetTime();
-				GFpX diffQ; diff(diffQ, QQ);
-				FieldElement<T>* helper = new FieldElement<T>();
-				helper->base = false;
-				conv(helper->repExt, diffQ);
-				helper->parent_field = parent->overfield;
-				
-				helper->self_inv();
-				parent->overfield->liftuphelper.reset(helper);
-				Field<T>::TIME.LIFTUP += GetTime();
-			}
+#endif
+			const FieldElement<T>& invDiffQQ =
+				parent->overfield->getLiftup(); 
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 -= GetTime();
-			e *= *(parent->overfield->liftuphelper);
+#endif
+			e *= invDiffQQ;
+#ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 += GetTime();
+#endif
 		}
 	}
 	

@@ -9,8 +9,9 @@
 namespace AS {
 	template <class T> class Field {
 
+	friend class FieldElement<T>;
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
-	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
+	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e) throw(NotInSameFieldException, NoOverFieldException);
 
 	public:
 		typedef T Infrastructure;
@@ -237,7 +238,6 @@ namespace AS {
 		const Field<T>& overField() const throw(NoOverFieldException) {
 			if (!overfield) throw NoOverFieldException();
 			return *overfield;
-			
 		}
 
 	/****************** Level embedding ******************/
@@ -294,6 +294,12 @@ namespace AS {
 		void operator=(const Field<T>&);
 		Field(const Field<T>&);
 		
+	/****************** Access to precomputed values ******************/
+		const FieldElement<T>& getPseudotrace(const long i) const;
+		const FieldElement<T>& getLiftup() const;
+		const MatGFp& getArtinMatrix() const;
+		const Context& getCyclotomic() const;
+	
 	/****************** Internal Constructors ******************/
 		/* Construct a field with specified parameters */
 		Field<T> (
@@ -333,21 +339,19 @@ namespace AS {
 			const Field<T>* sub,
 			const Context& ctxt,
 			const GFpE& pri,
-			const MatGFp& mat,
-			const long line,
 			const BigInt& cha,
 			const long deg,
 			const GFpE& g
 		) throw() :
-		subfield(sub), overfield(),
+		subfield(sub), overfield(NULL),
 		context(ctxt),
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
 		liftuphelper(),
-		artin(mat), artinLine(line),
+		artin(), artinLine(-1),
 		plusone(false), twopminusone(false),
 		Phi(),
-		stem(this), vsubfield(),
+		stem(this), vsubfield(NULL),
 		p(cha), d(deg), height(0),
 		gen(new FieldElement<T>(this, g)),
 		alpha()
@@ -358,7 +362,7 @@ namespace AS {
 			const GFp& pri,
 			const BigInt& cha
 		) throw() :
-		subfield(), overfield(),
+		subfield(NULL), overfield(NULL),
 		context(ctxt),
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
@@ -366,7 +370,7 @@ namespace AS {
 		artin(), artinLine(-1),
 		plusone(false), twopminusone(false),
 		Phi(),
-		stem(this), vsubfield(),
+		stem(this), vsubfield(NULL),
 		p(cha), d(1), height(0),
 		gen(new FieldElement<T>(this, pri)),
 		alpha()
@@ -381,9 +385,10 @@ namespace AS {
 			const BigInt& cha,
 			const long deg,
 			const long h,
-			const FieldElement<T>* aleph
+			const FieldElement<T>* aleph,
+			const Field<T>* vsub = NULL
 		) throw() :
-		subfield(sub), overfield(),
+		subfield(sub), overfield(NULL),
 		context(ctxt),
 		primitive(new FieldElement<T>(this, pri)),
 		pseudotraces(),
@@ -391,7 +396,7 @@ namespace AS {
 		artin(), artinLine(-1),
 		plusone(po), twopminusone(tpmo),
 		Phi(),
-		stem(this), vsubfield(),
+		stem(this), vsubfield(vsub),
 		p(cha), d(deg), height(h),
 		gen(new FieldElement<T>(this, pri)),
 		alpha(aleph)
@@ -409,5 +414,6 @@ namespace AS {
 
 #include "../src/Field.c++"
 #include "../src/FieldAlgorithms.c++"
+#include "../src/FieldPrecomputations.c++"
 
 #endif /*FIELD_H_*/

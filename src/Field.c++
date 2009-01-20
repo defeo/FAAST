@@ -9,34 +9,6 @@
 namespace AS {
 	template <class T> typename Field<T>::TIMINGS Field<T>::TIME;
 	
-	template <class T> typename T::MatGFp artinMatrix
-	(const typename T::BigInt& p, const long line, const typename T::GFpXModulus& P) {
-		typedef typename T::MatGFp      MatGFp;
-		typedef typename T::GFpX        GFpX;
-
-		long d = deg(P);
-		// we just want an invertinle d-1 minor
-		MatGFp appl; appl.SetDims(d-1, d-1);
-		// X^p mod P
-		GFpX Xp = PowerXMod(p, P);
-		// column is the column of X^p-X at each iteration
-		GFpX column(0,1);
-		// build the minor
-		for (long i = 1 ; i < d ; i++) {
-			MulMod(column, column, Xp, P);
-			for (long j = 0 ; j < line ; j++) {
-				appl[j][i-1] = coeff(column, j);
-			}
-			for (long j = line+1 ; j < d ; j++) {
-				appl[j-1][i-1] = coeff(column, j);
-			}
-			if (i > line) appl[i-1][i-1]--;
-			else if (i < line) appl[i][i-1]--;
-		}
-		//invert
-		return inv(appl);
-	}
-
 /****************** Constructors ******************/
 	/* All constructors are static. There's no way to directly
 	 * create a Field object. Field objects are permanent and 
@@ -57,7 +29,7 @@ namespace AS {
 	throw (NotPrimeException, NotIrreducibleException) {
 		// retrieve all the informations on the modulus
 		BigInt p = GFp::modulus();
-		GFpXModulus P = GFpE::modulus();
+		const GFpXModulus& P = GFpE::modulus();
 		long d = deg(P);
 		Context context; context.p.save(); context.P.save();
 		// test primality
@@ -87,19 +59,9 @@ namespace AS {
 			Field<T>* baseField = new Field<T>(context, one, p);
 			// compute the generator of this field
 			GFpE primitive; conv(primitive, GFpX(1,1));
-			// compute the inverse matrix of X^p-X
-			GFpXModulus Pmod; build(Pmod, P);
-			// WARNING : No more precomputation at this point,
-			// it is too expensive !
-			//
-			// We pick a redundant line : it corresponds
-			// to a power of x of trace different from 0.
-			// The residue formula tells us that Tr(x^dep) != 0
-			long line = -1; //d - 1 - deg(diff(P));
-			MatGFp artin; // = artinMatrix<T>(p,line,Pmod);
 			// build the field
 			Field<T>* K = new Field<T>(baseField, context, primitive,
-			                           artin, line, p, d, primitive);
+			                           p, d, primitive);
 			// connect the base field
 			baseField->overfield = K;
 			return *K;
@@ -115,7 +77,7 @@ namespace AS {
 	(const bool test) throw (NotPrimeException, NotIrreducibleException) {
 		// retrieve all the informations on the modulus
 		long p = 2;
-		GFpXModulus P = GFpE::modulus();
+		const GFpXModulus& P = GFpE::modulus();
 		long d = deg(P);
 		Context context; context.P.save();
 		// test irreducibility
@@ -136,20 +98,10 @@ namespace AS {
 			Field<GF2_Algebra>* baseField = new Field<GF2_Algebra>(context, one, p);
 			// compute the generator of this field
 			GFpE primitive; conv(primitive, GFpX(1,1));
-			// compute the inverse matrix of X^p-X
-			GFpXModulus Pmod; build(Pmod, P);
-			// WARNING : No more precomputation at this point,
-			// it is too expensive !
-			//
-			// We pick a redundant line : it corresponds
-			// to a power of x of trace different from 0.
-			// The residue formula tells us that Tr(x^dep) != 0
-			long line = -1; //d - 1 - deg(diff(P));
-			MatGFp artin;// = artinMatrix<GF2_Algebra>(p,line,Pmod);
 			// build the field
 			Field<GF2_Algebra>* K =
 				new Field<GF2_Algebra>(baseField, context, primitive,
-				                        artin, line, p, d, primitive);
+				                        p, d, primitive);
 			// connect the base field
 			baseField->overfield = K;
 			return *K;
@@ -348,18 +300,18 @@ namespace AS {
 
 	/* Set the context to work in this field */
 	template<class T> void Field<T>::switchContext() const throw() {
-		context.p.restore();
-		context.P.restore();
+		stem->context.p.restore();
+		stem->context.P.restore();
 	}
 	template<> void Field<GF2_Algebra>::switchContext() const throw() {
-		context.P.restore();
+		stem->context.P.restore();
 	}
 
 /****************** Field lattice navigation ******************/
 	/* The field GF(p) */
 	template <class T> const Field<T>& Field<T>::baseField() const throw() {
-		if (!subfield) return *this;
-		const Field<T>* result = subfield;
+		if (!stem->subfield) return *stem;
+		const Field<T>* result = stem->subfield;
 		while (result->subfield) result = result->subfield;
 		return *result;
 	}

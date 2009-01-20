@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT=-g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
+OPT = -g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
@@ -64,7 +64,8 @@ $(BIN)/testTmul.o: $(SRC)/testTmul.c++ $(INC)/Tmul.hpp
 ########## other files
 
 $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
-	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++
+	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ \
+	$(SRC)/FieldPrecomputations.c++
 	touch $(INC)/Field.hpp
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
@@ -92,6 +93,9 @@ $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 
 $(SRC)/FE-Liftup-Pushdown.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp
 	touch $(SRC)/FE-Liftup-Pushdown.c++
+
+$(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
+	touch $(SRC)/FieldPrecomputations.c++
 
 ######################################################################
 .PHONY: all

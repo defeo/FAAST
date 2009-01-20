@@ -31,9 +31,6 @@ namespace AS {
 		ZZ_auto& operator=(const long i) { ZZ::operator=(i); return *this; }
 		operator long() const {
 			return to_long(*this);
-#if AS_DEBUG >= 2
-			cout << "Warning : possible loss of precision." << endl;
-#endif
 		}
 	};
 

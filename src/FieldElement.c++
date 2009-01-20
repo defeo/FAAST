@@ -148,6 +148,16 @@ namespace AS {
 		else power(repExt, repExt, i);
 	}
 	
+	template <class T> void FieldElement<T>::self_frobenius()
+	throw() {
+		if (!parent_field) return;
+		if (base) return;
+		
+		parent_field->switchContext();
+		
+		power(repExt, repExt, parent_field->p);
+	}
+	
 	template <class T> void FieldElement<T>::self_trace() throw() {
 		if (!parent_field) return;
 		parent_field->switchContext();
