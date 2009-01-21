@@ -1,14 +1,31 @@
+#import "utilities.hpp"
+
 namespace AS {
 /****************** Arithmetics ******************/
 	/* n-th iterated frobenius. This algorithm is detailed in the
 	 * long version.
 	 */
 	template <class T> void
-	FieldElement<T>::self_frobenius(const long n) throw() {
+	FieldElement<T>::self_frobenius(long n) throw() {
 		if (isZero()) return;
 		if (base) return;
+
+		n %= parent_field->d;
+		if (n < 0) n = parent_field->d - n;
 		
-		//TODO
+		long p = parent_field->d;
+		long smalld = parent_field->baseField()->d;
+		// The small part
+		const long r = n % smalld;
+		SmallFrob(r);
+		// The big part
+		n /= smalld;
+		long j = 0;
+		while (n != 0) {
+			const long c = n % p;
+			for (long i = 0 ; i < c ; i++) BigFrob(j);
+			n /= p ; j++;
+		}
 	}
 	
 	template <class T> void
@@ -43,14 +60,49 @@ namespace AS {
 	}
 	
 	template <class T> void
-	FieldElement<T>::self_pseudotrace(const long n) throw() {
-		if (isZero()) return;
+	FieldElement<T>::self_pseudotrace(unsigned long n) throw() {
+		if (isZero() || n == 1) return;
+		if (n == 0) *this = parent_field->zero();
 		if (base) {
 			*this *= parent_field->scalar(n);
 			return;
 		}
 		
-		//TODO
+		// first remove the part above d
+		FieldElement<T> traces = trace();
+		traces *= n / parent_field->d;
+		// now go under d
+		n %= parent_field->d;
+		
+		long p = parent_field->d;
+		long smalld = parent_field->baseField()->d;
+		// The small part
+		const long r = n % smalld;
+		// The big part
+		n /= smalld;
+		const long j = NumPits(p, n);
+		if (j > 0) {
+			vector<FieldElement<T> > v;
+			BigPTraceVector(v, j-1);
+			for (long i = j-1 ; i >= 0 ; i++) {
+				const long c = n / power_long(p, i);
+				FieldElement<T> t = v[i];
+				for (long h = 1 ; h < c ; h++) {
+					t.BigFrob(i);
+					v[i] += t;
+				} 
+				if (i < j -1) {
+					for (long h = 1 ; h < c ; h++) v[i+1].BigFrob(i);
+					v[i] += v[i+1];
+				}
+				n %= power_long(p, i);
+			}
+			v[0].SmallFrob(r);
+			this->SmallPTrace(r);
+			*this += v[0];
+		} else {
+			SmallPTrace(r);
+		}
 	}
 
 /****************** Helpers for frobenius and trace ******************/
@@ -59,7 +111,8 @@ namespace AS {
 	/* p^j-th iterated frobenius */
 	template <class T> void FieldElement<T>::BigFrob(const long j) {
 #ifdef AS_DEBUG
-		if (j < 0) throw ASException("Bad input to BigFrob.");
+		if (j < 0 || j >= parent_field->height)
+			throw ASException("Bad input to BigFrob.");
 #endif
 		BigInt p = parent_field->p;
 		
@@ -91,7 +144,7 @@ namespace AS {
 	/* n-th iterated frobenius, n < d */
 	template <class T> void FieldElement<T>::SmallFrob(const long n) {
 #ifdef AS_DEBUG
-		if (n >= parent_field->d)
+		if (n <= 0 || n >= parent_field->baseField()->d)
 			throw ASException("Bad input to SmallFrob.");
 #endif
 		for (long i = 0 ; i < n ; i++)
@@ -101,13 +154,12 @@ namespace AS {
 	/* p^j-th pseudotrace */
 	template <class T> void FieldElement<T>::BigPTrace(const long j) {
 #ifdef AS_DEBUG
-		if (j < 0) throw ASException("Bad input to BigPTrace.");
+		if (j < 0 || j >= parent_field->height)
+			throw ASException("Bad input to BigPTrace.");
 #endif
-		if (j == 0) SmallPTrace(parent_field->d);
-		else {
-			FieldElement<T> t(*this);
-			t.BigPTrace(j-1);
-			*this += t;
+		SmallPTrace(parent_field->baseField()->d);
+		for (long i = 1 ; i <= j ; i++) {
+			FieldElement<T> t = *this;
 			for (BigInt i = 1 ; i < parent_field->p ; i++) {
 				t.BigFrob(j-1);
 				*this += t;
@@ -115,10 +167,31 @@ namespace AS {
 		}
 	}
 
+	/* Put in the vector v all the p^id pseudotraces for 0 <= i <= j */
+	template <class T> void
+	FieldElement<T>::BigPTraceVector(vector<FieldElement<T> >& v,
+	const long j) const {
+#ifdef AS_DEBUG
+		if (j < 0 || j >= parent_field->height)
+			throw ASException("Bad input to BigPTraceVector.");
+#endif
+		v.clear(); v.resize(j+1);
+		v[0] = *this;
+		v[0].SmallPTrace(parent_field->baseField()->d);
+		for (long i = 1 ; i <= j ; i++) {
+			v[i] = v[i-1];
+			FieldElement<T> t = v[i];
+			for (BigInt i = 1 ; i < parent_field->p ; i++) {
+				t.BigFrob(j-1);
+				v[i] += t;
+			}
+		}
+	}
+
 	/* n-th pseudotrace, n < d */
 	template <class T> void FieldElement<T>::SmallPTrace(const long n) {
 #ifdef AS_DEBUG
-		if (n > parent_field->d)
+		if (n <= 0 || n > parent_field->baseField()->d)
 			throw ASException("Bad input to SmallPTrace.");
 #endif
 		FieldElement<T> t(*this);

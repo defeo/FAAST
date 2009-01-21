@@ -14,7 +14,7 @@ namespace AS {
 	/* Pollard Rho factorisation algorithm */
 	void factor(long n, vector<pair<long,int> >& factors,
 	const bool trial = true, const int multiplicity = 1);
-	/* return the gratest power of p less than or equal to n */
+	/* return the least power of p greater than n */
 	long NumPits(const long p, const long n);
 	/* Computes P(X^n) */
 	template <class T> void expand(typename T::GFpX& res,

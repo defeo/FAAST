@@ -315,6 +315,12 @@ namespace AS {
 		while (result->subfield) result = result->subfield;
 		return *result;
 	}
+	/* The base field of the tower */
+	template <class T> const Field<T>& Field<T>::baseField() const throw() {
+		const Field<T>* result = stem;
+		while (result->height != 0) result = result->subfield;
+		return result;
+	}
 
 /****************** Comparison ******************/
 	/* There is inclusion between two fields only if the inclusion

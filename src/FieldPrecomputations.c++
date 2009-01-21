@@ -31,10 +31,31 @@ namespace AS {
 
 /****************** Access to precomputed values ******************/
 	template <class T> const FieldElement<T>&
-	Field<T>::getPseudotrace(const long i) const {
-		if (this != stem) return stem->getPseudotrace(i);
+	Field<T>::getPseudotrace(const long j) const {
+#ifdef AS_DEBUG
+		if (j < 0 || j >= height)
+			throw ASException("Bad input to getPseudotrace.");
+#endif
 
-		return (*pseudotraces)[i];
+		if (pseudotraces.size() > j) return pseudotraces[j];
+		if (this != stem) return stem->getPseudotrace(j);
+
+		long size = pseudotraces.size();
+		pseudotraces.resize(j+1);
+		if (size == 0) {
+			pseudotraces[0] = *alpha;
+			pseudotraces[0].SmallPTrace(baseField()->d);
+		}
+		for (long i = size + 1 ; i <= j ; i++) {
+			pseudotraces[i] = pseudotraces[i-1];
+			FieldElement<T> t = pseudotraces[i];
+			for (BigInt i = 1 ; i < p ; i++) {
+				t.BigFrob(j-1);
+				pseudotraces[i] += t;
+			}
+		}
+
+		return pseudotraces[j];
 	}
 	
 	template <class T> const FieldElement<T>& Field<T>::getLiftup() const {

@@ -94,6 +94,9 @@ $(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
 $(SRC)/FE-Liftup-Pushdown.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp
 	touch $(SRC)/FE-Liftup-Pushdown.c++
 
+$(SRC)/FE-Trace-Frob.c++: $(INC)/utilities.hpp
+	touch $(SRC)/FE-Trace-Frob.c++
+
 $(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
 	touch $(SRC)/FieldPrecomputations.c++
 

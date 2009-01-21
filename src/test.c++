@@ -17,7 +17,7 @@ int main(int argv, char* argc[]) {
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(7,1));
+	const gfp* K = &(gfp::createField(2,1));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "

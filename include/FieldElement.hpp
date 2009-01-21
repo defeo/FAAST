@@ -179,7 +179,7 @@ namespace AS {
 		/* Absolute trace over GF(p) */
 		FieldElement<T> trace() const throw();
 		/* n-th pseudotrace */
-		FieldElement<T> pseudotrace(const long n) const throw() {
+		FieldElement<T> pseudotrace(unsigned long n) const throw() {
 			FieldElement<T> tmp = *this;
 			tmp.self_pseudotrace(n);
 			return tmp;
@@ -191,10 +191,10 @@ namespace AS {
 		void operator^=(const ZZ&) throw();
 		void operator^=(const long) throw();
 		void self_frobenius() throw();
-		void self_frobenius(const long) throw();
+		void self_frobenius(long) throw();
 		void self_trace(const Field<T> F) throw(NotASubFieldException);
 		void self_trace() throw();
-		void self_pseudotrace(const long n) throw();
+		void self_pseudotrace(unsigned long) throw();
 		
 	/****************** Coercion of elements ******************/
 		FieldElement<T> operator>>(const Field<T>&) const 
@@ -255,6 +255,8 @@ namespace AS {
 		void SmallFrob(const long n);
 		/* p^j-th pseudotrace */
 		void BigPTrace(const long j);
+		/* Put in the vector v all the p^id pseudotraces for 0 <= i <= j */
+		void BigPTraceVector(vector<FieldElement<T> >& v, const long j) const;
 		/* n-th pseudotrace, n < d */
 		void SmallPTrace(const long n);
 	

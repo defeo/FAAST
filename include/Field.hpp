@@ -89,7 +89,7 @@ namespace AS {
 		/* The generator over GF(p) */
 		const auto_ptr<const FieldElement<T> > primitive;
 		/* Precomputed pseudotraces */
-		mutable auto_ptr<const vector<FieldElement<T> > > pseudotraces;
+		mutable vector<FieldElement<T> > pseudotraces;
 		/* Lift-up precomputation */
 		mutable auto_ptr<const FieldElement<T> > liftuphelper;
 		/* The inverse matrix of the d-1 minor of the
@@ -231,6 +231,8 @@ namespace AS {
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
 		const Field<T>& primeField() const throw();
+		/* The base field of the tower */
+		const Field<T>& baseField() const throw();
 		const Field<T>& subField() const throw(NoSubFieldException) {
 			if (!subfield) throw NoSubFieldException();
 			return *subfield;
@@ -309,7 +311,7 @@ namespace AS {
 			const Field<T>* over,
 			const Context& ctxt,
 			const FieldElement<T>* pri,
-			const vector<FieldElement<T> >* pseudo,
+			const vector<FieldElement<T> >& pseudo,
 			const FieldElement<T>* liftup,
 			const MatGFp& mat,
 			const long line,
