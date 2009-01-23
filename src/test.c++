@@ -14,61 +14,58 @@ typedef FieldElement<GF2_Algebra>  GFp2_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
+	
+	gfp::Infrastructure::BigInt p;
+	long d, l, t;
+	cin >> p; cin >> d; cin >> l; cin >> t;
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(7,1));
+	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
 	
-	for (int i = 1 ; i <= 5 ; i++) {
+	for (int i = 1 ; i <= l ; i++) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
 		cout << *K << " in " << cputime << endl;
 
-		for (int i = 1 ; i <= 3 ; i++) {
-			gfp_E a = K->random(), b, c, tmp;
-			long n = RandomBnd(K->d);
-			cputime = -NTL::GetTime();
+		for (int j = 0 ; j < i+t ; j++) {
+			gfp_E a = K->random(), b;
+			long n = (j>=i) ?
+				d + RandomBnd(K->d - d) : d*power_long(p, j);
+			double frobtime, pseudotime, naivetime;
+			
+			frobtime = -NTL::GetTime();
 			b = a.frobenius(n);
-			cputime += NTL::GetTime();
+			frobtime += NTL::GetTime();
 			cout << "Fast " << n << "-th Frobenius in "
-				<< cputime << endl;
-			c = a;
-			cputime = -NTL::GetTime();
-			for (long i = 0 ; i < n ; i++)
-				c.self_frobenius();
-			cputime += NTL::GetTime();
-			cout << "Naive " << n << "-th Frobenius in "
-				<< cputime << endl;
-			if (b != c) {
-				cout << "ERROR : results don't match" << endl;
-				cout << a << endl << b << endl << c << endl;
-			}
+				<< frobtime << endl;
+			
+			pseudotime = -NTL::GetTime();
+			b = a.pseudotrace(n);
+			pseudotime += NTL::GetTime();
+			cout << "Fast " << n << "-th Pseudotrace in "
+				<< pseudotime << endl;
+
 			cout << "Pseudotraces precomputed in " <<
 				gfp::TIME.PSEUDOTRACES << endl; 
-			cputime = -NTL::GetTime();
-			b = a.pseudotrace(n);
-			cputime += NTL::GetTime();
-			cout << "Fast " << n << "-th Pseudotrace in "
-				<< cputime << endl;
-			c = a;
-			cputime = -NTL::GetTime();
-			tmp = c;
-			for (long i = 1 ; i < n ; i++) {
-				tmp.self_frobenius();
-				c += tmp;
-			}
-			cputime += NTL::GetTime();
-			cout << "Naive " << n << "-th Pseudotrace in "
-				<< cputime << endl;
-			if (b != c) {
-				cout << "ERROR : results don't match" << endl;
-				cout << a << endl << b << endl << c << endl;
-			}
+
+			naivetime = -NTL::GetTime();
+			for (long i = 0 ; i < 10 ; i++)
+				a.self_frobenius();
+			naivetime += NTL::GetTime();
+			double average = naivetime / 10;
+			cout << "Naive Frobenius in " << average
+				<< ", projected execution time " <<
+				average * n << endl;
+			
+			cout << "Projected thresholds :" << endl
+				<< "\tfrobenius " << floor(frobtime / average) << endl
+				<< "\tpseudotrace " << floor(pseudotime / average) << endl;
 		}
 		cout << endl;
 	}
