@@ -115,12 +115,6 @@ namespace AS {
 		 * It is given mainly for printing purposes
 		 */
 		const Field<T>* vsubfield;
-		/* the characteristic */
-		const BigInt p;
-		/* the degree */
-		const long d;
-		/* The Artin-Schreier height */
-		const long height;
 		/* The generator over the subfield */
 		const auto_ptr<const FieldElement<T> > gen;
 		/* The element of the subfield such that this field is
@@ -128,6 +122,13 @@ namespace AS {
 		 * 			X^p - X - alpha
 		 */
 		const auto_ptr<const FieldElement<T> > alpha;
+	public:
+		/* the characteristic */
+		const BigInt p;
+		/* the degree */
+		const long d;
+		/* The Artin-Schreier height */
+		const long height;
 		
 
 	public:
@@ -320,11 +321,11 @@ namespace AS {
 			const Context& Ph,
 			const Field<T>* st,
 			const Field<T>* vsub,
+			const FieldElement<T>* g,
+			const FieldElement<T>* a,
 			const BigInt& cha,
 			const long deg,
-			const long h,
-			const FieldElement<T>* g,
-			const FieldElement<T>* a
+			const long h
 		) throw() :
 		subfield(sub), overfield(over),
 		context(ctxt),
@@ -335,8 +336,8 @@ namespace AS {
 		plusone(pluso), twopminusone(twopminuso),
 		Phi(Ph),
 		stem(st), vsubfield(vsub),
-		p(cha), d(deg), height(h),
-		gen(g), alpha(a)
+		gen(g), alpha(a),
+		p(cha), d(deg), height(h)
 		{}
 		/* Private constructor for base fields */
 		Field<T> (
@@ -356,9 +357,9 @@ namespace AS {
 		plusone(false), twopminusone(false),
 		Phi(),
 		stem(this), vsubfield(NULL),
-		p(cha), d(deg), height(0),
 		gen(new FieldElement<T>(this, g)),
-		alpha()
+		alpha(),
+		p(cha), d(deg), height(0)
 		{}
 		/* Private constructor for GF(p) */
 		Field<T> (
@@ -375,9 +376,9 @@ namespace AS {
 		plusone(false), twopminusone(false),
 		Phi(),
 		stem(this), vsubfield(NULL),
-		p(cha), d(1), height(0),
 		gen(new FieldElement<T>(this, pri)),
-		alpha()
+		alpha(),
+		p(cha), d(1), height(0)
 		{}
 		/* Private constructor for primitive stem fields */
 		Field<T> (
@@ -401,9 +402,9 @@ namespace AS {
 		plusone(po), twopminusone(tpmo),
 		Phi(),
 		stem(this), vsubfield(vsub),
-		p(cha), d(deg), height(h),
 		gen(new FieldElement<T>(this, pri)),
-		alpha(aleph)
+		alpha(aleph),
+		p(cha), d(deg), height(h)
 		{}
 
 	};

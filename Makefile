@@ -39,6 +39,11 @@ TEST := $(TEST:%=$(BIN)/%)
 $(BIN)/test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
+TESTLE := testLE.o
+TESTLE := $(TESTLE:%=$(BIN)/%)
+$(BIN)/testLE: $(COMMONOBJS) $(TESTLE)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTLE) $(LIB) -o $(BIN)/testLE
+
 TESTCYCLO := testCyclotomic.o
 TESTCYCLO := $(TESTCYCLO:%=$(BIN)/%)
 $(BIN)/testCyclotomic: $(COMMONOBJS) $(TESTCYCLO)
@@ -53,6 +58,9 @@ $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 
 $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
+
+$(BIN)/testLE.o: $(SRC)/testLE.c++ $(INC)/Types.hpp $(INC)/Field.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testLE.c++ -o $(BIN)/testLE.o
 
 $(BIN)/testCyclotomic.o: $(SRC)/testCyclotomic.c++ $(INC)/Types.hpp \
 	$(INC)/Field.hpp $(INC)/utilities.hpp
@@ -102,7 +110,7 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
 
 ######################################################################
 .PHONY: all
-all: createbin $(BIN)/test $(BIN)/testCyclotomic $(BIN)/testTmul
+all: createbin $(BIN)/test $(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
 
 .PHONY: clean
 clean:

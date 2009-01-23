@@ -28,7 +28,7 @@ namespace AS {
 	FieldElement<T>::operator=(const BigInt& i)
 	throw(UndefinedFieldException) {
 		if (!parent_field) {
-			if (i == 0) return *this;
+			if (i == long(0)) return *this;
 			else throw UndefinedFieldException();
 		}
 		parent_field->switchContext();

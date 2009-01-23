@@ -5,11 +5,11 @@
 using namespace std;
 using namespace AS;
 
-typedef Field<ZZ_p_Algebra> gfp;
-typedef Field<zz_p_Algebra> GFp;
+typedef Field<ZZ_p_Algebra> GFp;
+typedef Field<zz_p_Algebra> gfp;
 typedef Field<GF2_Algebra>  GFp2;
-typedef FieldElement<ZZ_p_Algebra> gfp_E;
-typedef FieldElement<zz_p_Algebra> GFp_E;
+typedef FieldElement<ZZ_p_Algebra> GFp_E;
+typedef FieldElement<zz_p_Algebra> gfp_E;
 typedef FieldElement<GF2_Algebra>  GFp2_E;
 
 int main(int argv, char* argc[]) {
@@ -17,7 +17,7 @@ int main(int argv, char* argc[]) {
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(2,1));
+	const gfp* K = &(gfp::createField(7,1));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
@@ -30,43 +30,46 @@ int main(int argv, char* argc[]) {
 		cout << *K << " in " << cputime << endl;
 
 		for (int i = 1 ; i <= 3 ; i++) {
-			gfp_E a = K->random(), b;
-			vector<gfp_E> down;
-	
-			cputime = -GetTime();
-			pushDown(a, down);
-			cputime += GetTime();
-			cout << "Push-down computed in " << cputime << endl;
-	
-			cputime = -GetTime();
-			liftUp(down, b);
-			cputime += GetTime();
-			cout << "Lift-up computed in " << cputime << endl;
-			cout << "Time spent in Lift-up precomputation : " <<
-				gfp::TIME.LIFTUP << endl;
-			cout << "Time spent in Lift-up Transposed Multiplication : " <<
-				gfp::TIME.LU_TRANSMUL << endl;
-			cout << "Time spent in Lift-up Mod* : " <<
-				gfp::TIME.LU_TRANSMOD << endl;
-			cout << "Time spent in Lift-up Push-down-rec* : " <<
-				gfp::TIME.LU_TRANSPUSHDOWN << endl;
-			cout << "Time spent in Lift-up step 4 : " <<
-				gfp::TIME.LU_STEP4 << endl;
-			cout << "Time spent in Lift-up step 5 : " <<
-				gfp::TIME.LU_STEP5 << endl;
-	
-			if (a != b) {
-				cout << "ERROR : Results don't match" << endl;
-				cout << a << endl << b << endl;
-				vector<gfp_E>::iterator it;
-				for (it = down.begin() ; it != down.end() ; it++)
-					cout << *it << " ";
-				cout << endl;
+			gfp_E a = K->random(), b, c, tmp;
+			long n = RandomBnd(K->d);
+			cputime = -NTL::GetTime();
+			b = a.frobenius(n);
+			cputime += NTL::GetTime();
+			cout << "Fast " << n << "-th Frobenius in "
+				<< cputime << endl;
+			c = a;
+			cputime = -NTL::GetTime();
+			for (long i = 0 ; i < n ; i++)
+				c.self_frobenius();
+			cputime += NTL::GetTime();
+			cout << "Naive " << n << "-th Frobenius in "
+				<< cputime << endl;
+			if (b != c) {
+				cout << "ERROR : results don't match" << endl;
+				cout << a << endl << b << endl << c << endl;
 			}
-			cout << endl;
+			cout << "Pseudotraces precomputed in " <<
+				gfp::TIME.PSEUDOTRACES << endl; 
+			cputime = -NTL::GetTime();
+			b = a.pseudotrace(n);
+			cputime += NTL::GetTime();
+			cout << "Fast " << n << "-th Pseudotrace in "
+				<< cputime << endl;
+			c = a;
+			cputime = -NTL::GetTime();
+			tmp = c;
+			for (long i = 1 ; i < n ; i++) {
+				tmp.self_frobenius();
+				c += tmp;
+			}
+			cputime += NTL::GetTime();
+			cout << "Naive " << n << "-th Pseudotrace in "
+				<< cputime << endl;
+			if (b != c) {
+				cout << "ERROR : results don't match" << endl;
+				cout << a << endl << b << endl << c << endl;
+			}
 		}
+		cout << endl;
 	}
-	
-	cout << endl << "Time spent building the cyclotomic polynomial : "
-		<< gfp::TIME.CYCLOTOMIC << endl << endl;
 }

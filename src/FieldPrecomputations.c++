@@ -37,23 +37,30 @@ namespace AS {
 			throw ASException("Bad input to getPseudotrace.");
 #endif
 
-		if (pseudotraces.size() > j) return pseudotraces[j];
+		long size = pseudotraces.size();
+		if (size > j) return pseudotraces[j];
 		if (this != stem) return stem->getPseudotrace(j);
 
-		long size = pseudotraces.size();
+#ifdef AS_TIMINGS
+		TIME.PSEUDOTRACES = -GetTime();
+#endif
 		pseudotraces.resize(j+1);
 		if (size == 0) {
 			pseudotraces[0] = *alpha;
-			pseudotraces[0].SmallPTrace(baseField()->d);
+			pseudotraces[0].SmallPTrace(baseField().d);
+			size++;
 		}
-		for (long i = size + 1 ; i <= j ; i++) {
+		for (long i = size ; i <= j ; i++) {
 			pseudotraces[i] = pseudotraces[i-1];
 			FieldElement<T> t = pseudotraces[i];
-			for (BigInt i = 1 ; i < p ; i++) {
-				t.BigFrob(j-1);
+			for (BigInt h = 1 ; h < p ; h++) {
+				t.BigFrob(i-1);
 				pseudotraces[i] += t;
 			}
 		}
+#ifdef AS_TIMINGS
+		TIME.PSEUDOTRACES += GetTime();
+#endif
 
 		return pseudotraces[j];
 	}

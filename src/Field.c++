@@ -319,7 +319,7 @@ namespace AS {
 	template <class T> const Field<T>& Field<T>::baseField() const throw() {
 		const Field<T>* result = stem;
 		while (result->height != 0) result = result->subfield;
-		return result;
+		return *result;
 	}
 
 /****************** Comparison ******************/

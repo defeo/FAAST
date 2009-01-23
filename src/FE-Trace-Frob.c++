@@ -1,4 +1,8 @@
 #import "utilities.hpp"
+#ifdef AS_DEBUG
+#import <string>
+#import <sstream>
+#endif
 
 namespace AS {
 /****************** Arithmetics ******************/
@@ -12,9 +16,9 @@ namespace AS {
 
 		n %= parent_field->d;
 		if (n < 0) n = parent_field->d - n;
-		
-		long p = parent_field->d;
-		long smalld = parent_field->baseField()->d;
+		if (n == 0) return;
+		long p = parent_field->p;
+		long smalld = parent_field->baseField().d;
 		// The small part
 		const long r = n % smalld;
 		SmallFrob(r);
@@ -69,13 +73,16 @@ namespace AS {
 		}
 		
 		// first remove the part above d
-		FieldElement<T> traces = trace();
-		traces *= n / parent_field->d;
+		FieldElement<T> traces;
+		if (n >= unsigned(parent_field->d)) {
+			traces = trace();
+			traces *= parent_field->scalar(n / parent_field->d);
+		}
 		// now go under d
 		n %= parent_field->d;
 		
-		long p = parent_field->d;
-		long smalld = parent_field->baseField()->d;
+		long p = parent_field->p;
+		long smalld = parent_field->baseField().d;
 		// The small part
 		const long r = n % smalld;
 		// The big part
@@ -84,25 +91,33 @@ namespace AS {
 		if (j > 0) {
 			vector<FieldElement<T> > v;
 			BigPTraceVector(v, j-1);
-			for (long i = j-1 ; i >= 0 ; i++) {
+			long i;
+			for (i = j-1 ; i >= 0 && n != 0 ; i--) {
 				const long c = n / power_long(p, i);
-				FieldElement<T> t = v[i];
-				for (long h = 1 ; h < c ; h++) {
-					t.BigFrob(i);
-					v[i] += t;
-				} 
-				if (i < j -1) {
-					for (long h = 1 ; h < c ; h++) v[i+1].BigFrob(i);
+				if (c == 0) {
+					v[i] = 0;
+				} else if (c > 1) {
+					FieldElement<T> t = v[i];
+					for (long h = 1 ; h < c ; h++) {
+						t.BigFrob(i);
+						v[i] += t;
+					}
+				}
+				if (i < j-1) {
+					for (long h = 0 ; h < c ; h++)
+						v[i+1].BigFrob(i);
 					v[i] += v[i+1];
 				}
 				n %= power_long(p, i);
 			}
-			v[0].SmallFrob(r);
+			v[i+1].SmallFrob(r);
 			this->SmallPTrace(r);
-			*this += v[0];
+			*this += v[i+1];
 		} else {
 			SmallPTrace(r);
 		}
+		// add the part above d, if needed
+		*this += traces;
 	}
 
 /****************** Helpers for frobenius and trace ******************/
@@ -111,28 +126,31 @@ namespace AS {
 	/* p^j-th iterated frobenius */
 	template <class T> void FieldElement<T>::BigFrob(const long j) {
 #ifdef AS_DEBUG
-		if (j < 0 || j >= parent_field->height)
-			throw ASException("Bad input to BigFrob.");
+		if (j < 0 || j >= parent_field->height) {
+			stringstream msg;
+			msg << "Bad input to BigFrob : " << j << ".";
+			throw ASException(msg.str().c_str());
+		}
 #endif
 		BigInt p = parent_field->p;
-		
-		// step 1
-		if (j >= parent_field->height) return;
 		// step 2
 		vector<FieldElement<T> > down;
 		pushDown(*this, down);
 		// step 3
-		for (BigInt i = 0 ; i < p ; i++)
+		if (j < parent_field->height - 1) {
+			for (BigInt i = 0 ; i < p ; i++)
 			down[i].BigFrob(j);
+		}
 		// step 5
 		const FieldElement<T>& beta = parent_field->getPseudotrace(j);
 		vector<FieldElement<T> > result;
-		for (BigInt i = 0 ; i <= p ; i++) {
-			result[i] = down[p-1];
-			for (BigInt j = long(i) - 1 ; j >= 0 ; j--) {
+		result.resize(p);
+		for (BigInt i = 0 ; i < p ; i++) {
+			result[i] = down[long(p)-1];
+			for (long j = long(i) - 1 ; j >= 0 ; j--) {
 				result[j] *= beta;
 				if (j > 0) result[j] += result[j-1];
-				else result[j] += down[i];
+				else result[j] += down[long(p)-long(i)-1];
 			}
 		}
 		// step 6
@@ -144,8 +162,11 @@ namespace AS {
 	/* n-th iterated frobenius, n < d */
 	template <class T> void FieldElement<T>::SmallFrob(const long n) {
 #ifdef AS_DEBUG
-		if (n <= 0 || n >= parent_field->baseField()->d)
-			throw ASException("Bad input to SmallFrob.");
+		if (n < 0 || n >= parent_field->baseField().d) {
+			stringstream msg;
+			msg << "Bad input to SmallFrob : " << n << ".";
+			throw ASException(msg.str().c_str());
+		}
 #endif
 		for (long i = 0 ; i < n ; i++)
 			self_frobenius();
@@ -154,14 +175,17 @@ namespace AS {
 	/* p^j-th pseudotrace */
 	template <class T> void FieldElement<T>::BigPTrace(const long j) {
 #ifdef AS_DEBUG
-		if (j < 0 || j >= parent_field->height)
-			throw ASException("Bad input to BigPTrace.");
+		if (j < 0 || j >= parent_field->height) {
+			stringstream msg;
+			msg << "Bad input to BigPTrace : " << j << ".";
+			throw ASException(msg.str().c_str());
+		}
 #endif
-		SmallPTrace(parent_field->baseField()->d);
+		SmallPTrace(parent_field->baseField().d);
 		for (long i = 1 ; i <= j ; i++) {
 			FieldElement<T> t = *this;
-			for (BigInt i = 1 ; i < parent_field->p ; i++) {
-				t.BigFrob(j-1);
+			for (BigInt h = 1 ; h < parent_field->p ; h++) {
+				t.BigFrob(i-1);
 				*this += t;
 			}
 		}
@@ -172,17 +196,20 @@ namespace AS {
 	FieldElement<T>::BigPTraceVector(vector<FieldElement<T> >& v,
 	const long j) const {
 #ifdef AS_DEBUG
-		if (j < 0 || j >= parent_field->height)
-			throw ASException("Bad input to BigPTraceVector.");
+		if (j < 0 || j >= parent_field->height) {
+			stringstream msg;
+			msg << "Bad input to BigPTraceVector : " << j << ".";
+			throw ASException(msg.str().c_str());
+		}
 #endif
 		v.clear(); v.resize(j+1);
 		v[0] = *this;
-		v[0].SmallPTrace(parent_field->baseField()->d);
+		v[0].SmallPTrace(parent_field->baseField().d);
 		for (long i = 1 ; i <= j ; i++) {
 			v[i] = v[i-1];
 			FieldElement<T> t = v[i];
-			for (BigInt i = 1 ; i < parent_field->p ; i++) {
-				t.BigFrob(j-1);
+			for (BigInt h = 1 ; h < parent_field->p ; h++) {
+				t.BigFrob(i-1);
 				v[i] += t;
 			}
 		}
@@ -191,14 +218,20 @@ namespace AS {
 	/* n-th pseudotrace, n < d */
 	template <class T> void FieldElement<T>::SmallPTrace(const long n) {
 #ifdef AS_DEBUG
-		if (n <= 0 || n > parent_field->baseField()->d)
-			throw ASException("Bad input to SmallPTrace.");
+		if (n < 0 || n > parent_field->baseField().d) {
+			stringstream msg;
+			msg << "Bad input to SmallPTrace : " << n << ".";
+			throw ASException(msg.str().c_str());
+		}
 #endif
-		FieldElement<T> t(*this);
-		*this += t;
-		for (long i = 1 ; i < n ; i++) {
-			t.self_frobenius();
-			*this += t;
+		if (n == 0) {
+			*this = parent_field->zero();
+		} else {
+			FieldElement<T> t(*this);
+			for (long i = 1 ; i < n ; i++) {
+				t.self_frobenius();
+				*this += t;
+			}
 		}
 	}
 	
