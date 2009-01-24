@@ -231,7 +231,7 @@ namespace AS {
 		parent_field->switchContext();
 		if (base) return;
 		else {
-			trace(repBase, repExt);
+			NTL::trace(repBase, repExt);
 			base = true;
 			repExt = 0;
 			parent_field = &(parent_field->baseField());
@@ -273,7 +273,7 @@ namespace AS {
 				vector<FieldElement<T> > v;
 				v.resize(1);
 				v[0] = *this;
-				liftUp(v, *this);
+				AS::liftUp(v, *this);
 			}
 		}
 		// or go down ...
@@ -281,7 +281,7 @@ namespace AS {
 			FieldElement<T> bak = *this;
 			while (parent_field->stem != F.stem) {
 				vector<FieldElement<T> > v;
-				pushDown(*this, v);
+				AS::pushDown(*this, v);
 				// verify coercibility
 				typename vector<FieldElement<T> >::iterator it = v.begin();
 				if (it != v.end()) {
@@ -313,7 +313,7 @@ namespace AS {
 		else if (parent_field->isOverFieldOf(F)) {
 			while (parent_field.stem != F.stem) {
 				vector<FieldElement<T> > v;
-				pushDown(*this, v);
+				AS::pushDown(*this, v);
 				// verify coercibility
 				typename vector<FieldElement<T> >::iterator it = v.begin();
 				if (it == v.end()) return true;

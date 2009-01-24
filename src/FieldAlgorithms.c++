@@ -256,8 +256,45 @@ namespace AS {
 	 * throw : IllegalCoercionException if the field e belongs to
 	 *         is not the immediate overfield of this.
 	 */
-//	void pushDown(FieldElement<T>& e, vector<FieldElement<T> >& v) const
-//		 throw(IllegalCoercionException);
+	template <class T> void Field<T>::pushDown(
+	const FieldElement<T>& e, vector<FieldElement<T> >& v)
+	const throw(IllegalCoercionException) {
+		const Field<T>* parent = e.parent_field;
+		// if the input is zero, return the empty vector
+		if (!parent) {
+			v.clear();
+			return;
+		}
+		// check that the element belongs to an overfield
+		if (parent->stem->subfield != stem)
+			throw IllegalCoercionException();
+
+		// if the overfield is a stem field, use the standard
+		// push-down algorithm from Section 4
+		if (parent == parent->stem) {
+			AS::pushDown(e, v);
+			typename vector<FieldElement<T> >::iterator it;
+			for (it = v.begin() ; it != v.end() ; it++)
+				*it >>= *this;
+			return;
+		}
+
+		// if zero, return the empty vector
+		if (e.isZero()) {
+			v.clear();
+			return;
+		}
+
+		// the algorithm ApplyInverse from Section 6
+		v.clear(); v.resize(p);
+		FieldElement<T> s = e;
+		v[0] = s.trace(*this);
+		v[long(p)-1] = -v[0];
+		for (BigInt j = 1 ; j < p ; j++) {
+			s *= *(parent->gen);
+			v[long(p)-1-long(j)] -= s.trace(*this);
+		}
+	}
 
 	/* Lift the elements in v up to this field and store the result in e.
 	 * If v is too short, it is filled with zeros. If v is too
@@ -268,7 +305,46 @@ namespace AS {
 	 * throw : IllegalCoercionException if the field e belongs to
 	 *         is not the immediate subfield of this.
 	 */
-//	void liftUp(vector<FieldElement<T> >& v, FieldElement<T>& e) const
-//		throw(NotInSameFieldException, IllegalCoercionException);
+	template <class T> void Field<T>::liftUp(
+	const vector<FieldElement<T> >& v, FieldElement<T>& e) const
+	throw(NotInSameFieldException, IllegalCoercionException) {
+		// if this is a stem field, use the standard lift-up
+		// algorithm from Section 4
+		if (this == stem) {
+			AS::liftUp(v, e);
+			return;
+		}
+		
+		// if v is empty, return 0
+		typename vector<FieldElement<T> >::const_iterator it = v.begin();
+		if (it == v.end()) {
+			e = zero();
+			return;
+		}
+		// check all elements of v belong to the same field
+		// and save this field into parent.
+		const Field<T>* parent = it->parent_field;
+		for (it++ ; it != v.end() ; it++) {
+			if (!parent) parent = it->parent_field;
+			else if (it->parent_field && it->parent_field != parent)
+				throw NotInSameFieldException();
+		}
+		// if it is a vector of zeros, return 0
+		if (!parent) {
+			e = zero();
+			return;
+		}
+		// check that the elements belong to a subfield
+		if (parent->stem->overfield != stem)
+			throw IllegalCoercionException();
+		
+		// the algorithm ApplyIsomorphism from Section 6
+		e = zero();
+		typename vector<FieldElement<T> >::const_reverse_iterator rit;
+		for (rit = v.rbegin() ; rit != v.rend() ; rit++) {
+			e *= *gen;
+			e += *rit >> *this;
+		}
+	}
 
 }

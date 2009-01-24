@@ -33,7 +33,7 @@ namespace AS {
 	}
 	
 	template <class T> void
-	FieldElement<T>::self_trace(const Field<T> F)
+	FieldElement<T>::self_trace(const Field<T>& F)
 	throw(NotASubFieldException) {
 		// zero stays zero
 		if (!parent_field) {
@@ -54,11 +54,11 @@ namespace AS {
 			
 			vector<FieldElement<T> > down;
 			while (parent_field != F.stem) {
-				pushDown(*this, down);
-				if (down.size() == parent_field->p) {
+				AS::pushDown(*this, down);
+				if (down.size() == unsigned(parent_field->p)) {
 					*this = down[long(parent_field->p) - 1];
 					negate();
-				} else *this = 0;
+				} else *this = F.stem->zero();
 			}
 			// move out of the stem
 			parent_field = &F;
@@ -139,7 +139,7 @@ namespace AS {
 		BigInt p = parent_field->p;
 		// step 2
 		vector<FieldElement<T> > down;
-		pushDown(*this, down);
+		AS::pushDown(*this, down);
 		down.resize(p);
 		// step 3
 		if (j < parent_field->height - 1) {
@@ -160,7 +160,7 @@ namespace AS {
 		}
 		// step 6
 		const Field<T>* parent = parent_field;
-		liftUp(result, *this);
+		AS::liftUp(result, *this);
 		parent_field = parent;
 	}
 

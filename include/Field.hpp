@@ -268,7 +268,7 @@ namespace AS {
 		 * throw : IllegalCoercionException if the field e belongs to
 		 *         is not the immediate overfield of this.
 		 */
-		void pushDown(FieldElement<T>& e, vector<FieldElement<T> >& v) const
+		void pushDown(const FieldElement<T>& e, vector<FieldElement<T> >& v) const
 			 throw(IllegalCoercionException);
 
 		/* Lift the elements in v up to this field and store the result in e.
@@ -280,7 +280,7 @@ namespace AS {
 		 * throw : IllegalCoercionException if the field e belongs to
 		 *         is not the immediate subfield of this.
 		 */
-		void liftUp(vector<FieldElement<T> >& v, FieldElement<T>& e) const
+		void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e) const
 			throw(NotInSameFieldException, IllegalCoercionException);
 
 	/****************** Comparison ******************/

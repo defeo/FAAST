@@ -170,7 +170,7 @@ namespace AS {
 		 * throws : NotASubFieldException if this does not belong to
 		 *          an overfield of F.
 		 */
-		FieldElement<T> trace(const Field<T> F)
+		FieldElement<T> trace(const Field<T>& F)
 		const throw(NotASubFieldException) {
 			FieldElement<T> tmp = *this;
 			tmp.self_trace(F);
@@ -192,7 +192,7 @@ namespace AS {
 		void operator^=(const long) throw();
 		void self_frobenius() throw();
 		void self_frobenius(long) throw();
-		void self_trace(const Field<T> F) throw(NotASubFieldException);
+		void self_trace(const Field<T>& F) throw(NotASubFieldException);
 		void self_trace() throw();
 		void self_pseudotrace(unsigned long) throw();
 		
