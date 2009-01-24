@@ -6,11 +6,11 @@ using namespace std;
 using namespace AS;
 
 typedef Field<ZZ_p_Algebra> GFp;
-typedef Field<zz_p_Algebra> gfp;
-typedef Field<GF2_Algebra>  GFp2;
+typedef Field<zz_p_Algebra> GFp2;
+typedef Field<GF2_Algebra>  gfp;
 typedef FieldElement<ZZ_p_Algebra> GFp_E;
-typedef FieldElement<zz_p_Algebra> gfp_E;
-typedef FieldElement<GF2_Algebra>  GFp2_E;
+typedef FieldElement<zz_p_Algebra> GFp2_E;
+typedef FieldElement<GF2_Algebra>  gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;

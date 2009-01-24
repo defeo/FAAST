@@ -130,7 +130,7 @@ all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
 	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
 
 .PHONY: now
-now: createbin $(BIN)/testStem 
+now: createbin $(BIN)/test
 
 .PHONY: clean
 clean:

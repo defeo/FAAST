@@ -5,8 +5,8 @@
 using namespace std;
 using namespace AS;
 
-typedef Field<zz_p_Algebra> gfp;
-typedef FieldElement<zz_p_Algebra> gfp_E;
+typedef Field<GF2_Algebra> gfp;
+typedef FieldElement<GF2_Algebra> gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime, totaltime;

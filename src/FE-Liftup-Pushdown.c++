@@ -5,7 +5,16 @@ NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
 void ShiftAdd(zz_pX& c, const zz_pX& a, long n);
 void ShiftAdd(ZZ_pX& c, const ZZ_pX& a, long n);
-void ComputeTraceVec(const GF2XModulus& F);
+void TraceVec(vec_GF2& S, const GF2X& f);
+void ComputeTraceVec(const GF2XModulus& F)
+{
+	vec_GF2& S = *((vec_GF2 *) &F.tracevec);
+
+	if (S.length() > 0)
+		return;
+	
+	TraceVec(S, F.f);
+}
 NTL_CLOSE_NNS
 
 namespace AS {
