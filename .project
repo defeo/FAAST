@@ -39,7 +39,7 @@
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.target.inc</key>
-					<value>all</value>
+					<value>now</value>
 				</dictionary>
 				<dictionary>
 					<key>org.eclipse.cdt.make.core.build.arguments</key>

@@ -37,6 +37,7 @@ namespace AS {
 	struct zz_p_Algebra {
 		typedef zz_p            GFp;
 		typedef mat_zz_p        MatGFp;
+		typedef vec_zz_p        VecGFp;
 		typedef zz_pX           GFpX;
 		typedef zz_pE           GFpE;
 		typedef zz_pEX          GFpEX;
@@ -55,6 +56,7 @@ namespace AS {
 	struct ZZ_p_Algebra {
 		typedef ZZ_p            GFp;
 		typedef mat_ZZ_p        MatGFp;
+		typedef vec_ZZ_p        VecGFp;
 		typedef ZZ_pX           GFpX;
 		typedef ZZ_pE           GFpE;
 		typedef ZZ_pEX          GFpEX;
@@ -73,6 +75,7 @@ namespace AS {
 	struct GF2_Algebra {
 		typedef GF2                 GFp;
 		typedef mat_GF2             MatGFp;
+		typedef vec_GF2             VecGFp;
 		typedef GF2X                GFpX;
 		typedef GF2E                GFpE;
 		typedef GF2EX               GFpEX;

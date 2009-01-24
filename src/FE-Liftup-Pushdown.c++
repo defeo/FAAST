@@ -169,29 +169,42 @@ namespace AS {
 	template <class T>
 	void pushDown(const FieldElement<T>& e, vector<FieldElement<T> >& v)
 	throw(NoSubFieldException) {
+		typedef typename T::GFp    GFp;
 		typedef typename T::GFpX   GFpX;
 		typedef typename T::BigInt BigInt;
 
-		if (!e.parent_field)
-			throw NoSubFieldException();
-		if (!e.parent_field->subfield)
+		if (!e.parent_field) {
+			v.clear();
+			return;
+		}
+		const Field<T>* parent = e.parent_field->stem;
+		if (!parent->subfield)
 			throw NoSubFieldException();
 		
-		const Field<T>* parent = e.parent_field->stem;
 		parent->switchContext();
 		
 		// if the subfield is prime
 		// simply return the list of coefficients
 		if (parent->subfield->d == 1) {
-			v.resize(parent->d);
+			v.resize(deg(rep(e.repExt)) + 1);
 			const Field<T>* base = &(parent->primeField());
 			const GFpX& eX = rep(e.repExt);
-			for (long i = 0 ; i < parent->d ; i++) {
+			for (long i = 0 ; i <= deg(eX) ; i++) {
 				v[i].base = true;
 				v[i].repBase = coeff(eX, i);
 				v[i].repExt = 0;
 				v[i].parent_field = base;
 			}
+		}
+		// if the element is a scalar
+		else if (deg(rep(e.repExt)) <= 0) {
+			v.resize(1);
+			v[0].base = false;
+			v[0].repBase = 0;
+			GFp ec = coeff(rep(e.repExt), 0);
+			parent->subfield->switchContext();
+			v[0].repExt = ec;
+			v[0].parent_field = parent->subfield;
 		}
 		// the real push-down algorithm from Section 4
 		else {
@@ -257,6 +270,7 @@ namespace AS {
 	template <class T>
 	void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException) {
+		typedef typename T::GFp    GFp;
 		typedef typename T::GFpX        GFpX;
 		typedef typename T::GFpE        GFpE;
 		typedef typename T::GFpXModulus GFpXModulus;
@@ -269,18 +283,24 @@ namespace AS {
 			return;
 		}
 		// check all elements of v belong to the same field
-		// and save this field into parent
+		// and save this field into parent.
+		// In parallel, check if v represents a scalar
 		const Field<T>* parent = it->parent_field;
+		bool scalar = it->base || deg(rep(it->repExt)) <= 0;
 		for (it++ ; it != v.end() ; it++) {
 			if (!parent) parent = it->parent_field;
-			else if (it->parent_field != parent)
+			else if (it->parent_field && it->parent_field != parent)
 				throw NotInSameFieldException();
+			scalar = scalar && *it == 0;
 		}
 		// standard checks
-		if (!parent) throw NoOverFieldException();
+		if (!parent) {
+			e = FieldElement<T>();
+			return;
+		}
+		parent = parent->stem;
 		if (!parent->overfield) throw NoOverFieldException();
 		
-		parent = parent->stem;
 		parent->switchContext();
 		
 		// if this is a prime field
@@ -295,6 +315,15 @@ namespace AS {
 			e.base = false;
 			e.repBase = 0;
 			conv(e.repExt, eX);
+			e.parent_field = parent->overfield;
+		}
+		// if the element is a scalar
+		else if (scalar) {
+			e.base = false;
+			e.repBase = 0;
+			GFp ec = coeff(rep(v[0].repExt), 0);
+			parent->overfield->switchContext();
+			e.repExt = ec;
 			e.parent_field = parent->overfield;
 		}
 		// the real lift-up algorithm from Section 4

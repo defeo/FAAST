@@ -71,8 +71,8 @@ namespace AS {
 		FieldElement() throw() : parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this element belongs to */
-		Field<T> parent() const throw(UndefinedFieldException)
-		{ return parent_field; }
+		const Field<T>& parent() const throw(UndefinedFieldException)
+		{ return *parent_field; }
 		
 	/****************** Copy ******************/
 		FieldElement(const FieldElement<T>& e) throw();
@@ -197,8 +197,13 @@ namespace AS {
 		void self_pseudotrace(unsigned long) throw();
 		
 	/****************** Coercion of elements ******************/
-		FieldElement<T> operator>>(const Field<T>&) const 
-			throw(IllegalCoercionException);
+		FieldElement<T> toScalar() const throw(IllegalCoercionException);
+		FieldElement<T> operator>>(const Field<T>& F) const 
+		throw(IllegalCoercionException) {
+			FieldElement<T> tmp = *this;
+			tmp >>= F;
+			return tmp;
+		}
 		void operator>>=(const Field<T>&) throw(IllegalCoercionException);
 		bool isCoercible(const Field<T>&) const throw();
 		
@@ -216,7 +221,7 @@ namespace AS {
 			return parent_field && 
 				(base ? IsOne(repBase) : IsOne(repExt));
 		}
-
+		bool isScalar() const throw();
 	/****************** Infrastructure ******************/
 		/* Interface with infrastructure. Use this only if you are
 		 * sure of what you do !

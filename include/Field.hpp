@@ -28,6 +28,7 @@ namespace AS {
 			double IRREDTEST;
 			double PRIMETEST;
 			double ARTINMATRIX;
+			double BUILDSTEM;
 			double CANTOR89;
 			double C89_PRE;
 			double C89_Qstar;
@@ -50,6 +51,7 @@ namespace AS {
 				IRREDTEST(-1),
 				PRIMETEST(-1),
 				ARTINMATRIX(-1),
+				BUILDSTEM(-1),
 				CANTOR89(-1),
 				C89_PRE(-1),
 				C89_Qstar(-1),
@@ -71,6 +73,7 @@ namespace AS {
 	private:
 		typedef typename T::GFp         GFp;
 		typedef typename T::MatGFp      MatGFp;
+		typedef typename T::VecGFp      VecGFp;
 		typedef typename T::GFpX        GFpX;
 		typedef typename T::GFpE        GFpE;
 		typedef typename T::GFpEX       GFpEX;
@@ -187,8 +190,16 @@ namespace AS {
 		 * degree p depending if the polynomial is irreducible.
 		 */
 		const Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha)
-		const throw (CharacteristicTooLargeException, NotSupportedException);
-		
+		const throw (CharacteristicTooLargeException, NotSupportedException, IllegalCoercionException);
+		/* Return a root in this field of the polynomial
+		 * 			X^p - X - alpha
+		 * throws IllegalCoercionException if alpha can't be
+		 * 		coerced to this field
+		 * throws IsIrreducibleException if the polynomial has
+		 * 		no roots in this field
+		 */
+		FieldElement<T> Couveignes2000(const FieldElement<T>& alpha)
+		const throw(IllegalCoercionException, IsIrreducibleException);
 	/****************** Properties ******************/
 		BigInt characteristic() const throw () { return p; }
 		long degree() const throw () { return d; }
@@ -242,6 +253,13 @@ namespace AS {
 			if (!overfield) throw NoOverFieldException();
 			return *overfield;
 		}
+		const Field<T>& stemField() const throw() {
+#ifdef AS_DEBUG
+			if (!stem) throw ASException("No stem in stemField().");
+#endif
+			return *stem;
+		}
+		
 
 	/****************** Level embedding ******************/
 		/* Push the element e down to this field and store
@@ -305,6 +323,12 @@ namespace AS {
 		const MatGFp& getArtinMatrix() const;
 		const Context& getCyclotomic() const;
 	
+	/****************** Couveignes 2000 subroutines ******************/
+		/* Couveignes' algorithm (Section 6).
+		 * Assumes Tr(alpha) = 0
+	 	 */
+		void couveignes00(FieldElement<T>& res, const FieldElement<T>& alpha) const;
+
 	/****************** Internal Constructors ******************/
 		/* Construct a field with specified parameters */
 		Field<T> (
@@ -406,6 +430,26 @@ namespace AS {
 		alpha(aleph),
 		p(cha), d(deg), height(h)
 		{}
+		/* Private constructor for non-stem fields */
+		Field<T> (
+			const Field<T>* st,
+			const FieldElement<T>& gen,
+			const FieldElement<T>* aleph,
+			const Field<T>* vsub
+		) throw() :
+		subfield(NULL), overfield(NULL),
+		context(),
+		primitive(NULL),
+		pseudotraces(),
+		liftuphelper(),
+		artin(), artinLine(-1),
+		plusone(), twopminusone(),
+		Phi(),
+		stem(st), vsubfield(vsub),
+		gen(new FieldElement<T>(this, gen.repBase, gen.repExt, gen.base)),
+		alpha(aleph),
+		p(st->p), d(st->d), height(st->height)
+		{}
 
 	};
 
@@ -420,5 +464,6 @@ namespace AS {
 #include "../src/Field.c++"
 #include "../src/FieldAlgorithms.c++"
 #include "../src/FieldPrecomputations.c++"
+#include "../src/Couveignes2000.c++"
 
 #endif /*FIELD_H_*/

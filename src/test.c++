@@ -16,57 +16,32 @@ int main(int argv, char* argc[]) {
 	double cputime;
 	
 	gfp::Infrastructure::BigInt p;
-	long d, l, t;
-	cin >> p; cin >> d; cin >> l; cin >> t;
+	long d, l;
+	cin >> p; cin >> d; cin >> l;
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
 	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
+cout << gfp::Infrastructure::GFpE::modulus() << endl;
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
 	
 	for (int i = 1 ; i <= l ; i++) {
+		gfp_E alpha = K->random();
+		cout << "alpha = " << alpha << endl;
 		cputime = -NTL::GetTime();
-		K = &(K->ArtinSchreierExtension());
+		K = &(K->ArtinSchreierExtension(alpha));
 		cputime += NTL::GetTime();
+cout << gfp::Infrastructure::GFpE::modulus() << endl;
 		cout << *K << " in " << cputime << endl;
+		cout << "Time spent building the stem " <<
+			gfp::TIME.BUILDSTEM << endl;
 
-		for (int j = 0 ; j < i+t ; j++) {
-			gfp_E a = K->random(), b;
-			long n = (j>=i) ?
-				d + RandomBnd(K->d - d) : d*power_long(p, j);
-			double frobtime, pseudotime, naivetime;
-			
-			frobtime = -NTL::GetTime();
-			b = a.frobenius(n);
-			frobtime += NTL::GetTime();
-			cout << "Fast " << n << "-th Frobenius in "
-				<< frobtime << endl;
-			
-			pseudotime = -NTL::GetTime();
-			b = a.pseudotrace(n);
-			pseudotime += NTL::GetTime();
-			cout << "Fast " << n << "-th Pseudotrace in "
-				<< pseudotime << endl;
-
-			cout << "Pseudotraces precomputed in " <<
-				gfp::TIME.PSEUDOTRACES << endl; 
-
-			naivetime = -NTL::GetTime();
-			for (long i = 0 ; i < 10 ; i++)
-				a.self_frobenius();
-			naivetime += NTL::GetTime();
-			double average = naivetime / 10;
-			cout << "Naive Frobenius in " << average
-				<< ", projected execution time " <<
-				average * n << endl;
-			
-			cout << "Projected thresholds :" << endl
-				<< "\tfrobenius " << floor(frobtime / average) << endl
-				<< "\tpseudotrace " << floor(pseudotime / average) << endl;
-		}
-		cout << endl;
+		cout << "Tr(alpha) = " << alpha.trace() << ", root = "
+			<< K->Couveignes2000(alpha) << endl << endl;
 	}
+	cout << "Time spent inverting the matrix" <<
+		gfp::TIME.ARTINMATRIX << endl;
 }

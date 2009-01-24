@@ -47,6 +47,23 @@ namespace AS {
 			*this = e;
 			return;
 		}
+		if (base && !e.base &&
+			&(e.parent_field->primeField()) == parent_field) {
+			e.parent_field->switchContext();
+			repExt = e.repExt;
+			repExt += repBase;
+			repBase = 0;
+			base = false;
+			parent_field = e.parent_field;
+			return;
+		}
+		if (!base && e.base &&
+			&(parent_field->primeField()) == e.parent_field) {
+			parent_field->switchContext();
+			repExt += e.repBase;
+			return;
+		}
+		
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase += e.repBase;
@@ -62,6 +79,23 @@ namespace AS {
 			negate();
 			return;
 		}
+		if (base && !e.base &&
+			&(e.parent_field->primeField()) == parent_field) {
+			e.parent_field->switchContext();
+			repExt = e.repExt;
+			repExt -= repBase;
+			repBase = 0;
+			base = false;
+			parent_field = e.parent_field;
+			return;
+		}
+		if (!base && e.base &&
+			&(parent_field->primeField()) == e.parent_field) {
+			parent_field->switchContext();
+			repExt -= e.repBase;
+			return;
+		}
+		
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase -= e.repBase;
@@ -80,6 +114,23 @@ namespace AS {
 			*this = parent_field->zero();
 			return;
 		}
+		if (base && !e.base &&
+			&(e.parent_field->primeField()) == parent_field) {
+			e.parent_field->switchContext();
+			repExt = e.repExt;
+			repExt *= repBase;
+			repBase = 0;
+			base = false;
+			parent_field = e.parent_field;
+			return;
+		}
+		if (!base && e.base &&
+			&(parent_field->primeField()) == e.parent_field) {
+			parent_field->switchContext();
+			repExt *= e.repBase;
+			return;
+		}
+		
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase *= e.repBase;
@@ -94,10 +145,27 @@ namespace AS {
 			*this = e.parent_field->zero();
 			return;
 		}
+		if (base && !e.base &&
+			&(e.parent_field->primeField()) == parent_field) {
+			e.parent_field->switchContext();
+			repExt = e.repExt;
+			repExt /= repBase;
+			repBase = 0;
+			base = false;
+			parent_field = e.parent_field;
+			return;
+		}
+		if (!base && e.base &&
+			&(parent_field->primeField()) == e.parent_field) {
+			parent_field->switchContext();
+			repExt /= e.repBase;
+			return;
+		}
+		
 		sameLevel(e);
 		parent_field->switchContext();
-		if (base) repBase *= e.repBase;
-		else repExt *= e.repExt;
+		if (base) repBase /= e.repBase;
+		else repExt /= e.repExt;
 	}
 
 	/* Unary operations */
@@ -120,8 +188,8 @@ namespace AS {
  	template <class T> void FieldElement<T>::negate() throw() {
  		if (!parent_field) return;
  		parent_field->switchContext();
- 		if (base) negate(repBase, repBase);
- 		else negate(repExt, repExt);
+ 		if (base) NTL::negate(repBase, repBase);
+ 		else NTL::negate(repExt, repExt);
  	}
  	
 	template <class T> void FieldElement<T>::self_inv()
@@ -171,11 +239,96 @@ namespace AS {
 	}
 	
 /****************** Coercion of elements ******************/
-/*	FieldElement<T> operator>>(const Field<T>&) const 
-		throw(IllegalCoercionException);
-	void operator>>=(const Field<T>&) throw(IllegalCoercionException);
-	bool isCoercible(const Field<T>&) const throw();
-*/	
+	template <class T> FieldElement<T>
+	FieldElement<T>::toScalar()
+	const throw(IllegalCoercionException) {
+		if (!parent_field) return *this;
+		if (parent_field->d == 1)
+			return *this >> parent_field->primeField();
+			
+#ifdef AS_DEBUG
+		if (base) throw
+			ASException("Malformed element in isScalar().");
+#endif
+
+		parent_field->switchContext();
+		if (deg(rep(repExt)) <= 0) {
+			GFp e; conv(e, repExt);
+			return FieldElement<T>(
+					&(parent_field->primeField()), e);
+		} else throw IllegalCoercionException();
+	}
+	
+	template <class T> void
+	FieldElement<T>::operator>>=(const Field<T>& F)
+	throw(IllegalCoercionException) {
+		if (!parent_field) {
+			*this = F.zero();
+			return;
+		}
+		
+		// go up ...
+		if (parent_field->isSubFieldOf(F)) {
+			while (parent_field->stem != F.stem) {
+				vector<FieldElement<T> > v;
+				v.resize(1);
+				v[0] = *this;
+				liftUp(v, *this);
+			}
+		}
+		// or go down ...
+		else if (parent_field->isOverFieldOf(F)) {
+			FieldElement<T> bak = *this;
+			while (parent_field->stem != F.stem) {
+				vector<FieldElement<T> > v;
+				pushDown(*this, v);
+				// verify coercibility
+				typename vector<FieldElement<T> >::iterator it = v.begin();
+				if (it != v.end()) {
+					*this = *it;
+					for (it++ ; it != v.end() ; it++) {
+						if (*it != 0) {
+							*this = bak;
+							throw IllegalCoercionException();
+						}
+					}
+				} else *this = F.zero();
+			}
+		}
+		// or go nowhere
+		else throw IllegalCoercionException();
+		
+		// move out of the stem, if needed
+		parent_field = &F;
+	}
+	 
+	template <class T> bool
+	FieldElement<T>::isCoercible(const Field<T>& F)
+	const throw() {
+		if (!parent_field) return true;
+		
+		// go up ...
+		if (parent_field->isSubFieldOf(F)) return true;
+		// or go down ...
+		else if (parent_field->isOverFieldOf(F)) {
+			while (parent_field.stem != F.stem) {
+				vector<FieldElement<T> > v;
+				pushDown(*this, v);
+				// verify coercibility
+				typename vector<FieldElement<T> >::iterator it = v.begin();
+				if (it == v.end()) return true;
+				else {
+					for (it++ ; it != v.end() ; it++) {
+						if (*it != 0) return false;
+					}
+				}
+			}
+			return true;
+		}
+		// or go nowhere
+		else return false;
+	}
+	
 /****************** Comparison ******************/
 	template <class T> bool
 	FieldElement<T>::operator==(const FieldElement<T>& e)
@@ -189,6 +342,16 @@ namespace AS {
 	const throw() {
 		if (!parent_field) return i == long(0);
 		else return base ? repBase == i : repExt == i;
+	}
+	template <class T> bool FieldElement<T>::isScalar() const
+	throw() {
+		if (!parent_field  || parent_field->d == 1) return true;
+#ifdef AS_DEBUG
+		if (base) throw
+			ASException("Malformed element in isScalar().");
+#endif
+		parent_field->switchContext();
+		return deg(rep(repExt)) <= 0;
 	}
 
 /****************** Infrastructure ******************/

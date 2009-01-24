@@ -332,8 +332,7 @@ namespace AS {
 #ifdef AS_DEBUG
 		if (!stemf || !stem) throw ASException("Error : Stem is NULL.");
 #endif
-		while (stemf != stem && stemf->subfield)
-			stemf = stemf->subfield;
+		while (stemf != stem && (stemf = stemf->subfield));
 		return stemf == stem;
 	}
 	

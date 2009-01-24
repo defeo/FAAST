@@ -39,6 +39,11 @@ TEST := $(TEST:%=$(BIN)/%)
 $(BIN)/test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
+TESTTF := testTraceFrob.o
+TESTTF := $(TESTTF:%=$(BIN)/%)
+$(BIN)/testTraceFrob: $(COMMONOBJS) $(TESTTF)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTTF) $(LIB) -o $(BIN)/testTraceFrob
+
 TESTLE := testLE.o
 TESTLE := $(TESTLE:%=$(BIN)/%)
 $(BIN)/testLE: $(COMMONOBJS) $(TESTLE)
@@ -59,6 +64,9 @@ $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
 
+$(BIN)/testTraceFrob.o: $(SRC)/testTraceFrob.c++ $(INC)/Types.hpp $(INC)/Field.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testTraceFrob.c++ -o $(BIN)/testTraceFrob.o
+
 $(BIN)/testLE.o: $(SRC)/testLE.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/testLE.c++ -o $(BIN)/testLE.o
 
@@ -73,7 +81,7 @@ $(BIN)/testTmul.o: $(SRC)/testTmul.c++ $(INC)/Tmul.hpp
 
 $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ \
-	$(SRC)/FieldPrecomputations.c++
+	$(SRC)/FieldPrecomputations.c++ $(SRC)/Couveignes2000.c++
 	touch $(INC)/Field.hpp
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
@@ -110,7 +118,11 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
 
 ######################################################################
 .PHONY: all
-all: createbin $(BIN)/test $(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
+all: createbin $(BIN)/test $(BIN)/testTraceFrob $(BIN)/testLE \
+	$(BIN)/testCyclotomic $(BIN)/testTmul
+
+.PHONY: now
+now: createbin $(BIN)/test 
 
 .PHONY: clean
 clean:

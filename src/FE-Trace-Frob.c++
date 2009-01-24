@@ -55,8 +55,10 @@ namespace AS {
 			vector<FieldElement<T> > down;
 			while (parent_field != F.stem) {
 				pushDown(*this, down);
-				*this = down[long(parent_field->p) - 1];
-				negate();
+				if (down.size() == parent_field->p) {
+					*this = down[long(parent_field->p) - 1];
+					negate();
+				} else *this = 0;
 			}
 			// move out of the stem
 			parent_field = &F;
@@ -132,10 +134,13 @@ namespace AS {
 			throw ASException(msg.str().c_str());
 		}
 #endif
+		if (isScalar()) return;
+		
 		BigInt p = parent_field->p;
 		// step 2
 		vector<FieldElement<T> > down;
 		pushDown(*this, down);
+		down.resize(p);
 		// step 3
 		if (j < parent_field->height - 1) {
 			for (BigInt i = 0 ; i < p ; i++)
@@ -168,6 +173,8 @@ namespace AS {
 			throw ASException(msg.str().c_str());
 		}
 #endif
+		if (isScalar()) return;
+		
 		for (long i = 0 ; i < n ; i++)
 			self_frobenius();
 	}
@@ -181,6 +188,8 @@ namespace AS {
 			throw ASException(msg.str().c_str());
 		}
 #endif
+		if (isZero()) return;
+		
 		SmallPTrace(parent_field->baseField().d);
 		for (long i = 1 ; i <= j ; i++) {
 			FieldElement<T> t = *this;
@@ -224,6 +233,8 @@ namespace AS {
 			throw ASException(msg.str().c_str());
 		}
 #endif
+		if (isZero()) return;
+		
 		if (n == 0) {
 			*this = parent_field->zero();
 		} else {

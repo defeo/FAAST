@@ -103,6 +103,9 @@ namespace AS {
 		// test if the characteristic stays in one word
 		if (p != long(p)) throw CharacteristicTooLargeException();
 		
+#ifdef AS_TIMINGS
+		TIME.BUILDSTEM = -GetTime();
+#endif
 		switchContext();
 		GFpX Q; bool po, tpmo;
 		FieldElement<T>* alpha;
@@ -120,14 +123,14 @@ namespace AS {
 				SetCoeff(Q, 1, -1);
 				SetCoeff(Q, 0, -1);
 				// alpha = 1
-				alpha = new FieldElement<T>(one());
+				alpha = new FieldElement<T>(stem->one());
 			} else {
 				// alpha = x0
-				alpha = new FieldElement<T>(*primitive);
+				alpha = new FieldElement<T>(*(stem->primitive));
 				GFpX Q0 = GFpE::modulus().val();
 				// if needed, make the trace of the primitive element
 				// different from 0
-				if (primitive->trace() == 0) {
+				if (stem->primitive->trace() == 0) {
 					// extend modulo X^p - X - x0 - 1
 					po = true;
 					if (d % p == 0) throw
@@ -137,7 +140,7 @@ namespace AS {
 					// Q_0* = Q_0(X-1)
 					compose<T>(Q0, Q0, xminus1, p);
 					// alpha = x0 + 1
-					*alpha += one();
+					*alpha += stem->one();
 				}
 				// X^p - X
 				GFpX xpminusx;
@@ -160,7 +163,7 @@ namespace AS {
 			// Q_1 = Q_0
 			compose<T>(Q, Q0, xpminusx, p);
 			// alpha = x1
-			alpha = new FieldElement<T>(*primitive);
+			alpha = new FieldElement<T>(*(stem->primitive));
 		}
 		// generic case, see paper
 		else {
@@ -180,7 +183,7 @@ namespace AS {
 				TIME.CANTOR89 += GetTime();
 #endif
 			// alpha = x1^(2p-1)
-			alpha = new FieldElement<T>(*primitive);
+			alpha = new FieldElement<T>(*(stem->primitive));
 			*alpha ^= long(2)*p - 1;
 		}
 		
@@ -200,8 +203,12 @@ namespace AS {
 		// who generated this extension ?
 		const Field<T>* vsub = (stem == this)? NULL : this;
 		
-		stem->overfield = new Field<T>(this, ctxt, pri, po, tpmo, p,
+		stem->overfield = new Field<T>(stem, ctxt, pri, po, tpmo, p,
 										long(p)*d, height+1, alpha, vsub);
+#ifdef AS_TIMINGS
+		TIME.BUILDSTEM += GetTime();
+#endif
+
 		return *(stem->overfield);
 	}
 	
@@ -210,7 +217,36 @@ namespace AS {
 	 * over this field. This may or may not be an extension of
 	 * degree p depending if the polynomial is irreducible.
 	 */
-//	const Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha) const throw (CharacteristicTooLargeExeption, NotSupportedException);
+	template <class T> const Field<T>&
+	Field<T>::ArtinSchreierExtension(const FieldElement<T>& alpha)
+	const throw (CharacteristicTooLargeException,
+	NotSupportedException, IllegalCoercionException) {
+		// check that alpha belongs to here
+		if ( !isOverFieldOf(*(alpha.parent_field)) )
+			throw IllegalCoercionException();
+		if (alpha.isZero()) return *this;
+		
+		FieldElement<T> root;
+		FieldElement<T>* aleph = new FieldElement<T>(alpha);
+		const Field<T> *vsub, *st;
+		// if X^p - X - alpha generates an extension of degree p
+		if (alpha.parent_field->stem == stem && alpha.trace() != 0) {
+			// first build the stem if needed
+			const Field<T>& up = ArtinSchreierExtension();
+			// find a root in the overfield
+			root = up.Couveignes2000(alpha);
+			vsub = this; st = up.stem;
+		}
+		// if X^p - X - alpha generates an extension of degree 1
+		else {
+			// find a root in here
+			root = Couveignes2000(alpha);
+			vsub = stem; st = stem;
+		}
+		// move alpha in here
+		*aleph >>= *this;
+		return *(new Field<T>(st, root, aleph, vsub));
+	}
 
 
 /****************** Level embedding ******************/

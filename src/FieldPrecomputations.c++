@@ -92,7 +92,7 @@ namespace AS {
 	T::MatGFp& Field<T>::getArtinMatrix() const {
 		if (this != stem) return stem->getArtinMatrix();
 
-		if (artinLine == -1) {
+		if (artinLine == -1 && d > 1) {
 			// We pick a redundant line : it corresponds
 			// to a power of x of trace different from 0.
 			// The residue formula tells us that Tr(x^dep) != 0
