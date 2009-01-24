@@ -39,6 +39,11 @@ TEST := $(TEST:%=$(BIN)/%)
 $(BIN)/test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
+TESTSTEM := testStem.o
+TESTSTEM := $(TESTSTEM:%=$(BIN)/%)
+$(BIN)/testStem: $(COMMONOBJS) $(TESTSTEM)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTSTEM) $(LIB) -o $(BIN)/testStem
+
 TESTTF := testTraceFrob.o
 TESTTF := $(TESTTF:%=$(BIN)/%)
 $(BIN)/testTraceFrob: $(COMMONOBJS) $(TESTTF)
@@ -63,6 +68,9 @@ $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 
 $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
+
+$(BIN)/testStem.o: $(SRC)/testStem.c++ $(INC)/Types.hpp $(INC)/Field.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testStem.c++ -o $(BIN)/testStem.o
 
 $(BIN)/testTraceFrob.o: $(SRC)/testTraceFrob.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/testTraceFrob.c++ -o $(BIN)/testTraceFrob.o
@@ -118,11 +126,11 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
 
 ######################################################################
 .PHONY: all
-all: createbin $(BIN)/test $(BIN)/testTraceFrob $(BIN)/testLE \
-	$(BIN)/testCyclotomic $(BIN)/testTmul
+all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
+	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
 
 .PHONY: now
-now: createbin $(BIN)/test 
+now: createbin $(BIN)/testStem 
 
 .PHONY: clean
 clean:
