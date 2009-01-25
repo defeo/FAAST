@@ -41,15 +41,6 @@ int main(int argv, char* argc[]) {
 			
 		const gfp& L = K->stemField().subField();
 		vector<gfp_E> v;
-		cputime = -NTL::GetTime();
-		L.pushDown(K->generator(), v);
-		cputime += NTL::GetTime();
-		cout << "Push-down in " << cputime << endl;
-		vector<gfp_E>::iterator it;
-		for (it = v.begin() ; it != v.end() ; it++)
-			cout << *it << " ";
-		cout << endl;
-		
 		gfp_E a = K->random(), b;
 		cputime = -NTL::GetTime();
 		L.pushDown(a, v);
@@ -65,26 +56,16 @@ int main(int argv, char* argc[]) {
 			cout << "ERROR : Results don't match" << endl;
 			cout << a << endl;
 			cout << b << endl;
+			vector<gfp_E>::iterator it;
 			for (it = v.begin() ; it != v.end() ; it++)
 				cout << *it << " ";
 			cout << endl;
 		}
 		
-		cputime = -NTL::GetTime();
-		AS::liftUp(v, a);
-		cputime += NTL::GetTime();
-		cout << "Plain Lift-up in " << cputime << endl;
-		
-		if ( (a >> *K) == b) {
-			cout << "ERROR : Results match" << endl;
-			cout << a << endl;
-			cout << b << endl;
-			for (it = v.begin() ; it != v.end() ; it++)
-				cout << *it << " ";
-			cout << endl;
-		}
-		
-		cout << endl;
+		cout << "Time spent in pseudotrace precomputation " <<
+			gfp::TIME.PSEUDOTRACES << endl;
+		cout << "Time spent in Lift-up precomputation " <<
+			gfp::TIME.LIFTUP << endl << endl;
 	}
 	cout << "Time spent inverting the matrix" <<
 		gfp::TIME.ARTINMATRIX << endl;
