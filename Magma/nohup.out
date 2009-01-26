@@ -1,0 +1,22 @@
+Magma: Fatal Error: Magma: Irrecoverable error; exiting
+Magma: Fatal Error: Magma: Irrecoverable error; exiting
+Magma: Fatal Error: Magma: Irrecoverable error; exiting
+Magma: Fatal Error: Magma: Irrecoverable error; exiting
+./bench.sh: line 9:  8750 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 24083 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  6185 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  4108 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:   512 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  1854 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  1866 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 17664 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  3571 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  5256 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  5267 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9:  9332 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 24234 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 24235 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 18867 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 18797 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 18795 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm
+./bench.sh: line 9: 25590 Terminated              $magma -b p:=$1 d:=$2 k:=$3 build_$4.mgm

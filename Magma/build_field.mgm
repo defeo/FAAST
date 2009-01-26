@@ -1,0 +1,87 @@
+p:=StringToInteger(p);
+d:=StringToInteger(d);
+k:=StringToInteger(k);
+
+t:=Cputime();
+K:=GF(p^d);
+t0:=Cputime()-t;
+x:=Random(K);
+y:=Random(K);
+t:=Cputime();
+z:=x*y;
+t1:=Cputime()-t;
+
+0, t0, t1, 0, 0;
+
+LK:=[* *];
+LK[1]:=K;
+
+function my_random(LK, i)
+    if i eq 0 then
+	return Random(LK[1]);
+    end if;
+    
+    return LK[i+1]![$$(LK, i-1) : j in [0..p-1]];
+end function;
+    
+tot:=-Cputime();
+for i in [1..k] do
+    t:=Cputime();
+    U<xi>:=PolynomialRing(LK[i]);
+    
+    if i eq 1 then
+	x:=LK[i].1;
+	for i in [0..p-1] do
+	    if Trace(x) ne 0 then
+		continue;
+	    else
+		x:=x+1;
+	    end if;
+	end for;
+	assert Trace(x) ne 0;
+	P:=xi^p-xi-x;
+    else
+	if i eq 2 and p eq 2 then
+	    P:=xi^p-xi-LK[i].1;
+	else
+	    P:=xi^p-xi-LK[i].1^(2*p-1);
+	end if;
+    end if;
+    
+    LK[i+1]:=ext<LK[i]|P>;
+    t0:=Cputime()-t;
+    
+    x:=Random(LK[i+1]);
+    y:=Random(LK[i+1]);
+    t:=Cputime();
+    z:=x*y;
+    t1:=Cputime()-t;
+    
+    x:=Random(LK[i+1]);
+    t:=Cputime();
+    y:=ElementToSequence(x, LK[i]);
+    t2:=Cputime()-t;
+    
+    t:=Cputime();
+    z:=LK[i+1]!y;
+    t3:=Cputime()-t;
+    
+    assert(z eq x);
+
+    x:=Random(LK[i+1]);
+    t:=Cputime();
+    y:=Trace(x, LK[i]);
+    t4:=Cputime()-t;
+
+/*	x:=Random(LK[i+1]);
+	n:=Random(Degree(LK[i]), Degree(LK[i+1]));
+	t:=Cputime();
+	y:=Frobenius(x, n);
+	t5:=Cputime()-t;
+*/
+    i, t0, t1, t2, t3, t4;//, n, t5;
+end for;
+tot+:=Cputime();
+tot;
+
+quit;

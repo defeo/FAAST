@@ -1,0 +1,64 @@
+
+procedure bench(p, d, k)
+    t:=Cputime();
+    K:=GF(p^d);
+    t0:=Cputime()-t;
+    
+    x:=Random(K);
+    y:=Random(K);
+    t:=Cputime();
+    z:=x*y;
+    t1:=Cputime()-t;
+    
+    0, t0, t1, 0, 0;
+    
+    LK:=[* *];
+    LK[1]:=K;
+    
+    tot:=-Cputime();
+    for i in [1..k] do
+	t:=Cputime();
+	LK[i+1]:=ext<LK[i]|p>;
+	t0:=Cputime()-t;
+	
+	x:=Random(LK[i+1]);
+	y:=Random(LK[i+1]);
+	t:=Cputime();
+	z:=x*y;
+	t1:=Cputime()-t;
+	
+	x:=Random(LK[i+1]);
+	t:=Cputime();
+	y:=ElementToSequence(x, LK[i+1]);
+	t2:=Cputime()-t;
+	
+	t:=Cputime();
+	z:=LK[i+1]!y;
+	t3:=Cputime()-t;
+	
+	assert(x eq z);
+
+	x:=Random(LK[i+1]);
+	t:=Cputime();
+	y:=Trace(x, LK[i]);
+	t4:=Cputime()-t;
+
+/*	x:=Random(LK[i+1]);
+	n:=Random(Degree(LK[i]), Degree(LK[i+1]));
+	t:=Cputime();
+	y:=Frobenius(x, n);
+	t5:=Cputime()-t;
+*/
+	i, t0, t1, t2, t3, t4;//, n, t5;
+    end for;
+    tot+:=Cputime();
+    tot;
+end procedure;
+
+p:=StringToInteger(p);
+d:=StringToInteger(d);
+k:=StringToInteger(k);
+
+bench(p, d, k);
+quit;
+
