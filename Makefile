@@ -30,7 +30,7 @@ COMMONOBJS := $(COMMONOBJS:%=$(BIN)/%)
 
 # Script to create the bin directory
 createbin:
-	if [[ ! -d $(BIN) ]] ; then mkdir $(BIN); fi
+	if [[ ! -d $(BIN) ]] ; then mkdir -p $(BIN); fi
 
 ########## binaries
 
