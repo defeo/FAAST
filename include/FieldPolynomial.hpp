@@ -39,8 +39,12 @@ namespace AS {
 		FieldPolynomial() throw() : parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this polynomial is defined over */
-		Field<T> parent() const throw(UndefinedFieldException)
-		{ return parent_field; }
+		const Field<T>& parent() const
+		throw(UndefinedFieldException) {
+			if (!parent_field)
+				throw UndefinedFieldException();
+			return *parent_field;
+		}
 		/* Degree. Returns -1 if the polynomial is 0. */
 		long degree() const throw();
 		
@@ -50,29 +54,51 @@ namespace AS {
 		/* Starting only from the constant coefficient */
 		FieldPolynomial(const FieldElement<T>& e) throw();
 		FieldPolynomial<T>& operator=(const FieldElement<T>& e) throw();
+		FieldPolynomial<T>& operator=(const BigInt& i)
+		throw(UndefinedFieldException);
 		
 	/****************** Coefficients ******************/
-		void getCoeff(const long, FieldElement<T>&) const throw();
-		void setCoeff(const long, const FieldElement<T>&) throw();
+		void getCoeff(const long, FieldElement<T>&)
+		const throw(BadParametersException);
+		void setCoeff(const long, const FieldElement<T>&)
+		throw(NotInSameFieldException, BadParametersException);
 		void setCoeff(const long i, const BigInt& c)
-		throw(UndefinedFieldException)
-		{ setCoeff(i, parent_field->scalar(c)); }
+		throw(UndefinedFieldException, BadParametersException);
 		void setCoeff(const long i)
-		throw(UndefinedFieldException)
-		{ setCoeff(i, parent_field->one()); }
+		throw(UndefinedFieldException, BadParametersException);
 	
 	/****************** Arithmetics ******************/
 		/* Binary operations */
-		FieldPolynomial<T> operator+(const FieldPolynomial<T>&)
-			const throw(NotInSameFieldException);
-		FieldPolynomial<T> operator-(const FieldPolynomial<T>&)
-			const throw(NotInSameFieldException);
-		FieldPolynomial<T> operator*(const FieldPolynomial<T>&)
-			const throw(NotInSameFieldException);
-		FieldPolynomial<T> operator/(const FieldPolynomial<T>&)
-			const throw(NotInSameFieldException, DivisionByZeroException);
-		FieldPolynomial<T> operator%(const FieldPolynomial<T>&)
-			const throw(NotInSameFieldException, DivisionByZeroException);
+		FieldPolynomial<T> operator+(const FieldPolynomial<T>& e)
+		const throw(NotInSameFieldException) {
+			FieldPolynomial<T> tmp = *this;
+			tmp += e;
+			return tmp;
+		}
+		FieldPolynomial<T> operator-(const FieldPolynomial<T>& e)
+		const throw(NotInSameFieldException) {
+			FieldPolynomial<T> tmp = *this;
+			tmp -= e;
+			return tmp;
+		}
+		FieldPolynomial<T> operator*(const FieldPolynomial<T>& e)
+			const throw(NotInSameFieldException) {
+			FieldPolynomial<T> tmp = *this;
+			tmp /= e;
+			return tmp;
+		}
+		FieldPolynomial<T> operator/(const FieldPolynomial<T>& e)
+			const throw(NotInSameFieldException, DivisionByZeroException) {
+			FieldPolynomial<T> tmp = *this;
+			tmp /= e;
+			return tmp;
+		}
+		FieldPolynomial<T> operator%(const FieldPolynomial<T>& e)
+			const throw(NotInSameFieldException, DivisionByZeroException) {
+			FieldPolynomial<T> tmp = *this;
+			tmp %= e;
+			return tmp;
+		}
 			
 		/* Self-incrementing binary operations. */
 		void operator+=(const FieldPolynomial<T>&)
@@ -107,13 +133,37 @@ namespace AS {
 			
 		/* Unary operations */
 		bool divides(const FieldPolynomial<T>&) const throw();
-		FieldPolynomial<T> operator-() const throw();
-		FieldPolynomial<T> operator^(const long) const throw();
-		FieldPolynomial<T> derivative() const throw();
-		FieldPolynomial<T> monic() const throw();
+		FieldPolynomial<T> operator-() const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp.negate();
+			return tmp;
+		}
+		FieldPolynomial<T> operator^(const long i) const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp ^= i;
+			return tmp;
+		}
+		FieldPolynomial<T> derivative() const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp.self_derivative();
+			return tmp;
+		}
+		FieldPolynomial<T> monic() const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp.normalize();
+			return tmp;
+		}
 		/* Frobenius and iterated frobenius over the coefficients */
-		FieldPolynomial<T> frobenius() const throw();
-		FieldPolynomial<T> frobenius(const long) const throw();
+		FieldPolynomial<T> frobenius() const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp.self_frobenius();
+			return tmp;
+		}
+		FieldPolynomial<T> frobenius(const long n) const throw() {
+			FieldPolynomial<T> tmp = *this;
+			tmp.self_frobenius(n);
+			return tmp;
+		}
 		
 		/* Self-incrementing Unary operations */
 		void negate() throw();
@@ -121,21 +171,43 @@ namespace AS {
 		void self_derivative() throw();
 		void normalize() throw();
 		void self_frobenius() throw();
-		void self_frobenius(const long) throw();
+		void self_frobenius(long) throw();
 		
 	/****************** Coercion of elements ******************/
-		FieldPolynomial<T> operator>>(const Field<T>&) const 
-			throw(IllegalCoercionException);
-		void operator>>=(const Field<T>&) throw(IllegalCoercionException);
+		FieldPolynomial<T> toScalarPolynomial() const throw(IllegalCoercionException);
+		FieldPolynomial<T> operator>>(const Field<T>&) const throw(IllegalCoercionException);
+		void operator>>=(const Field<T>& F)
+		throw(IllegalCoercionException) {
+			FieldPolynomial<T> tmp = *this >> F;
+			*this = F;
+		}
 		bool isCoercible(const Field<T>&) const throw();
 		
 	/****************** Comparison ******************/
 		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
+		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);
+		bool operator==(const BigInt&) const throw();
+
 		bool operator!=(const FieldPolynomial<T>& e)
 		const throw(NotInSameFieldException)
 		{ return !(*this==e); }
-		bool isZero() const throw();
-		bool isOne() const throw();
+
+		bool operator!=(const FieldElement<T>& e)
+		const throw(NotInSameFieldException)
+		{ return !(*this==e); }
+
+		bool operator!=(const BigInt& i) const throw()
+		{ return !(*this==i); }
+
+		bool isZero() const throw() {
+			return !parent_field ||
+				(base ? IsZero(repBase) : IsZero(repExt));
+		}
+		bool isOne() const throw() {
+			return parent_field && 
+				(base ? IsOne(repBase) : IsOne(repExt));
+		}
+		bool isScalarPolynomial() const throw();
 
 	/****************** Infrastructure ******************/
 		/* Interface with infrastructure. Use this only if you are
@@ -179,8 +251,27 @@ namespace AS {
 			parent_field(p), repExt(P), base(false) {}
 		FieldPolynomial(const Field<T>* p, const GFpX& P) throw() :
 			parent_field(p), repBase(P), base(true) {}
+	/****************** Utility Routines ******************/
+		void sameLevel(const FieldElement<T>& e) const
+		throw(NotInSameFieldException) {
+			if (parent_field != e.parent_field)
+			throw NotInSameFieldException();
+		}
+		void sameLevel(const FieldPolynomial<T>& e) const
+		throw(NotInSameFieldException) {
+			if (parent_field != e.parent_field)
+			throw NotInSameFieldException();
+		}
 
 	};
+
+/****************** Printing ******************/
+	template <class T> ostream&
+	operator<<(ostream& o, const FieldPolynomial<T>& p) {
+		return p.print(o);
+	}
 }
+
+#include "../src/FieldPolynomial.c++"
 
 #endif /*FIELDPOLYNOMIAL_H_*/

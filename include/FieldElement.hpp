@@ -71,8 +71,12 @@ namespace AS {
 		FieldElement() throw() : parent_field(NULL) {}
 	/****************** Properties ******************/
 		/* The field this element belongs to */
-		const Field<T>& parent() const throw(UndefinedFieldException)
-		{ return *parent_field; }
+		const Field<T>& parent() const
+		throw(UndefinedFieldException) {
+			if (!parent_field)
+				throw UndefinedFieldException();
+			return *parent_field;
+		}
 		
 	/****************** Copy ******************/
 		FieldElement(const FieldElement<T>& e) throw();
@@ -217,7 +221,7 @@ namespace AS {
 			return !parent_field ||
 				(base ? IsZero(repBase) : IsZero(repExt));
 		}
-		bool isOne() const throw()  {
+		bool isOne() const throw() {
 			return parent_field && 
 				(base ? IsOne(repBase) : IsOne(repExt));
 		}

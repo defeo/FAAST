@@ -32,6 +32,8 @@ namespace AS {
 			else throw UndefinedFieldException();
 		}
 		parent_field->switchContext();
+		repBase = 0;
+		repExt = 0;
 		if (base) repBase = i;
 		else repExt = i;
 		return *this;
