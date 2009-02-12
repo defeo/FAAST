@@ -20,8 +20,9 @@ namespace AS {
 		}
 	}
 	
-	template <class T> FieldPolynomial<T>::FieldPolynomial<T>&
-	operator=(const FieldPolynomial<T>& e) throw() {
+	template <class T> FieldPolynomial<T>&
+	FieldPolynomial<T>::operator=(const FieldPolynomial<T>& e)
+	throw() {
 		repBase = 0;
 		repExt = 0;
 		base = e.base;
@@ -46,8 +47,9 @@ namespace AS {
 		}
 	}
 	
-	template <class T> FieldPolynomial<T>::FieldPolynomial<T>&
-	operator=(const FieldElement<T>& e) throw() {
+	template <class T> FieldPolynomial<T>&
+	FieldPolynomial<T>::operator=(const FieldElement<T>& e)
+	throw() {
 		repBase = 0;
 		repExt = 0;
 		base = e.base;
@@ -60,8 +62,9 @@ namespace AS {
 		return *this;
 	}
 	
-	template <class T> FieldPolynomial<T>::FieldPolynomial<T>&
-	operator=(const BigInt& i) throw(UndefinedFieldException) {
+	template <class T> FieldPolynomial<T>&
+	FieldPolynomial<T>::operator=(const BigInt& i)
+	throw(UndefinedFieldException) {
 		if (!parent_field) {
 			if (i == long(0)) return *this;
 			else throw UndefinedFieldException();
@@ -234,7 +237,7 @@ namespace AS {
 	}
 
 	template <class T> void
-	FieldPolynomial<T>::operator^=(const long) throw() {
+	FieldPolynomial<T>::operator^=(const long i) throw() {
 		if (!parent_field) return;
 		parent_field->switchContext();
 		if (base) power(repBase, repBase, i);
@@ -307,9 +310,9 @@ namespace AS {
 		} else throw IllegalCoercionException();
 	}
 	
-	template <class T> void
+	template <class T> FieldPolynomial<T>
 	FieldPolynomial<T>::operator>>(const Field<T>& F)
-	throw(IllegalCoercionException) {
+	const throw(IllegalCoercionException) {
 		if (!parent_field) {
 			*this = F.zero();
 		} else if (parent_field->isIsomorphic(F)) {
@@ -318,7 +321,7 @@ namespace AS {
 			parent_field->isOverFieldOf(F)) {
 			FieldPolynomial<T> res = F.zero();
 			FieldElement<T> tmp;
-			for (long i = degree() ; i < ) {
+			for (long i = degree() ; i > 0 ; i--) {
 				getCoeff(i, tmp);
 				tmp >>= F;
 				setCoeff(res, i, tmp);
@@ -337,11 +340,11 @@ namespace AS {
 		// or go down ...
 		else if (parent_field->isOverFieldOf(F)) {
 			FieldElement<T> tmp;
-			for (long i = degree() ; i < ) {
+			for (long i = degree() ; i  >0 ; i--) {
 				getCoeff(i, tmp);
 				if (!tmp.isCoercible(F)) return false;
 			}
-			return true
+			return true;
 		}
 	}
 	
@@ -371,7 +374,7 @@ namespace AS {
 	}
 
 	template <class T> bool
-	FieldPolynomial<T>::operator==(const BigInt&) const throw() {
+	FieldPolynomial<T>::operator==(const BigInt& i) const throw() {
 		if (!parent_field) return i == long(0);
 		else {
 			parent_field->switchContext();
@@ -399,15 +402,56 @@ namespace AS {
 	/* Interface with infrastructure. Use this only if you are
 	 * sure of what you do !
 	 */
-//	template <class T> void FieldPolynomial<T>::toInfrastructure(GFpX& ) const throw(IllegalCoercionException);
-//	template <class T> void FieldPolynomial<T>::toInfrastructure(GFpEX& ) const throw(IllegalCoercionException);
+	template <class T> void
+	FieldPolynomial<T>::toInfrastructure(GFpX& p)
+	const throw(IllegalCoercionException) {
+		if (!parent_field || !base) throw IllegalCoercionException();
+		parent_field->switchContext();
+		p = repBase;
+	}
+	
+	template <class T> void
+	FieldPolynomial<T>::toInfrastructure(GFpEX& p)
+	const throw(IllegalCoercionException) {
+		if (!parent_field || !base) throw IllegalCoercionException();
+		parent_field->switchContext();
+		p = repExt;
+	}
 
 /****************** Printing ******************/
-//	template <class T> ostream& FieldPolynomial<T>::print(ostream&) const;
+	template <class T> ostream&
+	FieldPolynomial<T>::print(ostream& o) const {
+		if (!parent_field) return o << 0;
+		if (base) return o << repBase;
+		else return o << repExt;
+	}
+	
 	/* Print the element as a polynomial over the base field in the
 	 * variable varPoly. varField is used to print the element of the field.
 	 */
-//	template <class T> ostream& FieldPolynomial<T>::print(ostream&, const string& varPoly, const string& varField) const;
+	template <class T> ostream&
+	FieldPolynomial<T>::print(ostream& o, const string& varPoly,
+	const string& varField) const {
+		if (isZero()) return o << 0;
+		bool first = true;
+		FieldElement<T> c;
+		for (long i = degree() ; i >= 0 ; i--) {
+			getCoeff(i, c);
+			if (c != 0) {
+				if (first) first = false;
+				else o << " + ";
+				if (!c.isScalar()) o << "(";
+				if (c != 1) c.print(o, varField);
+				if (!c.isScalar()) o << ")";
+				if (c != 1 && i != 0) o << "*";
+				if (i != 0) o << varPoly;
+				if (i > 1) o << "^" << i;
+			}
+		}
+		if (first) o << 0;
+		return o;
+	}
+	
 	/* Print the element as a polynomial over the base field in the
 	 * variable varPoly.
 	 * varsField is used to print the element of the field on the
@@ -417,5 +461,26 @@ namespace AS {
 	 * throws : ASException if there's not enough variables
 	 *          in var
 	 */
-//	template <class T> ostream& FieldPolynomial<T>::print(ostream&, const string& varPoly, vector<const string>& varsField) const;
+	template <class T> ostream&
+	FieldPolynomial<T>::print(ostream& o, const string& varPoly,
+	const vector<string>& varsField) const {
+		if (isZero()) return o << 0;
+		bool first = true;
+		FieldElement<T> c;
+		for (long i = degree() ; i >= 0 ; i--) {
+			getCoeff(i, c);
+			if (c != 0) {
+				if (first) first = false;
+				else o << " + ";
+				if (!c.isScalar()) o << "(";
+				if (c != 1) c.print(o, varsField);
+				if (!c.isScalar()) o << ")";
+				if (c != 1 && i != 0) o << "*";
+				if (i != 0) o << varPoly;
+				if (i > 1) o << "^" << i;
+			}
+		}
+		if (first) o << 0;
+		return o;
+	}
 }

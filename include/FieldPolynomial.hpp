@@ -231,7 +231,7 @@ namespace AS {
 		 * throws : ASException if there's not enough variables
 		 *          in var
 		 */
-		ostream& print(ostream&, const string& varPoly, vector<const string>& varsField) const;
+		ostream& print(ostream&, const string& varPoly, const vector<string>& varsField) const;
 	/****************** Destructor ******************/
 		~FieldPolynomial() throw() {}
 

@@ -240,14 +240,14 @@ namespace AS {
 		 */
 		ostream& print(ostream&, const string& var) const;
 		/* Print the element as a multivariate polynomial over
-		 * GF(p). The number of variables in vars must match one
-		 * plus the Artin-Schreier height of the field the element
-		 * belongs to.
+		 * GF(p). The number of variables in vars must be at least
+		 * one plus the Artin-Schreier height of the field the
+		 * element belongs to.
 		 * 
 		 * throws : ASException if there's not enough variables
 		 *          in var
 		 */
-		ostream& print(ostream&, vector<const string>& vars) const;
+		ostream& print(ostream&, const vector<string>& vars) const;
 	/****************** Destructor ******************/
 		~FieldElement() throw() {}
 

@@ -383,14 +383,66 @@ namespace AS {
 	/* Print the element as a polynomial over GF(p) in the
 	 * variable var
 	 */
-//	ostream& print(ostream&, const string& var) const;
+	template <class T> ostream&
+	FieldElement<T>::print(ostream& o, const string& var) const {
+		if (isZero()) return o << 0;
+		if (base) return o << repBase;
+		else {
+			bool first = true;
+			GFp c;
+			for (long i = deg(rep(repExt)) ; i >= 0 ; i--) {
+				if ((c = coeff(rep(repExt), i)) != 0) {
+					if (first) first = false;
+					else o << " + ";
+					if (c != 1) o << c;
+					if (c != 1 && i != 0) o << "*";
+					if (i != 0) o << var;
+					if (i > 1) o << "^" << i;
+				}
+			}
+			if (first) o << 0;
+			return o;
+		}
+	}
+	
 	/* Print the element as a multivariate polynomial over
-	 * GF(p). The number of variables in vars must match one
-	 * plus the Artin-Schreier height of the field the element
-	 * belongs to.
+	 * GF(p). The number of variables in vars must be at least
+	 * one plus the Artin-Schreier height of the field the
+	 * element belongs to.
 	 * 
 	 * throws : ASException if there's not enough variables
 	 *          in var
 	 */
-//	ostream& print(ostream&, vector<const string>& vars) const;
+	template <class T> ostream&
+	FieldElement<T>::print(ostream& o, const vector<string>& vars)
+	const {
+		if (isZero()) return o << 0;
+		if (base) return o << repBase;
+		if (vars.size() < parent_field->height + 1) 
+			throw ASException("Not enough variables");
+		if (parent_field->height == 0) {
+			print(o, vars[0]);
+			return o;
+		} else {
+			vector<FieldElement<T> > down;
+			parent_field->vsubfield->pushDown(*this, down);
+			typename vector<FieldElement<T> >::iterator it;
+			bool first = true;
+			for (long i = 0 ; i < down.size() ; i++) {
+				if (!down[i].isZero()) {
+					if (first) first = false;
+					else o << " + ";
+					if (!down[i].isScalar()) o << "(";
+					if (down[i] != 1) down[i].print(o, vars);
+					if (!down[i].isScalar()) o << ")";
+					if (down[i] != 1 && i != 0) o << "*";
+					if (i != 0) o << vars[parent_field->height];
+					if (i > 1) o << "^" << i;
+				}
+			}
+			if (first) o << 0;
+			return o;
+		}
+	}
+
 }
