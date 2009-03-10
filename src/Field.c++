@@ -7,7 +7,9 @@
 #include <sstream>
 
 namespace AS {
+#ifdef AS_TIMINGS
 	template <class T> typename Field<T>::TIMINGS Field<T>::TIME;
+#endif
 	
 /****************** Constructors ******************/
 	/* All constructors are static. There's no way to directly

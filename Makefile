@@ -125,12 +125,24 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
 	touch $(SRC)/FieldPrecomputations.c++
 
 ######################################################################
+########## Library
+
+Artin-Schreier.hpp.gch: $(INC)/Artin-Schreier.hpp
+	$(CC) -x c++-header -c $(OPT) $(IPATH) $(INC)/Artin-Schreier.hpp -o Artin-Schreier.hpp.gch
+	
+$(INC)/Artin-Schreier.hpp: $(INC)/Types.hpp $(INC)/Field.hpp
+	touch $(INC)/Artin-Schreier.hpp
+
+######################################################################
 .PHONY: all
 all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
 	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
 
 .PHONY: now
 now: createbin $(BIN)/test
+
+.PHONY: library
+library: Artin-Schreier.hpp.gch
 
 .PHONY: clean
 clean:
