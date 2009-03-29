@@ -200,6 +200,19 @@ namespace AS {
 		void self_trace() throw();
 		void self_pseudotrace(unsigned long) throw();
 		
+	/****************** Minimal polynomials ******************/
+		/* The minimal polynomial over the field F */
+		FieldPolynomial<T> minimalPolynomial(const Field<T>& F)
+		const throw(NotASubFieldException);
+		/* All the minimal polynomials up to the field F. If
+		 * called this way :
+		 *		minimalPolynomials(F, res);
+		 * res[0] will contain minimalPolynomials(F), res[1]
+		 * will contain minimalPolynomials(F.overfield) and so on.
+		 */
+		void minimalPolynomials(const Field<T>& F, vector<FieldPolynomial<T> >)
+		const throw(NotASubFieldException);
+		
 	/****************** Coercion of elements ******************/
 		FieldElement<T> toScalar() const throw(IllegalCoercionException);
 		FieldElement<T> operator>>(const Field<T>& F) const 
@@ -297,5 +310,6 @@ namespace AS {
 #include "../src/FieldElement.c++"
 #include "../src/FE-Liftup-Pushdown.c++"
 #include "../src/FE-Trace-Frob.c++"
+#include "../src/Minpols.c++"
 
 #endif /*FIELDELEMENT_H_*/
