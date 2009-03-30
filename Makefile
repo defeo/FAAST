@@ -136,7 +136,7 @@ $(INC)/Artin-Schreier.hpp: $(INC)/Types.hpp $(INC)/Field.hpp
 ######################################################################
 .PHONY: all
 all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
-	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul
+	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul library
 
 .PHONY: now
 now: createbin $(BIN)/test

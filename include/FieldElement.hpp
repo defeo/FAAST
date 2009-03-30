@@ -8,6 +8,7 @@
 namespace AS {
 	template <class T> class Field;
 	template <class T> class FieldElement;
+	template <class T> class FieldPolynomial;
 	
 /****************** Level embedding ******************/
 	/* Push the element e down along the stem and store
@@ -271,11 +272,11 @@ namespace AS {
 	
 	private:
 	/****************** Helpers for frobenius and trace ******************/
-		/* p^j-th iterated frobenius */
+		/* p^jd-th iterated frobenius */
 		void BigFrob(const long j);
 		/* n-th iterated frobenius, n < d */
 		void SmallFrob(const long n);
-		/* p^j-th pseudotrace */
+		/* p^jd-th pseudotrace */
 		void BigPTrace(const long j);
 		/* Put in the vector v all the p^id pseudotraces for 0 <= i <= j */
 		void BigPTraceVector(vector<FieldElement<T> >& v, const long j) const;
