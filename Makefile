@@ -6,9 +6,9 @@ OPT = -g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
 # /usr/lib, /lib or some other directory specified by the $LIBRARY_PATH
 # environment variable
-GMPLIB = -lgmp
+GMPLIB =
 NTLLIB = -lntl_p 
-MLIB = -lm
+MLIB =
 CPROFLIB =
 
 # Project's files
@@ -139,7 +139,7 @@ all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
 	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul library
 
 .PHONY: now
-now: createbin $(BIN)/test
+now: createbin $(BIN)/test $(BIN)/testStem
 
 .PHONY: library
 library: Artin-Schreier.hpp.gch

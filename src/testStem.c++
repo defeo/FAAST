@@ -23,13 +23,15 @@ int main(int argv, char* argc[]) {
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
 	
+	cout << "\tCreate\tPushDow\tLiftUp\tPreLift\tMul" << endl;
 	totaltime = -GetTime();
 	for (int i = 1 ; i <= l ; i++) {
+		cout << i << "\t";
 		/** Construction **/
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
-		cout << *K << " in " << cputime << endl;
+		cout << cputime << "\t";
 
 		gfp_E a = K->random(), b;
 		vector<gfp_E> down;
@@ -38,14 +40,13 @@ int main(int argv, char* argc[]) {
 		cputime = -GetTime();
 		pushDown(a, down);
 		cputime += GetTime();
-		cout << "Push-down computed in " << cputime << endl;
+		cout << cputime << "\t";
 
 		cputime = -GetTime();
 		liftUp(down, b);
 		cputime += GetTime();
-		cout << "Lift-up computed in " << cputime << endl;
-		cout << "Time spent in Lift-up precomputation : " <<
-			gfp::TIME.LIFTUP << endl;
+		cout << cputime << "\t";
+		cout << gfp::TIME.LIFTUP << "\t";
 
 		if (a != b) {
 			cout << "ERROR : Results don't match" << endl;
@@ -60,7 +61,7 @@ int main(int argv, char* argc[]) {
 		cputime = -GetTime();
 		a*b;
 		cputime += GetTime();
-		cout << "Multiplication computed in " << cputime << endl;
+		cout << cputime << endl;
 
 		/** Iterated frobenius **/
 /*		long n = RandomBnd(K->d - K->subField().d) + K->subField().d;
@@ -71,7 +72,6 @@ int main(int argv, char* argc[]) {
 		cout << "Pseudotraces precomputed in " <<
 			gfp::TIME.PSEUDOTRACES << endl; 
 */		
-		cout << endl;
 	}
 	totaltime += GetTime();
 		

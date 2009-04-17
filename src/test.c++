@@ -6,11 +6,11 @@ using namespace std;
 using namespace AS;
 
 typedef Field<ZZ_p_Algebra> GFp;
-typedef Field<zz_p_Algebra> gfp;
-typedef Field<GF2_Algebra>  GFp2;
+typedef Field<zz_p_Algebra> GFp2;
+typedef Field<GF2_Algebra>  gfp;
 typedef FieldElement<ZZ_p_Algebra> GFp_E;
-typedef FieldElement<zz_p_Algebra> gfp_E;
-typedef FieldElement<GF2_Algebra>  GFp2_E;
+typedef FieldElement<zz_p_Algebra> GFp2_E;
+typedef FieldElement<GF2_Algebra>  gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
@@ -27,7 +27,9 @@ int main(int argv, char* argc[]) {
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
 	
+	cout << "\tCreate\tCrStem\tPushDow\tLiftUp\tPrePseu\tPreLift" << endl;
 	for (int i = 1 ; i <= l ; i++) {
+		cout << i << "\t";
 		gfp_E alpha;
 		do {
 			alpha = K->random();
@@ -35,9 +37,8 @@ int main(int argv, char* argc[]) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension(alpha));
 		cputime += NTL::GetTime();
-		cout << *K << " in " << cputime << endl;
-		cout << "Time spent building the stem " <<
-			gfp::TIME.BUILDSTEM << endl;
+		cout << cputime << "\t";
+		cout << gfp::TIME.BUILDSTEM << "\t";
 			
 		const gfp& L = K->stemField().subField();
 		vector<gfp_E> v;
@@ -45,12 +46,12 @@ int main(int argv, char* argc[]) {
 		cputime = -NTL::GetTime();
 		L.pushDown(a, v);
 		cputime += NTL::GetTime();
-		cout << "Push-down in " << cputime << endl;
+		cout << cputime << "\t";
 		
 		cputime = -NTL::GetTime();
 		K->liftUp(v, b);
 		cputime += NTL::GetTime();
-		cout << "Lift-up in " << cputime << endl;
+		cout << cputime << "\t";
 		
 		if (a != b) {
 			cout << "ERROR : Results don't match" << endl;
@@ -62,11 +63,9 @@ int main(int argv, char* argc[]) {
 			cout << endl;
 		}
 		
-		cout << "Time spent in pseudotrace precomputation " <<
-			gfp::TIME.PSEUDOTRACES << endl;
-		cout << "Time spent in Lift-up precomputation " <<
-			gfp::TIME.LIFTUP << endl << endl;
+		cout << gfp::TIME.PSEUDOTRACES << "\t";
+		cout << gfp::TIME.LIFTUP << endl;
 	}
-	cout << "Time spent inverting the matrix" <<
+	cout << endl << "Time spent inverting the matrix" <<
 		gfp::TIME.ARTINMATRIX << endl;
 }
