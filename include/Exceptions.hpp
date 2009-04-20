@@ -24,6 +24,7 @@ namespace AS {
 	class NotInSameFieldException : public ASException {};
 	class DivisionByZeroException : public ASException {};
 	class IllegalCoercionException : public ASException {};
+	class NoSuchPolynomialException : public ASException {};
 	class NotSupportedException : public ASException {
 	public:
 		NotSupportedException() {}
