@@ -7,11 +7,11 @@
 
 namespace AS {
 	template <class T> class Field;
-	
+
 	template <class T> class FieldPolynomial {
 	public:
 		typedef T Infrastructure;
-		
+
 	private:
 		typedef typename T::GFp     GFp;
 		typedef typename T::MatGFp  MatGFp;
@@ -20,8 +20,8 @@ namespace AS {
 		typedef typename T::GFpEX   GFpEX;
 		typedef typename T::BigInt  BigInt;
 		typedef typename T::Context Context;
-		
-		
+
+
 	/****************** Members ******************/
 		/* The representation of this element */
 		GFpX repBase;
@@ -47,7 +47,7 @@ namespace AS {
 		}
 		/* Degree. Returns -1 if the polynomial is 0. */
 		long degree() const throw();
-		
+
 	/****************** Copy ******************/
 		FieldPolynomial(const FieldPolynomial<T>&) throw();
 		FieldPolynomial<T>& operator=(const FieldPolynomial<T>&) throw();
@@ -56,7 +56,7 @@ namespace AS {
 		FieldPolynomial<T>& operator=(const FieldElement<T>& e) throw();
 		FieldPolynomial<T>& operator=(const BigInt& i)
 		throw(UndefinedFieldException);
-		
+
 	/****************** Coefficients ******************/
 		void getCoeff(const long, FieldElement<T>&)
 		const throw(BadParametersException);
@@ -66,7 +66,7 @@ namespace AS {
 		throw(UndefinedFieldException, BadParametersException);
 		void setCoeff(const long i)
 		throw(UndefinedFieldException, BadParametersException);
-	
+
 	/****************** Arithmetics ******************/
 		/* Binary operations */
 		FieldPolynomial<T> operator+(const FieldPolynomial<T>& e)
@@ -99,7 +99,7 @@ namespace AS {
 			tmp %= e;
 			return tmp;
 		}
-			
+
 		/* Self-incrementing binary operations. */
 		void operator+=(const FieldPolynomial<T>&)
 			throw(NotInSameFieldException);
@@ -116,7 +116,7 @@ namespace AS {
 		 * Aplly on the arguments and store in this.
 		 */
 		void sum(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
-			throw(NotInSameFieldException) 
+			throw(NotInSameFieldException)
 		{ operator=(a); operator+=(b); }
 		void difference(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
 			throw(NotInSameFieldException)
@@ -130,7 +130,7 @@ namespace AS {
 		void mod(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
 			throw(NotInSameFieldException, DivisionByZeroException)
 		{ operator=(a); operator%=(b); }
-			
+
 		/* Unary operations */
 		bool divides(const FieldPolynomial<T>&) const throw();
 		FieldPolynomial<T> operator-() const throw() {
@@ -164,7 +164,7 @@ namespace AS {
 			tmp.self_frobenius(n);
 			return tmp;
 		}
-		
+
 		/* Self-incrementing Unary operations */
 		void negate() throw();
 		void operator^=(const long) throw();
@@ -172,7 +172,7 @@ namespace AS {
 		void normalize() throw();
 		void self_frobenius() throw();
 		void self_frobenius(long) throw();
-		
+
 	/****************** Coercion of elements ******************/
 		FieldPolynomial<T> toScalarPolynomial() const throw(IllegalCoercionException);
 		FieldPolynomial<T> operator>>(const Field<T>&) const throw(IllegalCoercionException);
@@ -182,7 +182,29 @@ namespace AS {
 			*this = F;
 		}
 		bool isCoercible(const Field<T>&) const throw();
-		
+
+	/****************** Evaluation ******************/
+		/* Returns this(e).
+		 *
+		 * The optional parameter minpols must contain either the result of
+		 * e.minimalPolynomials(this.parent,v), or must be an empty vector,
+		 * in which case it is filled with the result of
+		 * e.minimalPolynomials(this.parent,v).
+		 *
+		 * throws : IllegalCoercionException if this cannot be coerced to e.parent
+		 * 			nor can e be coerced to this.parent
+		 */
+		FieldElement<T> evaluate(const FieldElement<T>& e,
+		vector<FieldPolynomial<T> >& minpols = vector<FieldPolynomial<T> >())
+		const throw(IllegalCoercionException) {
+			return e.evaluate(*this, minpols);
+		}
+
+		/* Same as evaluate(e) */
+		FieldElement<T> operator()(const FieldElement<T>& e)
+		const throw(IllegalCoercionException) {
+			return evaluate(e);
+		}
 	/****************** Comparison ******************/
 		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
 		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);
@@ -204,7 +226,7 @@ namespace AS {
 				(base ? IsZero(repBase) : IsZero(repExt));
 		}
 		bool isOne() const throw() {
-			return parent_field && 
+			return parent_field &&
 				(base ? IsOne(repBase) : IsOne(repExt));
 		}
 		bool isScalarPolynomial() const throw();
@@ -227,7 +249,7 @@ namespace AS {
 		 * varsField is used to print the element of the field on the
 		 * multivariate basis. The number of variables in vars must match
 		 * one plus the Artin-Schreier height of the base field.
-		 * 
+		 *
 		 * throws : ASException if there's not enough variables
 		 *          in var
 		 */
@@ -239,7 +261,7 @@ namespace AS {
 	/*****************************************************/
 	/****************** Private section ******************/
 	/*****************************************************/
-	
+
 	private:
 	/****************** Internal Constructors ******************/
 		/* Construct an element with given representation and parent.

@@ -15,7 +15,7 @@ namespace AS {
 
 	public:
 		typedef T Infrastructure;
-		
+
 	/* Timings for various computations */
 #ifdef AS_TIMINGS
 	public:
@@ -41,9 +41,9 @@ namespace AS {
 			double LU_TRANSPUSHDOWN;
 			double LU_STEP4;
 			double LU_STEP5;
-			
+
 			t() :
-				CYCLOTOMIC(-1), 
+				CYCLOTOMIC(-1),
 				PSEUDOTRACES(-1),
 				LIFTUP(-1),
 				TRACEVEC(-1),
@@ -66,10 +66,10 @@ namespace AS {
 				LU_STEP5(-1)
 				{}
 		} TIMINGS;
-		
+
 		static TIMINGS TIME;
 #endif
-		
+
 	private:
 		typedef typename T::GFp         GFp;
 		typedef typename T::MatGFp      MatGFp;
@@ -80,7 +80,7 @@ namespace AS {
 		typedef typename T::BigInt      BigInt;
 		typedef typename T::Context     Context;
 		typedef typename T::GFpXModulus GFpXModulus;
-		
+
 	/****************** Members for the stem ******************/
 		/* The immediate subfield and overfield, if they're defined */
 		mutable const Field<T>* subfield;
@@ -112,7 +112,7 @@ namespace AS {
 	/****************** Members for non-stem fields ******************/
 		/* The stem-field to which this one is isomorphic */
 		const Field<T>* stem;
-		
+
 	/****************** Common members ******************/
 		/* The virtual subfield, if it is different from the real.
 		 * It is given mainly for printing purposes
@@ -132,32 +132,32 @@ namespace AS {
 		const long d;
 		/* The Artin-Schreier height */
 		const long height;
-		
+
 
 	public:
 	/****************** Constructors ******************/
 		/* All constructors are static. There's no way to directly
-		 * create a Field object. Field objects are permanent and 
+		 * create a Field object. Field objects are permanent and
 		 * they cannot be deleted after creation. They live in their
 		 * own lattice structure.
 		 */
-	
+
 		/* Default constructor, builds a field from some default value
 		 * (i.e. the context for NTL).
-		 * 
+		 *
 		 * If test is false, do not perform primality and irreducibility
 		 * tests
-		 * 
+		 *
 		 * throws : NotPrimeException, NotIrreducibleException if the
 		 *          default makes no sense
 		 */
 		static const Field<T>& createField(const bool test = true)
 		throw (NotPrimeException, NotIrreducibleException);
 		/* Build a field from an irreducible polynomial P.
-		 * 
+		 *
 		 * If test is false, do not perform primality and irreducibility
 		 * tests
-		 * 
+		 *
 		 * throws : NotPrimeExeption if the polynomial isn't defined
 		 *          over a prime field
 		 * throws : NotIrreducibleException if P is not irreducible
@@ -168,19 +168,19 @@ namespace AS {
 		 * polynomial.
 		 * Notice that this operation implicitely creates
 		 * the field GF(p) too.
-		 * 
+		 *
 		 * If test is false, do not perform primality and irreducibility
 		 * tests
-		 * 
+		 *
 		 * throws : NotPrimeException if p is not prime
 		 * throws : ASException if d less than one
 		 */
 		static const Field<T>& createField
 		(const BigInt& p, const long d = 1, const bool test = true)
 		throw (NotPrimeException, BadParametersException);
-	
+
 	/****************** Field Extensions ******************/
-		/* Build a default extension of degree p over this field. 
+		/* Build a default extension of degree p over this field.
 		 */
 		const Field<T>& ArtinSchreierExtension() const
 		throw (CharacteristicTooLargeException, NotSupportedException);
@@ -216,7 +216,7 @@ namespace AS {
 		 * by primitiveElement().
 		 */
 		FieldPolynomial<T> primitivePolynomial() const throw();
-		
+
 	/****************** Field Elements ******************/
 		/* Constructs the element i times 1 */
 		FieldElement<T> scalar(const BigInt& i) const throw ();
@@ -225,10 +225,10 @@ namespace AS {
 		/* The generator over the immediately preceding subfield */
 		FieldElement<T> generator() const throw () { return *gen; }
 		/* The generator over GF(p) */
-		FieldElement<T> primitiveElement() const throw () { return *primitive; } 
+		FieldElement<T> primitiveElement() const throw () { return *primitive; }
 		/* A random element of the field */
 		FieldElement<T> random() const throw ();
-		
+
 	/****************** Infrastructure ******************/
 		/* Use these methods only if you are sure of what you do ! */
 
@@ -239,7 +239,7 @@ namespace AS {
 		FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
 		/* Set the context to work in this field */
 		void switchContext() const throw();
-	
+
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
 		const Field<T>& primeField() const throw();
@@ -259,12 +259,12 @@ namespace AS {
 #endif
 			return *stem;
 		}
-		
+
 
 	/****************** Level embedding ******************/
 		/* Push the element e down to this field and store
 		 * the result in v.
-		 * 
+		 *
 		 * throw : IllegalCoercionException if the field e belongs to
 		 *         is not the immediate overfield of this.
 		 */
@@ -274,7 +274,7 @@ namespace AS {
 		/* Lift the elements in v up to this field and store the result in e.
 		 * If v is too short, it is filled with zeros. If v is too
 		 * long, the unnecessary elements are ignored.
-		 * 
+		 *
 		 * throw : NotInSameFieldException if the elements of v do not
 		 *         belong all to the same field.
 		 * throw : IllegalCoercionException if the field e belongs to
@@ -298,9 +298,11 @@ namespace AS {
 		 */
 		bool isSubFieldOf(const Field<T>& f) const throw ();
 		bool isOverFieldOf(const Field<T>& f) const throw ()
-		{ return f.isSubFieldOf(*this); }
+		{ return isIsomorphic(f) || f.isSubFieldOf(*this); }
 		bool isPrimeField() const throw ()
 		{ return subfield == NULL; }
+		bool isBaseField() const throw ()
+		{ return height == 0; }
 	/****************** Printing ******************/
 		ostream& print(ostream&) const;
 	/****************** Destructor ******************/
@@ -311,18 +313,18 @@ namespace AS {
 	/*****************************************************/
 	/****************** Private section ******************/
 	/*****************************************************/
-	
+
 	private:
 	/****************** Copy prohibited ******************/
 		void operator=(const Field<T>&);
 		Field(const Field<T>&);
-		
+
 	/****************** Access to precomputed values ******************/
 		const FieldElement<T>& getPseudotrace(const long i) const;
 		const FieldElement<T>& getLiftup() const;
 		const MatGFp& getArtinMatrix() const;
 		const Context& getCyclotomic() const;
-	
+
 	/****************** Couveignes 2000 subroutines ******************/
 		/* Couveignes' algorithm (Section 6).
 		 * Assumes Tr(alpha) = 0
