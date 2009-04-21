@@ -39,6 +39,11 @@ TEST := $(TEST:%=$(BIN)/%)
 $(BIN)/test: $(COMMONOBJS) $(TEST)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TEST) $(LIB) -o $(BIN)/test
 
+TESTISO := testIso.o
+TESTISO := $(TESTISO:%=$(BIN)/%)
+$(BIN)/testIso: $(COMMONOBJS) $(TESTISO)
+	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTISO) $(LIB) -o $(BIN)/testIso
+
 TESTSTEM := testStem.o
 TESTSTEM := $(TESTSTEM:%=$(BIN)/%)
 $(BIN)/testStem: $(COMMONOBJS) $(TESTSTEM)
@@ -69,6 +74,9 @@ $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 $(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
 
+$(BIN)/testIso.o: $(SRC)/testIso.c++ $(INC)/Types.hpp $(INC)/Field.hpp
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/testIso.c++ -o $(BIN)/testIso.o
+
 $(BIN)/testStem.o: $(SRC)/testStem.c++ $(INC)/Types.hpp $(INC)/Field.hpp
 	$(CC) -c $(OPT) $(IPATH) $(SRC)/testStem.c++ -o $(BIN)/testStem.o
 
@@ -94,7 +102,7 @@ $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
 	$(SRC)/FieldElement.c++ $(SRC)/FE-Liftup-Pushdown.c++ \
-	$(SRC)/FE-Trace-Frob.c++
+	$(SRC)/FE-Trace-Frob.c++ $(SRC)/MinPols.c++
 	touch $(INC)/FieldElement.hpp
 
 $(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
@@ -135,11 +143,12 @@ $(INC)/Artin-Schreier.hpp: $(INC)/Types.hpp $(INC)/Field.hpp
 
 ######################################################################
 .PHONY: all
-all: createbin $(BIN)/test $(BIN)/testStem $(BIN)/testTraceFrob \
-	$(BIN)/testLE $(BIN)/testCyclotomic $(BIN)/testTmul library
+all: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
+	$(BIN)/testTraceFrob $(BIN)/testLE $(BIN)/testCyclotomic \
+	$(BIN)/testTmul library
 
 .PHONY: now
-now: createbin $(BIN)/test $(BIN)/testStem
+now: createbin $(BIN)/test
 
 .PHONY: library
 library: Artin-Schreier.hpp.gch

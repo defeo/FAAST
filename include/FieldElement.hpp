@@ -202,17 +202,35 @@ namespace AS {
 		void self_pseudotrace(unsigned long) throw();
 
 	/****************** Minimal polynomials and Evaluation******************/
-		/* The minimal polynomial over the field F */
+		/* The minimal polynomial over the base field. */
+		FieldPolynomial<T> minimalPolynomial() const throw() {
+			parent_field->switchContext();
+			GFpX minpol;
+			MinPolyMod(minpol, rep(repExt), GFpE::modulus());
+			return parent_field->primeField().fromInfrastructure(minpol);
+		}
+		/* The minimal polynomial over the field F
+		 *
+		 * throws: NotASubFieldException if F is not a subfield of this.parent
+		 * throws: NotSupportedException if F is not part of an Artin-Schreier tower
+		 */
 		FieldPolynomial<T> minimalPolynomial(const Field<T>& F)
-		const throw(NotASubFieldException);
+		const throw(NotASubFieldException, NotSupportedException) {
+			vector<FieldPolynomial<T> > minpols;
+			minimalPolynomials(F, minpols);
+			return minpols[0];
+		}
 		/* All the minimal polynomials up to the field F. If
 		 * called this way :
 		 *		minimalPolynomials(F, res);
 		 * res[0] will contain minimalPolynomials(F), res[1]
 		 * will contain minimalPolynomials(F.overfield) and so on.
+		 *
+		 * throws: NotASubFieldException if F is not a subfield of this.parent
+		 * throws: NotSupportedException if F is not part of an Artin-Schreier tower
 		 */
 		void minimalPolynomials(const Field<T>& F, vector<FieldPolynomial<T> >&)
-		const throw(NotASubFieldException);
+		const throw(NotASubFieldException, NotSupportedException);
 
 		/* The a-affine minimal polynomial over the field F,
 		 * That is the minimum degree polynomial P of F[X] such that
