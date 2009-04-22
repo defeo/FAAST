@@ -5,9 +5,9 @@
 using namespace std;
 using namespace AS;
 
-typedef Field<GF2_Algebra>  gfp;
-typedef FieldElement<GF2_Algebra>  gfp_E;
-typedef FieldPolynomial<GF2_Algebra>  gfp_X;
+typedef Field<zz_p_Algebra>  gfp;
+typedef FieldElement<zz_p_Algebra>  gfp_E;
+typedef FieldPolynomial<zz_p_Algebra>  gfp_X;
 
 int main(int argv, char* argc[]) {
 	double cputime;
@@ -42,29 +42,37 @@ int main(int argv, char* argc[]) {
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
 
+		gfp_X poly;
+		bool nopol = false;
 		cputime = -NTL::GetTime();
-		gfp_X poly = a.affineMinimalPolynomial(K->baseField(), b, minpols);
+		try {
+			poly = a.affineMinimalPolynomial(K->baseField(), b, minpols);
+		} catch (NoSuchPolynomialException e) {
+			nopol = true;
+			cout << "*";
+		}
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
 
-		cputime = -NTL::GetTime();
-		c = a.evaluate(poly, minpols);
-		cputime += NTL::GetTime();
-		cout << cputime << "\t";
+		if (!nopol) {
+			cputime = -NTL::GetTime();
+			c = a.evaluate(poly, minpols);
+			cputime += NTL::GetTime();
+			cout << cputime << endl;
 
-		if (c != b) {
-			cout << "ERROR 1 : Results don't match" << endl;
-			cout << a << endl << b << endl << c << endl;
-			cout << poly << endl;
-		}
-
-		poly >>= *K;
-		c = poly.evaluate(a);
-		if (c != b) {
-			cout << "ERROR 2 : Results don't match" << endl;
-			cout << a << endl << b << endl << c << endl;
-			cout << poly << endl;
-		}
-
+			if (c != b) {
+				cout << "ERROR 1 : Results don't match" << endl;
+				cout << a << endl << b << endl << c << endl;
+				cout << poly << endl;
+			}
+	
+			poly >>= *K;
+			c = poly.evaluate(a);
+			if (c != b) {
+				cout << "ERROR 2 : Results don't match" << endl;
+				cout << a << endl << b << endl << c << endl;
+				cout << poly << endl;
+			}
+		} else cout << "*\t" << endl;
 	}
 }

@@ -179,9 +179,8 @@ namespace AS {
 	/****************** Coercion of elements ******************/
 		FieldPolynomial<T> toScalarPolynomial() const throw(IllegalCoercionException);
 		FieldPolynomial<T> operator>>(const Field<T>&) const throw(IllegalCoercionException);
-		void operator>>=(const Field<T>& F)
-		throw(IllegalCoercionException) {
-			FieldPolynomial<T> tmp = *this >> F;
+		void operator>>=(const Field<T>& F) throw(IllegalCoercionException) {
+			FieldPolynomial<T> tmp = *this >> F; 
 			*this = tmp;
 		}
 		bool isCoercible(const Field<T>&) const throw();

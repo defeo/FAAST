@@ -323,7 +323,7 @@ namespace AS {
 			parent_field->isOverFieldOf(F)) {
 			FieldPolynomial<T> res = F.zero();
 			FieldElement<T> tmp;
-			for (long i = degree() ; i > 0 ; i--) {
+			for (long i = degree() ; i >= 0 ; i--) {
 				getCoeff(i, tmp);
 				tmp >>= F;
 				res.setCoeff(i, tmp);

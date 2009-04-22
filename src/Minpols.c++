@@ -23,7 +23,7 @@ namespace AS {
 		// first loop
 		// go down as long as this is a member of the subfield
 		try {
-			while (*G != *(F.stem)) {
+			while (G != F.stem) {
 				res[levels - 1] =
 					res[levels] >> *(G->subfield);
 				levels--;
@@ -32,11 +32,11 @@ namespace AS {
 		} catch (IllegalCoercionException e) {}
 		// second loop
 		// go down by galois conjugation
-		while (*G != *(F.stem)) {
+		while (G != F.stem) {
 			FieldPolynomial<T> tmp = res[levels];
 			res[levels - 1] = res[levels];
 			for (BigInt i = 1 ; i < G->p ; i++) {
-				tmp.frobenius(power_long(G->p, G->height - 1)*G->d);
+				tmp.self_frobenius(G->subfield->d);
 				res[levels -1] *= tmp;
 			}
 			res[levels - 1] >>= *(G->subfield);
@@ -94,7 +94,6 @@ namespace AS {
 				G = G->subfield;
 			}
 		} catch (IllegalCoercionException e) {}
-
 		// get the list of minimal polynomials of this
 		if (minpols.size() == 0)
 			tmpx.minimalPolynomials(F, minpols);
@@ -126,11 +125,12 @@ namespace AS {
 			res *= (minpols[i-1] >> *G) / minpols[i];
 			FieldPolynomial<T> tmp = res;
 			for (BigInt j = 1 ; j < G->p ; j++) {
-				tmp.frobenius(power_long(G->p, G->height - 1)*G->d);
+				tmp.self_frobenius(G->subfield->d);
 				res += tmp;
 			}
 			res >>= *(G->subfield);
 			G = G->subfield;
+			i--;
 		}
 
 		return res >> F;
@@ -156,9 +156,9 @@ namespace AS {
 		if (F->isOverFieldOf(*G)) {
 			FieldElement<T> x = *this >> *F;
 			// Horner rule
-			FieldElement<T> res, coeff;
-			P.getCoeff(P.degree(), res);
-			for (long i = P.degree()-1 ; i >= 0 ; i++) {
+			FieldElement<T> coeff, res = F->zero();
+			if (P != 0) P.getCoeff(P.degree(), res);
+			for (long i = P.degree()-1 ; i >= 0 ; i--) {
 				res *= x;
 				P.getCoeff(i, coeff);
 				res += coeff;
@@ -191,7 +191,7 @@ namespace AS {
 				F = F->stem;
 				while (*F != *G) {
 					reduced %= minpols[i];
-					reduced >>= F->overField();
+					reduced >>= *(F->overfield);
 					F = F->overfield;
 					i++;
 				}
