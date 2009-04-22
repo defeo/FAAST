@@ -9,6 +9,9 @@ namespace AS {
 	template <class T> class Field;
 
 	template <class T> class FieldPolynomial {
+
+	friend class FieldElement<T>;
+
 	public:
 		typedef T Infrastructure;
 
@@ -179,7 +182,7 @@ namespace AS {
 		void operator>>=(const Field<T>& F)
 		throw(IllegalCoercionException) {
 			FieldPolynomial<T> tmp = *this >> F;
-			*this = F;
+			*this = tmp;
 		}
 		bool isCoercible(const Field<T>&) const throw();
 
@@ -195,16 +198,13 @@ namespace AS {
 		 * 			nor can e be coerced to this.parent
 		 */
 		FieldElement<T> evaluate(const FieldElement<T>& e,
-		vector<FieldPolynomial<T> >& minpols = vector<FieldPolynomial<T> >())
-		const throw(IllegalCoercionException) {
-			return e.evaluate(*this, minpols);
-		}
+		vector<FieldPolynomial<T> >& minpols)
+		const throw(IllegalCoercionException)
+		{ return e.evaluate(*this, minpols); }
 
-		/* Same as evaluate(e) */
-		FieldElement<T> operator()(const FieldElement<T>& e)
-		const throw(IllegalCoercionException) {
-			return evaluate(e);
-		}
+		FieldElement<T> evaluate(const FieldElement<T>& e)
+		const throw(IllegalCoercionException)
+		{ return e.evaluate(*this); }
 	/****************** Comparison ******************/
 		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
 		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);

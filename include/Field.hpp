@@ -288,7 +288,7 @@ namespace AS {
 		 * object.
 		 */
 		bool operator==(const Field<T>& f) const throw () { return this==&f; }
-		bool operator!=(const Field<T>& f) const throw () { return !(*this)==f; }
+		bool operator!=(const Field<T>& f) const throw () { return !(*this==f); }
 		/* Two fields are isomorphic if the isomorphism between them
 		 * has actually been computed
 		 */

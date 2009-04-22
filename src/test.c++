@@ -5,16 +5,13 @@
 using namespace std;
 using namespace AS;
 
-typedef Field<ZZ_p_Algebra> GFp;
-typedef Field<zz_p_Algebra> GFp2;
 typedef Field<GF2_Algebra>  gfp;
-typedef FieldElement<ZZ_p_Algebra> GFp_E;
-typedef FieldElement<zz_p_Algebra> GFp2_E;
 typedef FieldElement<GF2_Algebra>  gfp_E;
+typedef FieldPolynomial<GF2_Algebra>  gfp_X;
 
 int main(int argv, char* argc[]) {
 	double cputime;
-	
+
 	gfp::Infrastructure::BigInt p;
 	long d, l;
 	cin >> p; cin >> d; cin >> l;
@@ -26,46 +23,48 @@ int main(int argv, char* argc[]) {
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
-	
-	cout << "\tCreate\tCrStem\tPushDow\tLiftUp\tPrePseu\tPreLift" << endl;
+
+	cout << "\tCreate\tMinPol\tInterp\tEval" << endl;
 	for (int i = 1 ; i <= l ; i++) {
 		cout << i << "\t";
-		gfp_E alpha;
-		do {
-			alpha = K->random();
-		} while (alpha.trace() == 0);
 		cputime = -NTL::GetTime();
-		K = &(K->ArtinSchreierExtension(alpha));
+		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		cout << gfp::TIME.BUILDSTEM << "\t";
-			
-		const gfp& L = K->stemField().subField();
-		vector<gfp_E> v;
-		gfp_E a = K->random(), b;
+
+		gfp_E a, b, c;
+		a = K->random();
+		b = K->random();
+
+		vector<gfp_X> minpols;
 		cputime = -NTL::GetTime();
-		L.pushDown(a, v);
+		a.minimalPolynomials(K->baseField(),minpols);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		
+
 		cputime = -NTL::GetTime();
-		K->liftUp(v, b);
+		gfp_X poly = a.affineMinimalPolynomial(K->baseField(), b, minpols);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		
-		if (a != b) {
-			cout << "ERROR : Results don't match" << endl;
-			cout << a << endl;
-			cout << b << endl;
-			vector<gfp_E>::iterator it;
-			for (it = v.begin() ; it != v.end() ; it++)
-				cout << *it << " ";
-			cout << endl;
+
+		cputime = -NTL::GetTime();
+		c = a.evaluate(poly, minpols);
+		cputime += NTL::GetTime();
+		cout << cputime << "\t";
+
+		if (c != b) {
+			cout << "ERROR 1 : Results don't match" << endl;
+			cout << a << endl << b << endl << c << endl;
+			cout << poly << endl;
 		}
-		
-		cout << gfp::TIME.PSEUDOTRACES << "\t";
-		cout << gfp::TIME.LIFTUP << endl;
+
+		poly >>= *K;
+		c = poly.evaluate(a);
+		if (c != b) {
+			cout << "ERROR 2 : Results don't match" << endl;
+			cout << a << endl << b << endl << c << endl;
+			cout << poly << endl;
+		}
+
 	}
-	cout << endl << "Time spent inverting the matrix" <<
-		gfp::TIME.ARTINMATRIX << endl;
 }

@@ -8,7 +8,7 @@ namespace AS {
 	template <class T> void FieldElement<T>::minimalPolynomials(
 	const Field<T>& F, vector<FieldPolynomial<T> >& res)
 	const throw(NotASubFieldException, NotSupportedException) {
-		Field<T>* G = parent_field->stem;
+		const Field<T>* G = parent_field->stem;
 		if (!F.isSubFieldOf(*G)) throw NotASubFieldException();
 		if (F.isPrimeField() && !F.isBaseField())
 			throw NotSupportedException();
@@ -64,14 +64,14 @@ namespace AS {
 	const FieldElement<T>& a, vector<FieldPolynomial<T> >& minpols)
 	const throw(NotASubFieldException, NoSuchPolynomialException,
 	NotSupportedException, BadParametersException) {
-		Field<T>* G = parent_field->stem;
-		Field<T>* H = a.parent_field->stem;
-		if (!F.isSubFieldOF(*G)) throw NotASubFieldException();
+		const Field<T>* G = parent_field->stem;
+		const Field<T>* H = a.parent_field->stem;
+		if (!F.isSubFieldOf(*G)) throw NotASubFieldException();
 
 		if (F.isPrimeField() && !F.isBaseField())
 			throw NotSupportedException();
 		if (!H->isSubFieldOf(*G)) throw NoSuchPolynomialException();
-		
+
 		// if a is in F, simply return the constant polynomial
 		if (G->isSubFieldOf(F)) return a >> F;
 
@@ -97,10 +97,10 @@ namespace AS {
 
 		// get the list of minimal polynomials of this
 		if (minpols.size() == 0)
-			tmpx.minimalPolynomials(*F, minpols);
-		else if (minpols.size() < G->height - F->height + 1)
+			tmpx.minimalPolynomials(F, minpols);
+		else if (long(minpols.size()) < G->height - F.height + 1)
 			throw BadParametersException("minpols too small.");
-			
+
 		// second loop :
 		// go down as long as a is a member of the subfield
 		try {
@@ -108,14 +108,14 @@ namespace AS {
 				tmpa >>= *(H->subfield);
 				H = H->subfield;
 			}
-			// if we arrived at the bottom, the interpolating 
+			// if we arrived at the bottom, the interpolating
 			// polynomial is simply a
 			return FieldPolynomial<T>(tmpa) >> F;
 		} catch (IllegalCoercionException e) {}
 
 		// The interpolation begins, but we act like if a = 1
 		// till G equals H
-		FieldPolynomial<T> M = Derivative(minpols[0]);
+		FieldPolynomial<T> M = minpols[0].derivative();
 		FieldPolynomial<T> res = tmpx.evaluate(M, minpols).inv();
 
 		// third loop : interpolation
@@ -132,7 +132,7 @@ namespace AS {
 			res >>= *(G->subfield);
 			G = G->subfield;
 		}
-		
+
 		return res >> F;
 	}
 
@@ -150,17 +150,17 @@ namespace AS {
 	FieldElement<T>::evaluate(const FieldPolynomial<T>& P,
 	vector<FieldPolynomial<T> >& minpols)
 	const throw(IllegalCoercionException, BadParametersException) {
-		Field<T>* G = parent_field->stem;
-		Field<T>* F = P.parent_field;
+		const Field<T>* G = parent_field->stem;
+		const Field<T>* F = P.parent_field;
 		// first case : this must go up
 		if (F->isOverFieldOf(*G)) {
 			FieldElement<T> x = *this >> *F;
 			// Horner rule
 			FieldElement<T> res, coeff;
-			P.getCoeff(res, P.degree());
+			P.getCoeff(P.degree(), res);
 			for (long i = P.degree()-1 ; i >= 0 ; i++) {
 				res *= x;
-				P.getCoeff(coeff, i);
+				P.getCoeff(i, coeff);
 				res += coeff;
 			}
 			return res;
@@ -180,7 +180,7 @@ namespace AS {
 			// get the minimal polynomials if needed
 			if (minpols.size() == 0)
 				tmp.minimalPolynomials(*F, minpols);
-			else if (minpols.size() < G->height - F->height + 1)
+			else if (long(minpols.size()) < G->height - F->height + 1)
 				throw BadParametersException("minpols too small.");
 
 			// second loop :

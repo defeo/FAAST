@@ -39,6 +39,7 @@ namespace AS {
 	template <class T> class FieldElement {
 
 	friend class Field<T>;
+	friend class FieldPolynomial<T>;
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
 	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
 
@@ -246,9 +247,17 @@ namespace AS {
 		 */
 		FieldPolynomial<T> affineMinimalPolynomial(
 		const Field<T>& F, const FieldElement<T>& a,
-		vector<FieldPolynomial<T> >& minpols = vector<FieldPolynomial<T> >())
+		vector<FieldPolynomial<T> >& minpols)
 		const throw(NotASubFieldException, NoSuchPolynomialException,
 		NotSupportedException, BadParametersException);
+
+		FieldPolynomial<T> affineMinimalPolynomial(
+		const Field<T>& F, const FieldElement<T>& a)
+		const throw(NotASubFieldException, NoSuchPolynomialException,
+		NotSupportedException, BadParametersException) {
+			vector<FieldPolynomial<T> > minpols;
+			return affineMinimalPolynomial(F,a,minpols);
+		}
 
 		/* Returns P(this).
 		 *
@@ -262,9 +271,14 @@ namespace AS {
 		 * throws : BadParametersException if minpols contains bad data
 		 */
 		FieldElement<T> evaluate(const FieldPolynomial<T>& P,
-		vector<FieldPolynomial<T> >& minpols = vector<FieldPolynomial<T> >())
+		vector<FieldPolynomial<T> >& minpols)
 		const throw(IllegalCoercionException, BadParametersException);
 
+		FieldElement<T> evaluate(const FieldPolynomial<T>& P)
+		const throw(IllegalCoercionException, BadParametersException) {
+			vector<FieldPolynomial<T> > minpols;
+			return evaluate(P, minpols);
+		}
 	/****************** Coercion of elements ******************/
 		FieldElement<T> toScalar() const throw(IllegalCoercionException);
 		FieldElement<T> operator>>(const Field<T>& F) const

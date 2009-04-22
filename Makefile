@@ -102,7 +102,7 @@ $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
 	$(SRC)/FieldElement.c++ $(SRC)/FE-Liftup-Pushdown.c++ \
-	$(SRC)/FE-Trace-Frob.c++ $(SRC)/MinPols.c++
+	$(SRC)/FE-Trace-Frob.c++ $(SRC)/Minpols.c++
 	touch $(INC)/FieldElement.hpp
 
 $(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
