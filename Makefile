@@ -148,7 +148,7 @@ all: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
 	$(BIN)/testTmul library
 
 .PHONY: now
-now: createbin $(BIN)/test
+now: createbin $(BIN)/test library
 
 .PHONY: library
 library: Artin-Schreier.hpp.gch
