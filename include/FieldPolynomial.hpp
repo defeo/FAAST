@@ -204,6 +204,14 @@ namespace AS {
 		FieldElement<T> evaluate(const FieldElement<T>& e)
 		const throw(IllegalCoercionException)
 		{ return e.evaluate(*this); }
+	/****************** GCD ******************/
+		/* GCD between this and e */
+		FieldPolynomial<T> GCD(const FieldPolynomial<T>& e)
+		const throw(NotInSameFieldException);
+		/* XGCD between this and e */
+		FieldPolynomial<T> XGCD(const FieldPolynomial<T>& e,
+		FieldPolynomial<T>& U, FieldPolynomial<T>& V)
+		const throw(NotInSameFieldException);
 	/****************** Comparison ******************/
 		bool operator==(const FieldPolynomial<T>&) const throw(NotInSameFieldException);
 		bool operator==(const FieldElement<T>&) const throw(NotInSameFieldException);

@@ -225,7 +225,8 @@ namespace AS {
 		/* The generator over the immediately preceding subfield */
 		FieldElement<T> generator() const throw () { return *gen; }
 		/* The generator over GF(p) */
-		FieldElement<T> primitiveElement() const throw () { return *primitive; }
+		FieldElement<T> primitiveElement() const throw ()
+		{ return *stem->primitive >> *this; }
 		/* A random element of the field */
 		FieldElement<T> random() const throw ();
 

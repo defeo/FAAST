@@ -400,6 +400,44 @@ namespace AS {
 		return true;
 	}
 
+/****************** GCD ******************/
+	/* GCD between this and e */
+	template <class T> FieldPolynomial<T>
+	FieldPolynomial<T>::GCD(const FieldPolynomial<T>& e)
+	const throw(NotInSameFieldException) {
+		if (!e.parent_field) return *this;
+		if (!parent_field) return e;
+		sameLevel(e);
+		parent_field->switchContext();
+		
+		FieldPolynomial<T> res = parent_field->zero();
+		if (base) GCD(res.repBase, repBase, e.repBase);
+		else GCD(res.repExt, repExt, e.repExt);
+	}
+
+	/* XGCD between this and e */
+	template <class T> FieldPolynomial<T>
+	FieldPolynomial<T>::XGCD(const FieldPolynomial<T>& e,
+	FieldPolynomial<T>& U, FieldPolynomial<T>& V)
+	const throw(NotInSameFieldException) {
+		if (!e.parent_field) return *this;
+		if (!parent_field) return e;
+		sameLevel(e);
+		parent_field->switchContext();
+		
+		FieldPolynomial<T> res;
+		if (base) {
+			XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
+			U.repExt = V.repExt = 0;
+		} else {
+			XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
+			U.repBase = V.repBase = 0;
+		} return GCD(repExt, e.repExt);
+		
+		res.parent_field = U.parent_field = V.parent_field = parent_field;
+		res.base = U.base = V.base = base;
+	}
+
 /****************** Infrastructure ******************/
 	/* Interface with infrastructure. Use this only if you are
 	 * sure of what you do !
