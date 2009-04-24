@@ -10,6 +10,7 @@ namespace AS {
 
 	template <class T> class FieldPolynomial {
 
+	friend class Field<T>;
 	friend class FieldElement<T>;
 
 	public:
@@ -180,7 +181,7 @@ namespace AS {
 		FieldPolynomial<T> toScalarPolynomial() const throw(IllegalCoercionException);
 		FieldPolynomial<T> operator>>(const Field<T>&) const throw(IllegalCoercionException);
 		void operator>>=(const Field<T>& F) throw(IllegalCoercionException) {
-			FieldPolynomial<T> tmp = *this >> F; 
+			FieldPolynomial<T> tmp = *this >> F;
 			*this = tmp;
 		}
 		bool isCoercible(const Field<T>&) const throw();
@@ -275,11 +276,11 @@ namespace AS {
 		 * Reserved for use by Field<T>
 		 */
 		FieldPolynomial(const Field<T>* p, const GFpX& PBase, const GFpEX& PExt, const bool b) throw() :
-			parent_field(p), repBase(PBase), repExt(PExt), base(b) {}
+			repBase(PBase), repExt(PExt), base(b), parent_field(p) {}
 		FieldPolynomial(const Field<T>* p, const GFpEX& P) throw() :
-			parent_field(p), repExt(P), base(false) {}
+			repExt(P), base(false), parent_field(p) {}
 		FieldPolynomial(const Field<T>* p, const GFpX& P) throw() :
-			parent_field(p), repBase(P), base(true) {}
+			repBase(P), base(true), parent_field(p) {}
 	/****************** Utility Routines ******************/
 		void sameLevel(const FieldElement<T>& e) const
 		throw(NotInSameFieldException) {

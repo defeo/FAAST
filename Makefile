@@ -1,13 +1,13 @@
 SHELL = /bin/bash
 CC = g++
-OPT = -g -pg -Wall -DAS_DEBUG=2 -DAS_TIMINGS
+OPT = -g -Wall -DAS_DEBUG=2 -DAS_TIMINGS
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
 # /usr/lib, /lib or some other directory specified by the $LIBRARY_PATH
 # environment variable
 GMPLIB =
-NTLLIB = -lntl_p 
+NTLLIB = -lntl 
 MLIB =
 CPROFLIB =
 
