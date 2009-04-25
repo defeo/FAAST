@@ -409,10 +409,12 @@ namespace AS {
 		if (!parent_field) return e;
 		sameLevel(e);
 		parent_field->switchContext();
-		
+
 		FieldPolynomial<T> res = parent_field->zero();
-		if (base) GCD(res.repBase, repBase, e.repBase);
-		else GCD(res.repExt, repExt, e.repExt);
+		if (base) NTL::GCD(res.repBase, repBase, e.repBase);
+		else NTL::GCD(res.repExt, repExt, e.repExt);
+
+		return res;
 	}
 
 	/* XGCD between this and e */
@@ -424,18 +426,19 @@ namespace AS {
 		if (!parent_field) return e;
 		sameLevel(e);
 		parent_field->switchContext();
-		
+
 		FieldPolynomial<T> res;
 		if (base) {
-			XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
+			NTL::XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
 			U.repExt = V.repExt = 0;
 		} else {
-			XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
+			NTL::XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
 			U.repBase = V.repBase = 0;
-		} return GCD(repExt, e.repExt);
-		
+		}
+
 		res.parent_field = U.parent_field = V.parent_field = parent_field;
 		res.base = U.base = V.base = base;
+		return res;
 	}
 
 /****************** Infrastructure ******************/
