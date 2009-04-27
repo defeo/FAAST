@@ -15,6 +15,7 @@ namespace AS {
 				v[j] -= v[h] * (t * binom);
 			}
 			v[j] /= tr * parent.primeField().scalar(j);
+			v[j] >>= parent;
 		}
 		v[0] = parent.zero();
 	}
@@ -33,8 +34,8 @@ namespace AS {
 			res = alpha;
 			return;
 		}
-		
-		const Field<T>& parent = *(alpha.parent_field); 
+
+		const Field<T>& parent = *(alpha.parent_field);
 		long i = parent.height;
 		// step 1
 		if (i == 0) {
@@ -44,7 +45,7 @@ namespace AS {
 			if (parent.stem->artinLine < 0)
 				throw ASException("Bad Artin Matrix.");
 #endif
-			VecGFp low, high; 
+			VecGFp low, high;
 			VectorCopy(low, rep(alpha.repExt), parent.stem->artinLine);
 			VectorCopy(high, RightShift(rep(alpha.repExt),
 				parent.stem->artinLine+1),
@@ -90,7 +91,7 @@ namespace AS {
 		// step 6
 		AS::liftUp(etas, res);
 	}
-	
+
 	/* Return a root in this field of the polynomial
 	 * 			X^p - X - alpha
 	 * throws IllegalCoercionException if alpha can't be
@@ -103,7 +104,7 @@ namespace AS {
 	const throw(IllegalCoercionException, IsIrreducibleException) {
 		if (!isOverFieldOf(*(alpha.parent_field)))
 			throw IllegalCoercionException();
-			
+
 		// if alpha lies in this level
 		if (alpha.parent_field->stem == stem) {
 			if (alpha.trace() != 0)

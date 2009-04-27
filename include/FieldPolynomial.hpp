@@ -88,7 +88,7 @@ namespace AS {
 		FieldPolynomial<T> operator*(const FieldPolynomial<T>& e)
 			const throw(NotInSameFieldException) {
 			FieldPolynomial<T> tmp = *this;
-			tmp /= e;
+			tmp *= e;
 			return tmp;
 		}
 		FieldPolynomial<T> operator/(const FieldPolynomial<T>& e)
