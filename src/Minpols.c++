@@ -79,7 +79,7 @@ namespace AS {
 		// go down as long as this is a member of the subfield
 		FieldPolynomial<T> tmpa = a;
 		tmpa >>= *H;
-		FieldElement<T> tmpx = *this;
+		FieldElement<T> tmpx = *this >> *G;
 		try {
 			while (G != F.stem) {
 				tmpx >>= *(G->subfield);

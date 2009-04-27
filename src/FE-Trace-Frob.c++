@@ -15,7 +15,7 @@ namespace AS {
 		if (base) return;
 
 		n %= parent_field->d;
-		if (n < 0) n = parent_field->d - n;
+		if (n < 0) n = parent_field->d + n;
 		if (n == 0) return;
 		long p = parent_field->p;
 		long smalld = parent_field->baseField().d;
@@ -31,7 +31,7 @@ namespace AS {
 			n /= p ; j++;
 		}
 	}
-	
+
 	template <class T> void
 	FieldElement<T>::self_trace(const Field<T>& F)
 	throw(NotASubFieldException) {
@@ -51,7 +51,7 @@ namespace AS {
 		else {
 			// move to the stem
 			parent_field = parent_field->stem;
-			
+
 			vector<FieldElement<T> > down;
 			while (parent_field != F.stem) {
 				AS::pushDown(*this, down);
@@ -64,7 +64,7 @@ namespace AS {
 			parent_field = &F;
 		}
 	}
-	
+
 	template <class T> void
 	FieldElement<T>::self_pseudotrace(unsigned long n) throw() {
 		if (isZero() || n == 1) return;
@@ -73,7 +73,7 @@ namespace AS {
 			*this *= parent_field->scalar(n);
 			return;
 		}
-		
+
 		// first remove the part above d
 		FieldElement<T> traces;
 		if (n >= unsigned(parent_field->d)) {
@@ -82,7 +82,7 @@ namespace AS {
 		}
 		// now go under d
 		n %= parent_field->d;
-		
+
 		long p = parent_field->p;
 		long smalld = parent_field->baseField().d;
 		// The small part
@@ -124,7 +124,7 @@ namespace AS {
 
 /****************** Helpers for frobenius and trace ******************/
 	/* See Section 5 and the long version (probably section 6). */
-	
+
 	/* p^j-th iterated frobenius */
 	template <class T> void FieldElement<T>::BigFrob(const long j) {
 #ifdef AS_DEBUG
@@ -135,7 +135,7 @@ namespace AS {
 		}
 #endif
 		if (isScalar()) return;
-		
+
 		BigInt p = parent_field->p;
 		// step 2
 		vector<FieldElement<T> > down;
@@ -174,11 +174,11 @@ namespace AS {
 		}
 #endif
 		if (isScalar()) return;
-		
+
 		for (long i = 0 ; i < n ; i++)
 			self_frobenius();
 	}
-	
+
 	/* p^j-th pseudotrace */
 	template <class T> void FieldElement<T>::BigPTrace(const long j) {
 #ifdef AS_DEBUG
@@ -189,7 +189,7 @@ namespace AS {
 		}
 #endif
 		if (isZero()) return;
-		
+
 		SmallPTrace(parent_field->baseField().d);
 		for (long i = 1 ; i <= j ; i++) {
 			FieldElement<T> t = *this;
@@ -234,7 +234,7 @@ namespace AS {
 		}
 #endif
 		if (isZero()) return;
-		
+
 		if (n == 0) {
 			*this = parent_field->zero();
 		} else {
@@ -245,5 +245,5 @@ namespace AS {
 			}
 		}
 	}
-	
+
 }

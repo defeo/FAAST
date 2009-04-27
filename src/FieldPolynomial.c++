@@ -456,7 +456,7 @@ namespace AS {
 	template <class T> void
 	FieldPolynomial<T>::toInfrastructure(GFpEX& p)
 	const throw(IllegalCoercionException) {
-		if (!parent_field || !base) throw IllegalCoercionException();
+		if (!parent_field || base) throw IllegalCoercionException();
 		parent_field->switchContext();
 		p = repExt;
 	}
