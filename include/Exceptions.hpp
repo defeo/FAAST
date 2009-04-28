@@ -14,20 +14,61 @@ namespace AS {
 			return message;
 		}
 	};
-	
-	class NotIrreducibleException : public ASException {};
-	class IsIrreducibleException : public ASException {};
-	class NotPrimeException : public ASException {};
-	class NoOverFieldException : public ASException {};
-	class NoSubFieldException : public ASException {};
-	class NotASubFieldException : public ASException {};
-	class NotInSameFieldException : public ASException {};
-	class DivisionByZeroException : public ASException {};
-	class IllegalCoercionException : public ASException {};
-	class NoSuchPolynomialException : public ASException {};
+
+	class NotIrreducibleException : public ASException {
+	public:
+		virtual const char* what() const throw() {
+			return "NotIrreducibleException";
+		}
+	};
+	class IsIrreducibleException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "IsIrreducibleException";
+		}
+	};
+	class NotPrimeException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NotPrimeException";
+		}
+	};
+	class NoOverFieldException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NoOverFieldException";
+		}
+	};
+	class NoSubFieldException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NoSubFieldException";
+		}
+	};
+	class NotASubFieldException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NotASubFieldException";
+		}
+	};
+	class NotInSameFieldException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NotInSameFieldException";
+		}
+	};
+	class DivisionByZeroException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "DivisionByZeroException";
+		}
+	};
+	class IllegalCoercionException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "IllegalCoercionException";
+		}
+	};
+	class NoSuchPolynomialException : public ASException {	public:
+		virtual const char* what() const throw() {
+			return "NoSuchPolynomialException";
+		}
+	};
 	class NotSupportedException : public ASException {
 	public:
-		NotSupportedException() {}
+		NotSupportedException() : ASException("NotSupportedException") {}
 		NotSupportedException(const char* m) : ASException(m) {}
 	};
 	class UndefinedFieldException : public ASException {
@@ -38,7 +79,7 @@ namespace AS {
 	};
 	class BadParametersException : public ASException {
 	public:
-		BadParametersException() {}
+		BadParametersException() : ASException("BadParametersException") {}
 		BadParametersException(const char* m) : ASException(m) {}
 	};
 	class CharacteristicTooLargeException : public ASException {
