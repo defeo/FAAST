@@ -23,14 +23,15 @@ namespace AS {
 	template <class T> FieldPolynomial<T>&
 	FieldPolynomial<T>::operator=(const FieldPolynomial<T>& e)
 	throw() {
-		repBase = 0;
-		repExt = 0;
 		base = e.base;
 		parent_field = e.parent_field;
 		if (parent_field) {
 			parent_field->switchContext();
-			if (base) repBase = e.repBase;
-			else repExt = e.repExt;
+			if (base) { repBase = e.repBase; repExt = 0; }
+			else { repExt = e.repExt; repBase = 0; }
+		} else {
+			repBase = 0;
+			repExt = 0;
 		}
 		return *this;
 	}

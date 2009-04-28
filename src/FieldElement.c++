@@ -12,14 +12,15 @@ namespace AS {
 
 	template <class T> FieldElement<T>&
 	FieldElement<T>::operator=(const FieldElement<T>& e) throw() {
-		repBase = 0;
-		repExt = 0;
 		base = e.base;
 		parent_field = e.parent_field;
 		if (parent_field) {
 			parent_field->switchContext();
-			if (base) repBase = e.repBase;
-			else repExt = e.repExt;
+			if (base) { repBase = e.repBase; repExt = 0; }
+			else { repExt = e.repExt; repBase = 0; }
+		} else {
+			repBase = 0;
+			repExt = 0;
 		}
 		return *this;
 	}
@@ -38,7 +39,7 @@ namespace AS {
 		else repExt = i;
 		return *this;
 	}
-	
+
 /****************** Arithmetics ******************/
 	/* Self-incrementing binary operations. */
 	template <class T> void
@@ -65,7 +66,7 @@ namespace AS {
 			repExt += e.repBase;
 			return;
 		}
-		
+
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase += e.repBase;
@@ -97,7 +98,7 @@ namespace AS {
 			repExt -= e.repBase;
 			return;
 		}
-		
+
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase -= e.repBase;
@@ -132,7 +133,7 @@ namespace AS {
 			repExt *= e.repBase;
 			return;
 		}
-		
+
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase *= e.repBase;
@@ -163,7 +164,7 @@ namespace AS {
 			repExt /= e.repBase;
 			return;
 		}
-		
+
 		sameLevel(e);
 		parent_field->switchContext();
 		if (base) repBase /= e.repBase;
@@ -193,7 +194,7 @@ namespace AS {
  		if (base) NTL::negate(repBase, repBase);
  		else NTL::negate(repExt, repExt);
  	}
- 	
+
 	template <class T> void FieldElement<T>::self_inv()
 	throw(DivisionByZeroException) {
 		if (isZero()) throw DivisionByZeroException();
@@ -201,7 +202,7 @@ namespace AS {
 		if (base) NTL::inv(repBase, repBase);
 		else NTL::inv(repExt, repExt);
 	}
-	
+
 	template <class T> void FieldElement<T>::operator^=(const ZZ& i)
 	throw() {
 		if (!parent_field) return;
@@ -209,7 +210,7 @@ namespace AS {
 		if (base) power(repBase, repBase, i);
 		else power(repExt, repExt, i);
 	}
-	
+
 	template <class T> void FieldElement<T>::operator^=(const long i)
 	throw() {
 		if (!parent_field) return;
@@ -217,17 +218,17 @@ namespace AS {
 		if (base) power(repBase, repBase, i);
 		else power(repExt, repExt, i);
 	}
-	
+
 	template <class T> void FieldElement<T>::self_frobenius()
 	throw() {
 		if (!parent_field) return;
 		if (base) return;
-		
+
 		parent_field->switchContext();
-		
+
 		power(repExt, repExt, parent_field->p);
 	}
-	
+
 	template <class T> void FieldElement<T>::self_trace() throw() {
 		if (!parent_field) return;
 		parent_field->switchContext();
@@ -239,7 +240,7 @@ namespace AS {
 			parent_field = &(parent_field->baseField());
 		}
 	}
-	
+
 /****************** Coercion of elements ******************/
 	template <class T> FieldElement<T>
 	FieldElement<T>::toScalar()
@@ -247,7 +248,7 @@ namespace AS {
 		if (!parent_field) return *this;
 		if (parent_field->d == 1)
 			return *this >> parent_field->primeField();
-			
+
 #ifdef AS_DEBUG
 		if (base) throw
 			ASException("Malformed element in isScalar().");
@@ -260,7 +261,7 @@ namespace AS {
 					&(parent_field->primeField()), e);
 		} else throw IllegalCoercionException();
 	}
-	
+
 	template <class T> void
 	FieldElement<T>::operator>>=(const Field<T>& F)
 	throw(IllegalCoercionException) {
@@ -268,7 +269,7 @@ namespace AS {
 			*this = F.zero();
 			return;
 		}
-		
+
 		// go up ...
 		if (parent_field->isSubFieldOf(F)) {
 			while (parent_field->stem != F.stem) {
@@ -299,16 +300,16 @@ namespace AS {
 		}
 		// or go nowhere
 		else throw IllegalCoercionException();
-		
+
 		// move out of the stem, if needed
 		parent_field = &F;
 	}
-	 
+
 	template <class T> bool
 	FieldElement<T>::isCoercible(const Field<T>& F)
 	const throw() {
 		if (!parent_field) return true;
-		
+
 		// go up ...
 		if (parent_field->isSubFieldOf(F)) return true;
 		// or go down ...
@@ -330,7 +331,7 @@ namespace AS {
 		// or go nowhere
 		else return false;
 	}
-	
+
 /****************** Comparison ******************/
 	template <class T> bool
 	FieldElement<T>::operator==(const FieldElement<T>& e)
@@ -379,7 +380,7 @@ namespace AS {
 		if (base) return o << repBase;
 		else return o << repExt;
 	}
-	
+
 	/* Print the element as a polynomial over GF(p) in the
 	 * variable var
 	 */
@@ -404,12 +405,12 @@ namespace AS {
 			return o;
 		}
 	}
-	
+
 	/* Print the element as a multivariate polynomial over
 	 * GF(p). The number of variables in vars must be at least
 	 * one plus the Artin-Schreier height of the field the
 	 * element belongs to.
-	 * 
+	 *
 	 * throws : ASException if there's not enough variables
 	 *          in var
 	 */
@@ -418,7 +419,7 @@ namespace AS {
 	const {
 		if (isZero()) return o << 0;
 		if (base) return o << repBase;
-		if (vars.size() < parent_field->height + 1) 
+		if (vars.size() < parent_field->height + 1)
 			throw ASException("Not enough variables");
 		if (parent_field->height == 0) {
 			print(o, vars[0]);
