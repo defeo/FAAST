@@ -12,7 +12,7 @@ void ComputeTraceVec(const GF2XModulus& F)
 
 	if (S.length() > 0)
 		return;
-	
+
 	TraceVec(S, F.f);
 }
 NTL_CLOSE_NNS
@@ -25,7 +25,7 @@ namespace AS {
 	const typename T::BigInt& p) {
 		typedef typename T::GFpX   GFpX;
 		typedef typename T::BigInt BigInt;
-		
+
 		GFpX Lead = W[long(p)-1];
 		for (BigInt i = p-long(1) ; i >= long(0) ; i--) {
 			GFpX tmp = W[i];
@@ -47,7 +47,7 @@ namespace AS {
 	const typename T::BigInt& p) {
 		typedef typename T::GFpX   GFpX;
 		typedef typename T::BigInt BigInt;
-		
+
 		GFpX Lead; RightShift(Lead, W[0], 1);
 		Lead += W[1];
 		for (BigInt i = 0 ; i <= p-long(1) ; i++) {
@@ -85,7 +85,7 @@ namespace AS {
 		}
 		// if deg(V) < p, then
 		//     V mod Z^p - Z - T
-		// is V 
+		// is V
 		else {
 			W.resize(p);
 			for (long i = start ; i <= end ; i++)
@@ -136,11 +136,11 @@ namespace AS {
 		typedef typename T::BigInt         BigInt;
 
 		vector<GFpXMultiplier> Trans; Trans.resize(p);
-		
+
 		build(Trans[long(p)-1], W[0] + W[long(p)-1], Q);
 		for (BigInt i = 1; i < p ; i++)
 			build(Trans[long(p)-long(i)-1], W[i], Q);
-		
+
 		GFpX formtmp = -form;
 		for (BigInt i = 0 ; i < p ; i++)
 			TransMulMod(W[i], formtmp, Trans[i], Q);
@@ -151,7 +151,7 @@ namespace AS {
 		typedef typename T::GFpX           GFpX;
 		typedef typename T::GFpXMultiplier GFpXMultiplier;
 		typedef typename T::BigInt         BigInt;
-		
+
 		long d = deg(Q);
 		// Xn = X^d mod Q
 		GFpX Xn = -Q; SetCoeff(Xn, d, 0);
@@ -167,12 +167,12 @@ namespace AS {
 			ShiftAdd(W, tmp1, shift);
 		}
 	}
-	
-	
-	
+
+
+
 	/* Push the element e down along the stem and store
 	 * the result in v.
-	 * 
+	 *
 	 * throw : NoSubFieldException if e belongs to GF(p)
 	 */
 	template <class T>
@@ -189,9 +189,9 @@ namespace AS {
 		const Field<T>* parent = e.parent_field->stem;
 		if (!parent->subfield)
 			throw NoSubFieldException();
-		
+
 		parent->switchContext();
-		
+
 		// if the subfield is prime
 		// simply return the list of coefficients
 		if (parent->subfield->d == 1) {
@@ -242,10 +242,10 @@ namespace AS {
 				for (BigInt i = 0 ; i < p ; i++)
 					expand<T>(W[i], W[i], 2*long(p) - 1);
 			}
-			
+
 			// prepare to work in the subfield
 			parent->subfield->switchContext();
-			
+
 			// convert the result of push-down-rec to elements
 			// of the subfield
 			v.resize(p);
@@ -265,12 +265,12 @@ namespace AS {
 			}
 		}
 	}
-		
+
 	/* Lift the elements in v up along the stem and store
 	 * the result in e.
 	 * If v is too short, it is filled with zeros.
 	 * If v is too long, the unnecessary elements are ignored.
-	 * 
+	 *
 	 * throw : NotInSameFieldException if the elements of v do not
 	 *         belong all to the same field.
 	 * throw : NoOverFieldException if there's no extension to lift
@@ -309,9 +309,9 @@ namespace AS {
 		}
 		parent = parent->stem;
 		if (!parent->overfield) throw NoOverFieldException();
-		
+
 		parent->switchContext();
-		
+
 		// if this is a prime field
 		// simply merge the coefficients
 		if (parent->d == 1) {
@@ -413,7 +413,7 @@ namespace AS {
 				Field<T>::TIME.LU_TRANSEVAL += GetTime();
 #endif
 			}
-			
+
 			// step 4 of push-down*
 			GFpX V;
 #ifdef AS_TIMINGS
@@ -423,10 +423,10 @@ namespace AS {
 #ifdef AS_TIMINGS
 			Field<T>::TIME.LU_TRANSPUSHDOWN += GetTime();
 #endif
-			
+
 			// now get ready to work in the overfield
 			parent->overfield->switchContext();
-			
+
 			// step 4 of lift-up
 			const GFpXModulus& QQ = GFpE::modulus();
 #ifdef AS_TIMINGS
@@ -437,7 +437,7 @@ namespace AS {
 #ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP4 += GetTime();
 #endif
-			
+
 			// step 5 of lift-up
 #ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 = -GetTime();
@@ -451,7 +451,7 @@ namespace AS {
 			Field<T>::TIME.LU_STEP5 += GetTime();
 #endif
 			const FieldElement<T>& invDiffQQ =
-				parent->overfield->getLiftup(); 
+				parent->overfield->getLiftup();
 #ifdef AS_TIMINGS
 			Field<T>::TIME.LU_STEP5 -= GetTime();
 #endif
@@ -461,5 +461,5 @@ namespace AS {
 #endif
 		}
 	}
-	
+
 }

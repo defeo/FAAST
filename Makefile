@@ -98,7 +98,7 @@ $(BIN)/testTmul.o: $(SRC)/testTmul.c++ $(INC)/Tmul.hpp
 $(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
 	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ \
 	$(SRC)/FieldPrecomputations.c++ $(SRC)/Couveignes2000.c++
-	touch $(INC)/Field.hpp
+	touch $(INC)/Field.hpp $(SRC)/GF2hack.c++
 
 $(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
 	$(SRC)/FieldElement.c++ $(SRC)/FE-Liftup-Pushdown.c++ \

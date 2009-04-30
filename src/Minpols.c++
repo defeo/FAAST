@@ -175,6 +175,7 @@ namespace AS {
 					tmp >>= *(G->subfield);
 					G = G->subfield;
 				}
+cout << tmp.parent() << endl;
 			} catch (IllegalCoercionException e) {}
 
 			// get the minimal polynomials if needed
