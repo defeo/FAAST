@@ -23,16 +23,26 @@ namespace AS {
 	template <class T> FieldPolynomial<T>&
 	FieldPolynomial<T>::operator=(const FieldPolynomial<T>& e)
 	throw() {
+		if (!e.parent_field) {
+			parent_field = NULL;
+			// free the storage
+			repBase.kill();
+			repExt.kill();
+			return *this;
+		}
+
+		// if the modulus has changed, we free the storage
+		if (parent_field && parent_field->stemField() != e.parent_field->stemField()) {
+			repBase.kill();
+			repExt.kill();
+		}
+
 		base = e.base;
 		parent_field = e.parent_field;
-		if (parent_field) {
-			parent_field->switchContext();
-			if (base) { repBase = e.repBase; repExt = 0; }
-			else { repExt = e.repExt; repBase = 0; }
-		} else {
-			repBase = 0;
-			repExt = 0;
-		}
+		parent_field->switchContext();
+
+		if (base) { repBase = e.repBase; repExt = 0; }
+		else { repExt = e.repExt; repBase = 0; }
 		return *this;
 	}
 
@@ -51,15 +61,28 @@ namespace AS {
 	template <class T> FieldPolynomial<T>&
 	FieldPolynomial<T>::operator=(const FieldElement<T>& e)
 	throw() {
+		if (!e.parent_field) {
+			parent_field = NULL;
+			// free the storage
+			repBase.kill();
+			repExt.kill();
+			return *this;
+		}
+
+		// if the modulus has changed, we free the storage
+		if (parent_field && parent_field->stemField() != e.parent_field->stemField()) {
+			repBase.kill();
+			repExt.kill();
+		}
+
 		repBase = 0;
 		repExt = 0;
 		base = e.base;
 		parent_field = e.parent_field;
-		if (parent_field) {
-			parent_field->switchContext();
-			if (base) SetCoeff(repBase, 0, e.repBase);
-			else SetCoeff(repExt, 0, e.repExt);
-		}
+
+		parent_field->switchContext();
+		if (base) SetCoeff(repBase, 0, e.repBase);
+		else SetCoeff(repExt, 0, e.repExt);
 		return *this;
 	}
 
@@ -88,13 +111,12 @@ namespace AS {
 			e = FieldElement<T>();
 			return;
 		}
+
 		parent_field->switchContext();
 		e.parent_field = parent_field;
 		e.base = base;
-		e.repBase = 0;
-		e.repExt = 0;
-		if (base) e.repBase = coeff(repBase, i);
-		else e.repExt = coeff(repExt, i);
+		if (base) { e.repBase = coeff(repBase, i); e.repExt = 0; }
+		else { e.repExt = coeff(repExt, i); e.repBase = 0; }
 	}
 
 	template <class T> void
@@ -102,15 +124,22 @@ namespace AS {
 	throw(NotInSameFieldException, BadParametersException) {
 		if (i < 0)
 			throw BadParametersException("Negative index for polynomial coefficient.");
-		if (e.isZero()) return;
-		if (!parent_field) {
-			parent_field = e.parent_field;
-			base = e.base;
-		} else sameLevel(e);
+		if (!e.parent_field) {
+			if (!parent_field) return;
 
-		parent_field->switchContext();
-		if (base) SetCoeff(repBase, i, e.repBase);
-		else SetCoeff(repExt, i, e.repExt);
+			parent_field->switchContext();
+			if (base) SetCoeff(repBase, i, 0);
+			else SetCoeff(repExt, i, 0);
+		} else {
+			if (!parent_field) {
+				parent_field = e.parent_field;
+				base = e.base;
+			} else sameLevel(e);
+
+			parent_field->switchContext();
+			if (base) SetCoeff(repBase, i, e.repBase);
+			else SetCoeff(repExt, i, e.repExt);
+		}
 	}
 
 	template <class T> void
@@ -423,22 +452,21 @@ namespace AS {
 	FieldPolynomial<T>::XGCD(const FieldPolynomial<T>& e,
 	FieldPolynomial<T>& U, FieldPolynomial<T>& V)
 	const throw(NotInSameFieldException) {
-		if (!e.parent_field) return *this;
-		if (!parent_field) return e;
+		if (!e.parent_field && !parent_field) return U = V = *this;
+		else if (!e.parent_field) {
+			U = V = this->parent_field->one();
+			return *this;
+		} else if (!parent_field) {
+			U = V = e.parent_field->one();
+			return e;
+		}
 		sameLevel(e);
 		parent_field->switchContext();
 
-		FieldPolynomial<T> res;
-		if (base) {
-			NTL::XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
-			U.repExt = V.repExt = 0;
-		} else {
-			NTL::XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
-			U.repBase = V.repBase = 0;
-		}
+		FieldPolynomial<T> res = U = V = parent_field->zero();
+		if (base) NTL::XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
+		else NTL::XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
 
-		res.parent_field = U.parent_field = V.parent_field = parent_field;
-		res.base = U.base = V.base = base;
 		return res;
 	}
 

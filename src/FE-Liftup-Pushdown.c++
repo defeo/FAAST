@@ -200,8 +200,8 @@ namespace AS {
 			const GFpX& eX = rep(e.repExt);
 			for (long i = 0 ; i <= deg(eX) ; i++) {
 				v[i].base = true;
-				v[i].repBase = coeff(eX, i);
 				v[i].repExt = 0;
+				v[i].repBase = coeff(eX, i);
 				v[i].parent_field = base;
 			}
 		}
@@ -255,8 +255,8 @@ namespace AS {
 				// this automatically reduces modulo
 				// the defining polynomial if needed
 				if (base) {
-					v[i].repBase = coeff(W[i], 0);
 					v[i].repExt = 0;
+					v[i].repBase = coeff(W[i], 0);
 				} else {
 					v[i].repBase = 0;
 					conv(v[i].repExt, W[i]);

@@ -468,6 +468,5 @@ namespace AS {
 #include "../src/FieldAlgorithms.c++"
 #include "../src/FieldPrecomputations.c++"
 #include "../src/Couveignes2000.c++"
-#include "../src/GF2hack.c++"
 
 #endif /*FIELD_H_*/
