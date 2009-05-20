@@ -1,5 +1,5 @@
-#include "utilities.hpp"
-#include "Tmul.hpp"
+#include "AS/utilities.hpp"
+#include "AS/Tmul.hpp"
 
 NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);

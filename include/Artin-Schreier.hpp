@@ -1,7 +1,8 @@
 #ifndef ARTINSCHREIER_H_
 #define ARTINSCHREIER_H_
 
-#include "Types.hpp"
-#include "Field.hpp"
+#include "AS/Exceptions.hpp"
+#include "AS/Types.hpp"
+#include "AS/Field.hpp"
 
 #endif /*ARTINSCHREIER_H_*/

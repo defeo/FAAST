@@ -256,7 +256,7 @@ namespace AS {
 
 		parent_field->switchContext();
 		if (deg(rep(repExt)) <= 0) {
-			GFp e; conv(e, repExt);
+			GFp e = coeff(rep(repExt), 0);
 			return FieldElement<T>(
 					&(parent_field->primeField()), e);
 		} else throw IllegalCoercionException();
@@ -314,7 +314,7 @@ namespace AS {
 		if (parent_field->isSubFieldOf(F)) return true;
 		// or go down ...
 		else if (parent_field->isOverFieldOf(F)) {
-			while (parent_field.stem != F.stem) {
+			while (parent_field->stem != F.stem) {
 				vector<FieldElement<T> > v;
 				AS::pushDown(*this, v);
 				// verify coercibility
@@ -419,7 +419,7 @@ namespace AS {
 	const {
 		if (isZero()) return o << 0;
 		if (base) return o << repBase;
-		if (vars.size() < parent_field->height + 1)
+		if (long(vars.size()) < parent_field->height + 1)
 			throw ASException("Not enough variables");
 		if (parent_field->height == 0) {
 			print(o, vars[0]);
@@ -429,7 +429,7 @@ namespace AS {
 			parent_field->vsubfield->pushDown(*this, down);
 			typename vector<FieldElement<T> >::iterator it;
 			bool first = true;
-			for (long i = 0 ; i < down.size() ; i++) {
+			for (long i = 0 ; i < long(down.size()) ; i++) {
 				if (!down[i].isZero()) {
 					if (first) first = false;
 					else o << " + ";

@@ -14,6 +14,7 @@ CPROFLIB =
 # Project's files
 ROOT = .
 SRC = $(ROOT)/src
+TESTDIR = $(ROOT)/test
 INC = $(ROOT)/include
 BIN = $(ROOT)/bin/$(shell hostname)-$(shell uname -m)-$(CC)$(shell $(CC) -dumpversion)
 
@@ -25,8 +26,13 @@ IPATH=-I$(INC)
 LIB=$(NTLLIB) $(GMPLIB) $(MLIB) $(ZLIB) $(CPROFLIB)
 
 # Objects being prerequisites for every build
-COMMONOBJS := 
+COMMONOBJS := Artin-Schreier.o
 COMMONOBJS := $(COMMONOBJS:%=$(BIN)/%)
+
+########## targets
+# the default target
+.PHONY: all
+all: createbin library
 
 # Script to create the bin directory
 createbin:
@@ -69,89 +75,95 @@ TESTTMUL := $(TESTTMUL:%=$(BIN)/%)
 $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 	$(CC) $(OPT) $(IPATH) $(COMMONOBJS) $(TESTTMUL) $(LIB) -o $(BIN)/testTmul
 
-########## .o files
+########## object files
 
-$(BIN)/test.o: $(SRC)/test.c++ $(INC)/Types.hpp $(INC)/Field.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/test.c++ -o $(BIN)/test.o
+$(BIN)/Artin-Schreier.o: $(SRC)/explicit_instantiation.c++ $(INC)/Artin-Schreier.hpp \
+	$(SRC)/Couveignes2000.c++ $(SRC)/FE-Liftup-Pushdown.c++ $(SRC)/FE-Trace-Frob.c++ \
+	$(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ $(SRC)/FieldElement.c++ $(SRC)/FieldPolynomial.c++ \
+	$(SRC)/FieldPrecomputations.c++ $(SRC)/Minpols.c++ $(SRC)/utilities.c++ $(SRC)/NTLhacks.c++ \
+	$(SRC)/Types.c++
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/explicit_instantiation.c++ -o $(BIN)/Artin-Schreier.o
 
-$(BIN)/testIso.o: $(SRC)/testIso.c++ $(INC)/Types.hpp $(INC)/Field.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testIso.c++ -o $(BIN)/testIso.o
+########## object files for test routines
 
-$(BIN)/testStem.o: $(SRC)/testStem.c++ $(INC)/Types.hpp $(INC)/Field.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testStem.c++ -o $(BIN)/testStem.o
+$(BIN)/test.o: $(TESTDIR)/test.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/test.c++ -o $(BIN)/test.o
 
-$(BIN)/testTraceFrob.o: $(SRC)/testTraceFrob.c++ $(INC)/Types.hpp $(INC)/Field.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testTraceFrob.c++ -o $(BIN)/testTraceFrob.o
+$(BIN)/testIso.o: $(TESTDIR)/testIso.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testIso.c++ -o $(BIN)/testIso.o
 
-$(BIN)/testLE.o: $(SRC)/testLE.c++ $(INC)/Types.hpp $(INC)/Field.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testLE.c++ -o $(BIN)/testLE.o
+$(BIN)/testStem.o: $(TESTDIR)/testStem.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testStem.c++ -o $(BIN)/testStem.o
 
-$(BIN)/testCyclotomic.o: $(SRC)/testCyclotomic.c++ $(INC)/Types.hpp \
-	$(INC)/Field.hpp $(INC)/utilities.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testCyclotomic.c++ -o $(BIN)/testCyclotomic.o
+$(BIN)/testTraceFrob.o: $(TESTDIR)/testTraceFrob.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testTraceFrob.c++ -o $(BIN)/testTraceFrob.o
 
-$(BIN)/testTmul.o: $(SRC)/testTmul.c++ $(INC)/Tmul.hpp
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/testTmul.c++ -o $(BIN)/testTmul.o
+$(BIN)/testLE.o: $(TESTDIR)/testLE.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testLE.c++ -o $(BIN)/testLE.o
+
+$(BIN)/testCyclotomic.o: $(TESTDIR)/testCyclotomic.c++ $(INC)/Artin-Schreier.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testCyclotomic.c++ -o $(BIN)/testCyclotomic.o
+
+$(BIN)/testTmul.o: $(TESTDIR)/testTmul.c++ $(INC)/AS/Tmul.hpp
+	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testTmul.c++ -o $(BIN)/testTmul.o
 
 ########## other files
 
-$(INC)/Field.hpp: $(INC)/Exceptions.hpp $(INC)/FieldElement.hpp \
-	$(INC)/FieldPolynomial.hpp $(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ \
-	$(SRC)/FieldPrecomputations.c++ $(SRC)/Couveignes2000.c++
-	touch $(INC)/Field.hpp $(SRC)/GF2hack.c++
+$(INC)/Artin-Schreier.hpp: $(INC)/AS/Exceptions.hpp $(INC)/AS/Field.hpp $(INC)/AS/Types.hpp
+	touch $(INC)/Artin-Schreier.hpp
 
-$(INC)/FieldElement.hpp: $(INC)/Exceptions.hpp \
-	$(SRC)/FieldElement.c++ $(SRC)/FE-Liftup-Pushdown.c++ \
-	$(SRC)/FE-Trace-Frob.c++ $(SRC)/Minpols.c++
-	touch $(INC)/FieldElement.hpp
+$(INC)/AS/Types.hpp: $(INC)/AS/NTLhacks.hpp
+	touch $(INC)/AS/Types.hpp
 
-$(INC)/FieldPolynomial.hpp: $(INC)/Exceptions.hpp $(SRC)/FieldPolynomial.c++
-	touch $(INC)/FieldPolynomial.hpp
+$(INC)/AS/Field.hpp: $(INC)/AS/Exceptions.hpp $(INC)/AS/FieldElement.hpp $(INC)/AS/FieldPolynomial.hpp
+	touch $(INC)/AS/Field.hpp
 
-$(INC)/utilities.hpp: $(SRC)/utilities.c++
-	touch $(INC)/utilities.hpp
+$(INC)/AS/FieldElement.hpp: $(INC)/AS/Exceptions.hpp
+	touch $(INC)/AS/FieldElement.hpp
 
-$(SRC)/Field.c++: $(INC)/Types.hpp
-	touch $(SRC)/Field.c++
+$(INC)/AS/FieldPolynomial.hpp: $(INC)/AS/Exceptions.hpp
+	touch $(INC)/AS/FieldPolynomial.hpp
 
-$(SRC)/FieldElement.c++: $(INC)/Types.hpp
-	touch $(SRC)/FieldElement.c++
+$(INC)/AS/utilities.hpp: $(INC)/AS/Types.hpp $(INC)/AS/Exceptions.hpp
+	touch $(INC)/AS/utilities.hpp
 
-$(SRC)/FieldPolynomial.c++: $(INC)/Types.hpp
-	touch $(SRC)/FieldPolynomial.c++
-
-$(SRC)/FieldAlgorithms.c++: $(INC)/utilities.hpp
+$(SRC)/FieldAlgorithms.c++: $(INC)/AS/utilities.hpp
 	touch $(SRC)/FieldAlgorithms.c++
 
-$(SRC)/FE-Liftup-Pushdown.c++: $(INC)/utilities.hpp $(INC)/Tmul.hpp
+$(SRC)/FE-Liftup-Pushdown.c++: $(INC)/AS/utilities.hpp $(INC)/AS/Tmul.hpp
 	touch $(SRC)/FE-Liftup-Pushdown.c++
 
-$(SRC)/FE-Trace-Frob.c++: $(INC)/utilities.hpp
+$(SRC)/FE-Trace-Frob.c++: $(INC)/AS/utilities.hpp
 	touch $(SRC)/FE-Trace-Frob.c++
 
-$(SRC)/FieldPrecomputations.c++: $(INC)/utilities.hpp
+$(SRC)/FieldPrecomputations.c++: $(INC)/AS/utilities.hpp
 	touch $(SRC)/FieldPrecomputations.c++
 
 ######################################################################
-########## Library
+########## Obsolete
 
-Artin-Schreier.hpp.gch: $(INC)/Artin-Schreier.hpp
-	$(CC) -x c++-header -c $(OPT) $(IPATH) $(INC)/Artin-Schreier.hpp -o Artin-Schreier.hpp.gch
-	
-$(INC)/Artin-Schreier.hpp: $(INC)/Types.hpp $(INC)/Field.hpp
-	touch $(INC)/Artin-Schreier.hpp
+# Artin-Schreier.hpp.gch: $(INC)/Artin-Schreier.hpp
+#	$(CC) -x c++-header -c $(OPT) $(IPATH) $(INC)/Artin-Schreier.hpp -o Artin-Schreier.hpp.gch
 
 ######################################################################
-.PHONY: all
-all: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
-	$(BIN)/testTraceFrob $(BIN)/testLE $(BIN)/testCyclotomic \
-	$(BIN)/testTmul library
-
-.PHONY: now
-now: createbin $(BIN)/test library
+########## Other targets
 
 .PHONY: library
-library: Artin-Schreier.hpp.gch
+library: $(COMMONOBJS)
+	ar rcs libArtin-Schreier.a $(BIN)/Artin-Schreier.o
+
+.PHONY: test
+test: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
+	$(BIN)/testTraceFrob $(BIN)/testLE $(BIN)/testCyclotomic \
+	$(BIN)/testTmul
+
+.PHONY: doc
+doc:
+	doxygen doxy.conf
+
+.PHONY: doc-dev
+doc-dev:
+	(cat doxy.conf; echo "ENABLED_SECTIONS=DEV") | doxygen -
 
 .PHONY: clean
 clean:

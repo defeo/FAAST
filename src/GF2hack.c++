@@ -1,4 +1,6 @@
 /*
+ * Obsolete (integrated in the main code)
+ *
  * GF2hack.c++
  *
  *  Created on: Apr 29, 2009

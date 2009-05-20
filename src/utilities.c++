@@ -35,7 +35,7 @@ namespace AS {
 			SetCoeff(restmp, i*n, coeff(P, i));
 		res = restmp;
 	}
-	
+
 	/* Transpostion of expand */
 	template <class T> void contract(typename T::GFpX& res,
 	const typename T::GFpX& P, const long n) {
@@ -46,15 +46,15 @@ namespace AS {
 			SetCoeff(restmp, i, coeff(P, i*n));
 		res = restmp;
 	}
-	
-	
-	
+
+
+
 	/* Store in res the composition Q(R).
 	 * Q and R are two polynomials over GF(p)
 	 */
 	template <class T> void compose
 	(typename T::GFpX& res, const typename T::GFpX& Q,
-	const typename T::GFpX& R, const typename T::BigInt p) {
+	const typename T::GFpX& R, const typename T::BigInt& p) {
 		typedef typename T::GFpX GFpX;
 
 		long degree = max(deg(Q),0);
@@ -85,14 +85,14 @@ namespace AS {
 			res = Q;
 		}
 	}
-	
+
 	/* Brent variant of Pollard Rho. Returns 0 or a
 	 * factor of n.
 	 */
 	long brent80(long n, long x0, long m, long c) {
 /*		ZZ x, y, d, zzn, zzc;
 		x = y = x0; d = 1; zzn = n; zzc = c;
-		
+
 		while (d == 1) {
 			PowerMod(x,x,2,zzn); AddMod(x, x, zzc, zzn);
 			PowerMod(y,y,2,zzn); AddMod(y, y, zzc, zzn);
@@ -101,7 +101,7 @@ namespace AS {
 			d = GCD(abs(x-y), zzn);
 		}
 		return to_long(d);*/
-		
+
 		ZZ y, x, ys, zzn, zzc, q, g;
 		y = x0; zzn = n; zzc = c; q = 1; g = 0;
 		long r = 1;
@@ -133,24 +133,24 @@ namespace AS {
 		}
 		else return to_long(g);
 	}
-	
+
 	// Deterministic primality test. Only valid if
-	// 17 < n < 341,550,071,728,321 
+	// 17 < n < 341,550,071,728,321
 	bool isJaeschkePrime(long n) {
 		ZZ witn[7];
 		witn[0] = 2; witn[1] = 3; witn[2] = 5;
 		witn[3] = 7; witn[4] = 11; witn[5] = 13;
 		witn[6] = 17;
-		
+
 		ZZ zzn; zzn = n;
 		for (int i = 0 ; i < 7 ; i++) {
 			if (MillerWitness(zzn, witn[i])) return false;
 		}
 		return true;
 	}
-	
+
 	/* Inserts n with multiplicity m in the vector */
-	void insertInPlace(vector<pair<long,int> >& factors, 
+	void insertInPlace(vector<pair<long,int> >& factors,
 	long n, int m) {
 		bool inserted = false;
 		vector<pair<long,int> >::iterator it;
@@ -178,19 +178,19 @@ namespace AS {
 			for (int i = 0 ; i < 7 && n > 1; i++) {
 				for (mul = 0 ; n % trials[i] == 0 ; mul++) n /= trials[i];
 				if (mul > 0) {
-					insertInPlace(factors, trials[i], 
+					insertInPlace(factors, trials[i],
 									mul*multiplicity);
 				}
 			}
 		}
-		
+
 		if (n <= 1) return;
 		// test primality
 		bool isprime = isJaeschkePrime(n);
 		if (isprime && NumBits(n) > 47) {
 			isprime &= ProbPrime(n, 10);
 		}
-		
+
 		// if n is prime, simply add it to the factorisation
 		if (isprime) {
 			insertInPlace(factors, n, multiplicity);
@@ -208,10 +208,10 @@ namespace AS {
 			factor(n, factors, false, multiplicity);
 		}
 	}
-	
+
 	/* compute the n-th cyclotomic polynomial modulo p */
 	template <class T> void cyclotomic
-	(typename T::GFpX& res, const long n, const typename T::BigInt p) {
+	(typename T::GFpX& res, const long n, const typename T::BigInt& p) {
 		typedef typename T::GFpX GFpX;
 
 		if (n == 1) { SetX(res); SetCoeff(res, 0, -1); }
@@ -231,7 +231,7 @@ namespace AS {
 #endif
 				Phi = Phip / Phi;
 			}
-			
+
 			// now add the other factors
 			if (m > 1) {
 				expand<T>(res, Phi, m);

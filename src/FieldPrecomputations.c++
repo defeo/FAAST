@@ -1,4 +1,4 @@
-#include "utilities.hpp"
+#include "AS/utilities.hpp"
 
 namespace AS {
 	template <class T> typename T::MatGFp artinMatrix
@@ -64,10 +64,10 @@ namespace AS {
 
 		return pseudotraces[j];
 	}
-	
+
 	template <class T> const FieldElement<T>& Field<T>::getLiftup() const {
 		if (this != stem) return stem->getLiftup();
-		
+
 		if ( !(liftuphelper.get()) ) {
 			switchContext();
 #ifdef AS_TIMINGS
@@ -78,7 +78,7 @@ namespace AS {
 			helper->base = false;
 			conv(helper->repExt, diffQ);
 			helper->parent_field = this;
-			
+
 			helper->self_inv();
 			liftuphelper.reset(helper);
 #ifdef AS_TIMINGS
@@ -87,7 +87,7 @@ namespace AS {
 		}
 		return *liftuphelper;
 	}
-	
+
 	template <class T> const typename
 	T::MatGFp& Field<T>::getArtinMatrix() const {
 		if (this != stem) return stem->getArtinMatrix();

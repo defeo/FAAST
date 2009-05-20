@@ -1,5 +1,3 @@
-#include "Types.hpp"
-
 #include <NTL/ZZ_pXFactoring.h>
 #include <NTL/lzz_pXFactoring.h>
 #include <NTL/GF2XFactoring.h>
@@ -10,20 +8,20 @@ namespace AS {
 #ifdef AS_TIMINGS
 	template <class T> typename Field<T>::TIMINGS Field<T>::TIME;
 #endif
-	
+
 /****************** Constructors ******************/
 	/* All constructors are static. There's no way to directly
-	 * create a Field object. Field objects are permanent and 
+	 * create a Field object. Field objects are permanent and
 	 * they cannot be deleted after creation. They live in their
 	 * own lattice structure.
 	 */
 
 	/* Default constructor, builds a field from some default value
 	 * (i.e. the context for NTL).
-	 * 
+	 *
 	 * If test is false, do not perform primality and irreducibility
 	 * tests
-	 * 
+	 *
 	 * throws : NotPrimeException, NotIrreducibleException if the
 	 *          default makes no sense
 	 */
@@ -53,7 +51,7 @@ namespace AS {
 		}
 #ifdef AS_TIMINGS
 		TIME.IRREDTEST += GetTime();
-#endif		
+#endif
 		// build GF(p^d)
 		if (d >= 2) {
 			// build GF(p)
@@ -92,7 +90,7 @@ namespace AS {
 #ifdef AS_TIMINGS
 		TIME.IRREDTEST += GetTime();
 #endif
-		
+
 		// build GF(p^d)
 		if (d >= 2) {
 			// build GF(p)
@@ -114,13 +112,13 @@ namespace AS {
 			return *(new Field<GF2_Algebra>(context, primitive, p));
 		}
 	}
-	
+
 
 	/* Build a field from an irreducible polynomial P.
-	 * 
+	 *
 	 * If test is false, do not perform primality and irreducibility
 	 * tests
-	 * 
+	 *
 	 * throws : NotPrimeExeption if the polynomial isn't defined
 	 *          over a prime field
 	 * throws : NotIrreducibleException if P is not irreducible
@@ -136,10 +134,10 @@ namespace AS {
 	 * polynomial.
 	 * Notice that this operation implicitely creates
 	 * the field GF(p) too.
-	 * 
+	 *
 	 * If test is false, do not perform primality and irreducibility
 	 * tests
-	 * 
+	 *
 	 * throws : NotPrimeException if p is not prime
 	 * throws : ASException if d less than one
 	 */
@@ -161,7 +159,7 @@ namespace AS {
 #ifdef AS_TIMINGS
 		TIME.PRIMETEST += GetTime();
 #endif
-		
+
 		GFp::init(p);
 		GFpX P;
 #ifdef AS_TIMINGS
@@ -174,7 +172,7 @@ namespace AS {
 #endif
 		return createField(P, false);
 	}
-	
+
 	template<> const Field<GF2_Algebra>& Field<GF2_Algebra>::createField
 	(const BigInt& p, const long d, const bool test)
 	throw (NotPrimeException, BadParametersException) {
@@ -186,7 +184,7 @@ namespace AS {
 			s << "GF2 does not support characteristic " << p << ".";
 			throw BadParametersException(s.str().c_str());
 		}
-		
+
 		GFpX P;
 #ifdef AS_TIMINGS
 		TIME.BUILDIRRED = -GetTime();
@@ -198,7 +196,7 @@ namespace AS {
 #endif
 		return createField(P, false);
 	}
-	
+
 /****************** Properties ******************/
 	template <class T> ZZ Field<T>::cardinality() const throw () {
 		switchContext();
@@ -211,15 +209,16 @@ namespace AS {
 	 */
 	template <class T> FieldPolynomial<T> Field<T>::generatingPolynomial()
 	const throw() {
-		// if this is GF(p) or a base field, this is the same as 
+		// if this is GF(p) or a base field, this is the same as
 		// the primitive polynomial
 		if (height == 0) return primitivePolynomial();
 		// else, it is X^p - X - alpha
 		else {
 			switchContext();
-			FieldPolynomial<T> res(-alpha);
+			FieldPolynomial<T> res(-(*alpha));
 			res.setCoeff(1, -1);
 			res.setCoeff(to_long(p));
+			return res;
 		}
 	}
 
@@ -289,7 +288,7 @@ namespace AS {
 		switchContext();
 		if (d == 1) return FieldPolynomial<T>(this, x);
 		else {
-			GFpEX X; X = x;
+			GFpEX X; conv(X, x);
 			return FieldPolynomial<T>(this, X);
 		}
 	}
@@ -337,7 +336,7 @@ namespace AS {
 		while (stemf != stem && (stemf = stemf->subfield));
 		return stemf == stem;
 	}
-	
+
 /****************** Printing ******************/
 	template <class T> ostream& Field<T>::print(ostream& o) const {
 		o << "Finite field GF(" << p;

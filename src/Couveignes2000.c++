@@ -8,7 +8,7 @@ namespace AS {
 			FieldElement<T> binom =
 				parent.primeField().scalar(j);
 			v[j] = v[j-1];
-			for (long h = j + 1 ; h <= parent.p - 1 ; h++) {
+			for (long h = j + 1 ; h <= long(parent.p) - 1 ; h++) {
 				t *= tr;
 				binom *= parent.primeField().scalar(h);
 				binom /= parent.primeField().scalar(h - j + 1);

@@ -302,6 +302,4 @@ namespace AS {
 	}
 }
 
-#include "../src/FieldPolynomial.c++"
-
 #endif /*FIELDPOLYNOMIAL_H_*/

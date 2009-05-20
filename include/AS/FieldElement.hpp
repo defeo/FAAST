@@ -373,9 +373,4 @@ namespace AS {
 	}
 }
 
-#include "../src/FieldElement.c++"
-#include "../src/FE-Liftup-Pushdown.c++"
-#include "../src/FE-Trace-Frob.c++"
-#include "../src/Minpols.c++"
-
 #endif /*FIELDELEMENT_H_*/

@@ -1,6 +1,5 @@
-#include "Types.hpp"
-#include "Field.hpp"
-#include "utilities.hpp"
+#include "Artin-Schreier.hpp"
+#include "AS/utilities.hpp"
 #include <cstdlib>
 
 using namespace std;

@@ -1,6 +1,6 @@
 /* Courtesy of E. Schost */
 
-#include "Tmul.hpp"
+#include "AS/Tmul.hpp"
 #include <assert.h>
 #include <NTL/ZZ_pXFactoring.h>
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv){
   GF2X f2, a2, b2, x2;
   GF2XModulus f2mod;
   GF2XTransMultiplier b2mul;
-  
+
   const long d = 200;
   int col = 1;
 
@@ -53,37 +53,37 @@ int main(int argc, char** argv){
     F=BuildIrred_ZZ_pX(d);
     // and the modulus
     Fmod = ZZ_pXModulus(F);
-    
+
     // converts F to zz_pX
     f=cnv(F);
     // get the modulus
     fmod = zz_pXModulus(f);
-    
+
     // converts F to GF2X
     f2=cnv2(F);
     // get the modulus
     f2mod = GF2XModulus(f2);
-    
+
     // random polys + multiplier
     A=random_ZZ_pX(d);
     B=random_ZZ_pX(d);
     build(Bmul, B, Fmod);
-    
+
     // same over zz_pX
     a=cnv(A);
     b=cnv(B);
     build(bmul, b, fmod);
-    
+
     // same over GF2X
     a2=cnv2(A);
     b2=cnv2(B);
     build(b2mul, b2, f2mod);
-    
+
     // does transposed product
     TransMulMod(X, A, Bmul, Fmod);
     TransMulMod(x, a, bmul, fmod);
     TransMulMod(x2, a2, b2mul, f2mod);
-    
+
     // check the results
     assert (cnv(X)==x);
    	assert (cnv2(X) == x2);

@@ -17,6 +17,7 @@
 #include <NTL/GF2X.h>
 #include <NTL/GF2EX.h>
 #include <NTL/mat_GF2.h>
+#include "NTLhacks.hpp"
 
 NTL_CLIENT
 
@@ -51,7 +52,6 @@ namespace AS {
 
 		static char const * const name;
 	};
-	char const * const zz_p_Algebra::name = "zz_p";
 
 	struct ZZ_p_Algebra {
 		typedef ZZ_p            GFp;
@@ -70,7 +70,6 @@ namespace AS {
 
 		static char const * const name;
 	};
-	char const * const ZZ_p_Algebra::name = "ZZ_p";
 
 	struct GF2_Algebra {
 		typedef GF2                 GFp;
@@ -88,7 +87,6 @@ namespace AS {
 
 		static char const * const name;
 	};
-	char const * const GF2_Algebra::name = "GF2";
 }
 
 #endif /*TYPES_H_*/

@@ -1,5 +1,4 @@
-#include "Types.hpp"
-#include "Field.hpp"
+#include "Artin-Schreier.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -22,7 +21,7 @@ int main(int argv, char* argc[]) {
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
-	
+
 	cout << "\tCreate\tPushDow\tLiftUp\tPreLift\tMul" << endl;
 	totaltime = -GetTime();
 	for (int i = 1 ; i <= l ; i++) {
@@ -70,11 +69,11 @@ int main(int argv, char* argc[]) {
 		cputime += GetTime();
 		cout << n << "-th frobenius computed in " << cputime << endl;
 		cout << "Pseudotraces precomputed in " <<
-			gfp::TIME.PSEUDOTRACES << endl; 
-*/		
+			gfp::TIME.PSEUDOTRACES << endl;
+*/
 	}
 	totaltime += GetTime();
-		
+
 	cout << endl << "Time spent building the cyclotomic polynomial : "
 		<< gfp::TIME.CYCLOTOMIC << endl << endl;
 	cout << "Total duration : " << totaltime << endl;

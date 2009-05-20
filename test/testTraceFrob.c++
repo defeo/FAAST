@@ -1,5 +1,4 @@
-#include "Types.hpp"
-#include "Field.hpp"
+#include "Artin-Schreier.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -14,7 +13,7 @@ typedef FieldElement<GF2_Algebra>  GFp2_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
-	
+
 	gfp::Infrastructure::BigInt p;
 	long d, l, t;
 	cin >> p; cin >> d; cin >> l; cin >> t;
@@ -26,7 +25,7 @@ int main(int argv, char* argc[]) {
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
-	
+
 	for (int i = 1 ; i <= l ; i++) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
@@ -38,13 +37,13 @@ int main(int argv, char* argc[]) {
 			long n = (j>=i) ?
 				d + RandomBnd(K->d - d) : d*power_long(p, j);
 			double frobtime, pseudotime, naivetime;
-			
+
 			frobtime = -NTL::GetTime();
 			b = a.frobenius(n);
 			frobtime += NTL::GetTime();
 			cout << "Fast " << n << "-th Frobenius in "
 				<< frobtime << endl;
-			
+
 			pseudotime = -NTL::GetTime();
 			b = a.pseudotrace(n);
 			pseudotime += NTL::GetTime();
@@ -52,7 +51,7 @@ int main(int argv, char* argc[]) {
 				<< pseudotime << endl;
 
 			cout << "Pseudotraces precomputed in " <<
-				gfp::TIME.PSEUDOTRACES << endl; 
+				gfp::TIME.PSEUDOTRACES << endl;
 
 			naivetime = -NTL::GetTime();
 			for (long i = 0 ; i < 10 ; i++)
@@ -62,7 +61,7 @@ int main(int argv, char* argc[]) {
 			cout << "Naive Frobenius in " << average
 				<< ", projected execution time " <<
 				average * n << endl;
-			
+
 			cout << "Projected thresholds :" << endl
 				<< "\tfrobenius " << floor(frobtime / average) << endl
 				<< "\tpseudotrace " << floor(pseudotime / average) << endl;

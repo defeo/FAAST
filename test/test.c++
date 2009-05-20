@@ -1,5 +1,4 @@
-#include "Types.hpp"
-#include "Field.hpp"
+#include "Artin-Schreier.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -65,7 +64,7 @@ int main(int argv, char* argc[]) {
 				cout << a << endl << b << endl << c << endl;
 				cout << poly << endl;
 			}
-	
+
 			poly >>= *K;
 			c = poly.evaluate(a);
 			if (c != b) {

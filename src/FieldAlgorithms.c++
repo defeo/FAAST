@@ -1,15 +1,15 @@
-#include "utilities.hpp"
+#include "AS/utilities.hpp"
 
 /* This file contains algorithms from Sections 3 and 6
  * of the paper
  */
 
 namespace AS {
-	
+
 	/* Cantor's algorithm to compute the minimal polynomial
 	 * of the primitive generator of the Artin-Schreier
 	 * extension.
-	 * 
+	 *
 	 * It assumes the modulus has already been properly set
 	 * to the (2p-1)th cyclotomic polynomial.
 	 */
@@ -18,7 +18,7 @@ namespace AS {
 		typedef typename T::GFpX  GFpX;
 		typedef typename T::GFpE  GFpE;
 		typedef typename T::GFpEX GFpEX;
-		
+
 #ifdef AS_TIMINGS
 		Field<T>::TIME.C89_PRE = -GetTime();
 #endif
@@ -48,7 +48,7 @@ namespace AS {
 					coeff(Q, j) * omegas[c]);
 				c += i; c %= 2*p - 1;
 			}
-			Qstar *= Qtmp; 
+			Qstar *= Qtmp;
 		}
 #ifdef AS_TIMINGS
 		Field<T>::TIME.C89_Qstar += GetTime();
@@ -73,7 +73,7 @@ namespace AS {
 		Field<T>::TIME.C89_qstar += GetTime();
 		Field<T>::TIME.C89_compose = -GetTime();
 #endif
-		
+
 		// result = qstar(X^p - X)
 		GFpX xpminusx;
 		SetCoeff(xpminusx, p, 1);
@@ -86,7 +86,7 @@ namespace AS {
 
 
 /****************** Field Extensions ******************/
-	/* Build a default extension of degree p over this field. 
+	/* Build a default extension of degree p over this field.
 	 */
 	template <class T> const Field<T>& Field<T>::ArtinSchreierExtension()
 	const throw (CharacteristicTooLargeException, NotSupportedException) {
@@ -102,7 +102,7 @@ namespace AS {
 
 		// test if the characteristic stays in one word
 		if (p != long(p)) throw CharacteristicTooLargeException();
-		
+
 #ifdef AS_TIMINGS
 		TIME.BUILDSTEM = -GetTime();
 #endif
@@ -111,7 +111,7 @@ namespace AS {
 		FieldElement<T>* alpha;
 
 		// Compute the minimal polynomial Q of the new level
-		 
+
 		// first floor, Q_1 = Q_0(X^p - X)
 		if (height == 0) {
 			// extend modulo X^p - X - x0
@@ -186,7 +186,7 @@ namespace AS {
 			alpha = new FieldElement<T>(*(stem->primitive));
 			*alpha ^= long(2)*p - 1;
 		}
-		
+
 #if AS_DEBUG >= 3
 		if (!IterIrredTest(Q))
 			throw ASException("The defining polynomial of the extension is not irreducible.");
@@ -195,14 +195,14 @@ namespace AS {
 		GFpE::init(Q);
 		Context ctxt = primeField().context;
 		ctxt.P.save();
-		
+
 		// primitive element and generator
 		GFpX priX; SetX(priX);
 		GFpE pri; conv(pri, priX);
-		
+
 		// who generated this extension ?
 		const Field<T>* vsub = (stem == this)? NULL : this;
-		
+
 		stem->overfield = new Field<T>(stem, ctxt, pri, po, tpmo, p,
 										long(p)*d, height+1, alpha, vsub);
 #ifdef AS_TIMINGS
@@ -211,7 +211,7 @@ namespace AS {
 
 		return *(stem->overfield);
 	}
-	
+
 	/* Build the splitting field of the polynomial
 	 * 			X^p - X - alpha
 	 * over this field. This may or may not be an extension of
@@ -225,7 +225,7 @@ namespace AS {
 		if ( !isOverFieldOf(*(alpha.parent_field)) )
 			throw IllegalCoercionException();
 		if (alpha.isZero()) return *this;
-		
+
 		FieldElement<T> root;
 		FieldElement<T>* aleph = new FieldElement<T>(alpha);
 		const Field<T> *vsub, *st;
@@ -252,7 +252,7 @@ namespace AS {
 /****************** Level embedding ******************/
 	/* Push the element e down to this field and store
 	 * the result in v.
-	 * 
+	 *
 	 * throw : IllegalCoercionException if the field e belongs to
 	 *         is not the immediate overfield of this.
 	 */
@@ -299,7 +299,7 @@ namespace AS {
 	/* Lift the elements in v up to this field and store the result in e.
 	 * If v is too short, it is filled with zeros. If v is too
 	 * long, the unnecessary elements are ignored.
-	 * 
+	 *
 	 * throw : NotInSameFieldException if the elements of v do not
 	 *         belong all to the same field.
 	 * throw : IllegalCoercionException if the field e belongs to
@@ -314,7 +314,7 @@ namespace AS {
 			AS::liftUp(v, e);
 			return;
 		}
-		
+
 		// if v is empty, return 0
 		typename vector<FieldElement<T> >::const_iterator it = v.begin();
 		if (it == v.end()) {
@@ -337,7 +337,7 @@ namespace AS {
 		// check that the elements belong to a subfield
 		if (parent->stem->overfield != stem)
 			throw IllegalCoercionException();
-		
+
 		// the algorithm ApplyIsomorphism from Section 6
 		e = zero();
 		typename vector<FieldElement<T> >::const_reverse_iterator rit;

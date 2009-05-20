@@ -345,7 +345,7 @@ namespace AS {
 			const long line,
 			const bool pluso,
 			const bool twopminuso,
-			const Context& Ph,
+			const Context* Ph,
 			const Field<T>* st,
 			const Field<T>* vsub,
 			const FieldElement<T>* g,
@@ -461,12 +461,5 @@ namespace AS {
 		return f.print(o);
 	}
 }
-
-
-
-#include "../src/Field.c++"
-#include "../src/FieldAlgorithms.c++"
-#include "../src/FieldPrecomputations.c++"
-#include "../src/Couveignes2000.c++"
 
 #endif /*FIELD_H_*/

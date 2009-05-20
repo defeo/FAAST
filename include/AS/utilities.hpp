@@ -28,12 +28,10 @@ namespace AS {
 	 */
 	template <class T> void compose
 	(typename T::GFpX& res, const typename T::GFpX& Q,
-	const typename T::GFpX& R, const typename T::BigIny p);
+	const typename T::GFpX& R, const typename T::BigInt& p);
 	/* compute the n-th cyclotomic polynomial modulo p */
 	template <class T> void cyclotomic
-	(typename T::GFpX& res, const long n, const typename T::BigIny p);
+	(typename T::GFpX& res, const long n, const typename T::BigInt& p);
 }
-
-#include "../src/utilities.c++"
 
 #endif /*UTILITIES_H_*/

@@ -147,7 +147,7 @@ namespace AS {
 	throw(UndefinedFieldException, BadParametersException) {
 		if (i < 0)
 			throw BadParametersException("Negative index for polynomial coefficient.");
-		if (c == 0) return;
+		if (c == long(0)) return;
 		if (!parent_field)
 			throw UndefinedFieldException();
 
@@ -333,11 +333,15 @@ namespace AS {
 #endif
 
 		parent_field->switchContext();
-		if (isScalarPolynomial()) {
-			GFpX e; conv(e, repExt);
-			return FieldPolynomial<T>(
-					&(parent_field->primeField()), e);
-		} else throw IllegalCoercionException();
+		GFpX e;
+		for (long i = degree() ; i >= 0 ; i--) {
+			if (deg(rep(coeff(repExt, i))) > 0)
+				throw IllegalCoercionException();
+			else
+				SetCoeff(e, i, coeff(rep(coeff(repExt, i)), 0));
+		}
+
+		return FieldPolynomial<T>(&(parent_field->primeField()), e);
 	}
 
 	template <class T> FieldPolynomial<T>
@@ -377,7 +381,7 @@ namespace AS {
 				if (!tmp.isCoercible(F)) return false;
 			}
 			return true;
-		}
+		} else return false;
 	}
 
 /****************** Comparison ******************/

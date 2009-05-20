@@ -1,5 +1,4 @@
-#include "Types.hpp"
-#include "Field.hpp"
+#include "Artin-Schreier.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -14,7 +13,7 @@ typedef FieldElement<GF2_Algebra>  gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
-	
+
 	gfp::Infrastructure::BigInt p;
 	long d, l;
 	cin >> p; cin >> d; cin >> l;
@@ -26,7 +25,7 @@ int main(int argv, char* argc[]) {
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
-	
+
 	cout << "\tCreate\tCrStem\tPushDow\tLiftUp\tPrePseu\tPreLift" << endl;
 	for (int i = 1 ; i <= l ; i++) {
 		cout << i << "\t";
@@ -39,7 +38,7 @@ int main(int argv, char* argc[]) {
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
 		cout << gfp::TIME.BUILDSTEM << "\t";
-			
+
 		const gfp& L = K->stemField().subField();
 		vector<gfp_E> v;
 		gfp_E a = K->random(), b;
@@ -47,12 +46,12 @@ int main(int argv, char* argc[]) {
 		L.pushDown(a, v);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		
+
 		cputime = -NTL::GetTime();
 		K->liftUp(v, b);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		
+
 		if (a != b) {
 			cout << "ERROR : Results don't match" << endl;
 			cout << a << endl;
@@ -62,7 +61,7 @@ int main(int argv, char* argc[]) {
 				cout << *it << " ";
 			cout << endl;
 		}
-		
+
 		cout << gfp::TIME.PSEUDOTRACES << "\t";
 		cout << gfp::TIME.LIFTUP << endl;
 	}

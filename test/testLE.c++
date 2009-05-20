@@ -1,5 +1,4 @@
-#include "Types.hpp"
-#include "Field.hpp"
+#include "Artin-Schreier.hpp"
 #include <cstdlib>
 
 using namespace std;
@@ -22,7 +21,7 @@ int main(int argv, char* argc[]) {
 	cout << *K << " in " << cputime << endl;
 	cout << "Time spent building the irreducible polynomial : "
 		<< gfp::TIME.BUILDIRRED << endl << endl;
-	
+
 	for (int i = 1 ; i <= 5 ; i++) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
@@ -32,12 +31,12 @@ int main(int argv, char* argc[]) {
 		for (int i = 1 ; i <= 3 ; i++) {
 			gfp_E a = K->random(), b;
 			vector<gfp_E> down;
-	
+
 			cputime = -GetTime();
 			pushDown(a, down);
 			cputime += GetTime();
 			cout << "Push-down computed in " << cputime << endl;
-	
+
 			cputime = -GetTime();
 			liftUp(down, b);
 			cputime += GetTime();
@@ -54,7 +53,7 @@ int main(int argv, char* argc[]) {
 				gfp::TIME.LU_STEP4 << endl;
 			cout << "Time spent in Lift-up step 5 : " <<
 				gfp::TIME.LU_STEP5 << endl;
-	
+
 			if (a != b) {
 				cout << "ERROR : Results don't match" << endl;
 				cout << a << endl << b << endl;
@@ -66,7 +65,7 @@ int main(int argv, char* argc[]) {
 			cout << endl;
 		}
 	}
-	
+
 	cout << endl << "Time spent building the cyclotomic polynomial : "
 		<< gfp::TIME.CYCLOTOMIC << endl << endl;
 }
