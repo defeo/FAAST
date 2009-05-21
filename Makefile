@@ -163,7 +163,7 @@ doc:
 
 .PHONY: doc-dev
 doc-dev:
-	(cat doxy.conf; echo "ENABLED_SECTIONS=DEV") | doxygen -
+	(cat doxy.conf; echo "ENABLED_SECTIONS=DEV"; echo "OUTPUT_DIRECTORY=doc-dev";) | doxygen -
 
 .PHONY: clean
 clean:
