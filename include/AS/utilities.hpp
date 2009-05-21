@@ -46,6 +46,8 @@ namespace AS {
 	 *  \brief Compute \a P(X<sup>n</sup>).
 	 *
 	 *  Compute the polynomial obtained by composing \a P with X<sup>n</sup>.
+	 *  It implements the algorithm
+	 *  referred as \c Evaluate in Section 4 of [\ref ISSAC "DFS '09"].
 	 *
 	 *  \param [out] res A polynomial to hold the result.
 	 *  \param [in] P A polynomial.
@@ -57,7 +59,8 @@ namespace AS {
 	 *  \brief Transposition of expand().
 	 *
 	 *  From polynomial \a P, deduce a polynomial whose k-th coefficient
-	 *  is the nk-th coefficient of \a P.
+	 *  is the nk-th coefficient of \a P. It implements the algorithm
+	 *  referred as \c Evaluate* in Section 4 of [\ref ISSAC "DFS '09"].
 	 *
 	 *  \param [out] res A polynomial to hold the result.
 	 *  \param [in] P A polynomial.
@@ -70,7 +73,7 @@ namespace AS {
 	 *
 	 * Given \a Q and \a R, two polynomials over GF(p), compute
 	 * their composition. This implements algorithm \c Compose of
-	 * \ref ISSAC.
+	 * [\ref ISSAC "DFS '09"].
 	 *
 	 *  \param [out] res A polynomial to hold the result.
 	 *  \param [in] Q A polynomial.
@@ -82,7 +85,9 @@ namespace AS {
 	(typename T::GFpX& res, const typename T::GFpX& Q,
 	const typename T::GFpX& R, const typename T::BigInt& p);
 	/**
-	 *  \brief Compute the <i>n</i>-th cyclotomic polynomial modulo \a p
+	 *  \brief Compute the <i>n</i>-th cyclotomic polynomial modulo \a p.
+	 *
+	 *  It implements the algorithm described in [\ref Brent "Brent '93"].
 	 *
 	 *  \param [out] res A polynomial to hold the result.
 	 *  \param [in] n A strictly positive integer.

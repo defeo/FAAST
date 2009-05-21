@@ -1,0 +1,16 @@
+/**
+	\page Bibliography Bibliography
+	
+	<table class="biblio">
+	<tr>
+	<td>\anchor Brent [Brent '93]</td><td>R. P. Brent. On computing factors of cyclotomic
+	polynomials. <i>Math. Comp.</i> 61:131–149, 1993.</td>
+	</tr><tr>
+	<td>\anchor Cou00 [Couveignes '00]</td><td>J.-M Couveignes. Isomorphisms between Artin-Schreier
+	towers. <i>Math. Comp.</i> 69(232): 1625–1631, 2000.</td>
+	</tr><tr>
+	<td>\anchor ISSAC [DFS '09]</td><td>L. De Feo, É. Schost. Fast Arithmetics in
+	Artin-Schreier towers. In <i>ISSAC'09</i>. ACM 2009.</td>
+	</tr>
+	</table>
+*/
