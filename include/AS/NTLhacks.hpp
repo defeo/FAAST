@@ -1,4 +1,4 @@
-/* This header contains small hacks to add routines lacking in NTL.
+/* This header contains small hacks adding routines and features to NTL.
  *
  * NTLhacks.hpp
  *
