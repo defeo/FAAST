@@ -37,9 +37,9 @@ namespace AS {
 	 * or ZZ_p_Algebra::BigInt instead. 
 	 */
 	class ZZ_auto : public ZZ {
-		ZZ_auto(const long i) : ZZ(to_ZZ(i)) {}
 	public:
-		ZZ_auto() {};
+		ZZ_auto() {}
+		ZZ_auto(const long i) : ZZ(to_ZZ(i)) {}
 		ZZ_auto(const ZZ& i) : ZZ(i) {}
 		ZZ_auto& operator=(const ZZ_auto& i) { ZZ::operator=(i); return *this; }
 		ZZ_auto& operator=(const ZZ& i) { ZZ::operator=(i); return *this; }
