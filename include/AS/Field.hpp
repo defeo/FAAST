@@ -7,6 +7,28 @@
 #include <memory>
 
 namespace AS {
+	/**
+	 * \defgroup Field Finite Field Arithmetics
+	 * This is the core of the library. 
+	 */
+	
+	/**
+	 * \ingroup Field
+	 * \brief A finite field.
+	 * 
+	 * Objects of this class can only be built through the static instantiators createField() and
+	 * can never be destroyed.
+	 * 
+	 * The way the arithmetics of the field are actually implemented is
+	 * given by the template parameter \a T that must be one of the \ref Infrastructures.
+	 * Note that changing the Infrastructure may sensibly change the speed of your code.
+	 * 
+	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
+	 * the arithmetic operations.
+	 * 
+	 * \todo Field objects are immortal. A better memory management involving garbage collection may be
+	 * implemented one day.
+	 */
 	template <class T> class Field {
 
 	friend class FieldElement<T>;
@@ -14,12 +36,21 @@ namespace AS {
 	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e) throw(NotInSameFieldException, NoOverFieldException);
 
 	public:
+		/** \brief A link to the Infrastructure */
 		typedef T Infrastructure;
 
-	/* Timings for various computations */
 #ifdef AS_TIMINGS
 	public:
-		typedef struct t {
+		/**
+		 * \brief This struct stores various timings related to precomputations.
+		 * 
+		 * Which precomputations are needed is detailed in [\ref ISSAC "DFS '09"].
+		 * 
+		 * \note The preprocessor flag \c AS_TIMINGS has to be passed to the compiler
+		 * in order to activate this feature.
+		 */
+		static struct TIMINGS {
+			/** \brief The time spent precomputing the (2p-1)-th cyclotomic polynomial */
 			double CYCLOTOMIC;
 			double PSEUDOTRACES;
 			double LIFTUP;
@@ -29,45 +60,18 @@ namespace AS {
 			double PRIMETEST;
 			double ARTINMATRIX;
 			double BUILDSTEM;
-			double CANTOR89;
-			double C89_PRE;
-			double C89_Qstar;
-			double C89_qstar;
-			double C89_compose;
-			double LU_PLUSONE;
-			double LU_TRANSMUL;
-			double LU_TRANSMOD;
-			double LU_TRANSEVAL;
-			double LU_TRANSPUSHDOWN;
-			double LU_STEP4;
-			double LU_STEP5;
-
-			t() :
-				CYCLOTOMIC(-1),
-				PSEUDOTRACES(-1),
-				LIFTUP(-1),
-				TRACEVEC(-1),
-				BUILDIRRED(-1),
-				IRREDTEST(-1),
-				PRIMETEST(-1),
-				ARTINMATRIX(-1),
-				BUILDSTEM(-1),
-				CANTOR89(-1),
-				C89_PRE(-1),
-				C89_Qstar(-1),
-				C89_qstar(-1),
-				C89_compose(-1),
-				LU_PLUSONE(-1),
-				LU_TRANSMUL(-1),
-				LU_TRANSMOD(-1),
-				LU_TRANSEVAL(-1),
-				LU_TRANSPUSHDOWN(-1),
-				LU_STEP4(-1),
-				LU_STEP5(-1)
-				{}
-		} TIMINGS;
-
-		static TIMINGS TIME;
+			
+			TIMINGS() : CYCLOTOMIC(0),
+			PSEUDOTRACES(0),
+			LIFTUP(0),
+			TRACEVEC(0),
+			BUILDIRRED(0),
+			IRREDTEST(0),
+			PRIMETEST(0),
+			ARTINMATRIX(0),
+			BUILDSTEM(0)
+			{}
+		} TIME;
 #endif
 
 	private:

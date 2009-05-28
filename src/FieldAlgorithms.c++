@@ -19,9 +19,6 @@ namespace AS {
 		typedef typename T::GFpE  GFpE;
 		typedef typename T::GFpEX GFpEX;
 
-#ifdef AS_TIMINGS
-		Field<T>::TIME.C89_PRE = -GetTime();
-#endif
 		// X mod Phi(X), the (2p-1)th root of unity
 		GFpE omega; GFpX omegaX;
 		SetX(omegaX); conv(omega, omegaX);
@@ -30,10 +27,6 @@ namespace AS {
 		omegas[0] = 1;
 		for (long i = 1; i <= 2*p-2 ; i++)
 			omegas[i] = omegas[i-1]*omega;
-#ifdef AS_TIMINGS
-		Field<T>::TIME.C89_PRE += GetTime();
-		Field<T>::TIME.C89_Qstar = -GetTime();
-#endif
 
 		// Qstar = prod_i Q(omega^i Y)
 		GFpEX Qstar; conv(Qstar, Q);
@@ -50,10 +43,6 @@ namespace AS {
 			}
 			Qstar *= Qtmp;
 		}
-#ifdef AS_TIMINGS
-		Field<T>::TIME.C89_Qstar += GetTime();
-		Field<T>::TIME.C89_qstar = -GetTime();
-#endif
 		// qstar( X^(2p-1) ) = Qstar
 		GFpX qstar;
 		long c = 0;
@@ -69,19 +58,12 @@ namespace AS {
 			}
 #endif
 		}
-#ifdef AS_TIMINGS
-		Field<T>::TIME.C89_qstar += GetTime();
-		Field<T>::TIME.C89_compose = -GetTime();
-#endif
 
 		// result = qstar(X^p - X)
 		GFpX xpminusx;
 		SetCoeff(xpminusx, p, 1);
 		SetCoeff(xpminusx, 1, -1);
 		compose<T>(res, qstar, xpminusx, p);
-#ifdef AS_TIMINGS
-		Field<T>::TIME.C89_compose += GetTime();
-#endif
 	}
 
 
@@ -175,13 +157,7 @@ namespace AS {
 			primeField().getCyclotomic().P.restore();
 			// apply Cantor's algorithm to compute the
 			// minimal polynomial
-#ifdef AS_TIMINGS
-				TIME.CANTOR89 = -GetTime();
-#endif
 			cantor89<T>(Q, Q0, p);
-#ifdef AS_TIMINGS
-				TIME.CANTOR89 += GetTime();
-#endif
 			// alpha = x1^(2p-1)
 			alpha = new FieldElement<T>(*(stem->primitive));
 			*alpha ^= long(2)*p - 1;

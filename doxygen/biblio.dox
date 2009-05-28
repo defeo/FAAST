@@ -6,11 +6,18 @@
 	<td>\anchor Brent [Brent '93]</td><td>R. P. Brent. On computing factors of cyclotomic
 	polynomials. <i>Math. Comp.</i> 61:131–149, 1993.</td>
 	</tr><tr>
+	<td>\anchor gf2x [gf2x]</td><td>R. Brent, P. Gaudry, E. Thomé, P. Zimmermann.
+	Faster multiplication in GF(2)[x]. In <i>ANTS'08</i>, 153-166. Springer, 2008.
+	Library available at http://gforge.inria.fr/projects/gf2x/</td>
+	</tr><tr>
 	<td>\anchor Cou00 [Couveignes '00]</td><td>J.-M Couveignes. Isomorphisms between Artin-Schreier
 	towers. <i>Math. Comp.</i> 69(232): 1625–1631, 2000.</td>
 	</tr><tr>
 	<td>\anchor ISSAC [DFS '09]</td><td>L. De Feo, É. Schost. Fast Arithmetics in
 	Artin-Schreier towers. In <i>ISSAC'09</i>. ACM 2009.</td>
+	</tr><tr>
+	<td>\anchor NTL [NTL]</td><td>V. Shoup. \c NTL, a Number Theory Library. Available at 
+	http://www.shoup.net/ntl/</td>
 	</tr>
 	</table>
 */
