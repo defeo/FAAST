@@ -163,7 +163,12 @@ doc:
 
 .PHONY: doc-dev
 doc-dev:
-	(cat doxy.conf; echo "ENABLED_SECTIONS=DEV"; echo "OUTPUT_DIRECTORY=doc-dev";) | doxygen -
+	(cat doxy.conf; \
+	echo "ENABLED_SECTIONS=DEV"; \
+	echo "OUTPUT_DIRECTORY=doc-dev"; \
+	echo "PREDEFINED = AS_TIMINGS"; \
+	echo "SHOW_USED_FILES = YES"; \
+	echo "SHOW_FILES = YES") | doxygen -
 
 .PHONY: clean
 clean:
