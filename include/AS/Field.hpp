@@ -9,28 +9,33 @@
 namespace AS {
 	/**
 	 * \defgroup Field Finite Field Arithmetics
-	 * This is the core of the library. 
+	 * This is the core of the library.
 	 */
-	
+
 	/**
 	 * \ingroup Field
 	 * \nosubgrouping
 	 * \brief A finite field.
-	 * 
+	 *
 	 * Objects of this class can only be built through the static instantiators createField() and
 	 * can never be destroyed.
-	 * 
+	 *
 	 * The way the arithmetics of the field are actually implemented is
 	 * given by the template parameter \a T that must be one of the \ref Infrastructures.
 	 * Note that changing the Infrastructure may sensibly change the speed of your code.
-	 * 
+	 *
 	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
 	 * the arithmetic operations.
-	 * 
+	 *
 	 * \todo Field objects are immortal. A better memory management involving garbage collection may be
 	 * implemented one day.
 	 */
 	template <class T> class Field {
+		/** \example using_infrastructure.c++
+		 * This example illustrates how to use the AS::Field::switchContext(),
+		 * AS::FieldElement::toInfrastructure(), AS::FieldPolynomial::toInfrastructure()
+		 * and AS::Field::fromInfrastructure() methods.
+		 */
 
 	friend class FieldElement<T>;
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
@@ -44,9 +49,9 @@ namespace AS {
 	 */
 		/**
 		 * \brief This struct stores various timings related to precomputations.
-		 * 
+		 *
 		 * \see [\ref ISSAC "DFS '09"] for details on the computations.
-		 * 
+		 *
 		 * \note The preprocessor flag \c AS_TIMINGS has to be passed to the compiler
 		 * in order to activate this feature.
 		 */
@@ -65,14 +70,14 @@ namespace AS {
 			double BUILDIRRED;
 			/** \brief The time spent testing the irreducibility of polynomials defining base fields. */
 			double IRREDTEST;
-			/** \brief The time spent testing primality of cardinalities */ 
+			/** \brief The time spent testing primality of cardinalities */
 			double PRIMETEST;
 			/** \brief The time spent precomputing and inverting the matrix of the application
 			 * X<sup>p</sup> - X in base fields. See [\ref ISSAC "DFS '09", Section 6]. */
 			double ARTINMATRIX;
 			/** \brief The time spent computing the primitive tower. See [\ref ISSAC "DFS '09", Section 3]. */
 			double BUILDSTEM;
-			
+
 			TIMINGS() : CYCLOTOMIC(0),
 			PSEUDOTRACES(0),
 			LIFTUP(0),
@@ -84,7 +89,7 @@ namespace AS {
 			BUILDSTEM(0)
 			{}
 		};
-		
+
 		/**
 		 * \brief \copybrief TIMINGS See TIMINGS.
 		 */
@@ -95,7 +100,7 @@ namespace AS {
 	/** \name Local types
 	 * Local types defined in this class. They are aliases to simplify the access
 	 * to the \ref Infrastructures "Infrastructure" \a T and its subtypes.
-	 * 
+	 *
 	 * \see \ref Infrastructures
 	 * @{
 	 */
@@ -178,11 +183,11 @@ namespace AS {
 		/** \brief The degree over the prime field F<sub>p</sub>. */
 		const long d;
 		/** \brief The constructed Artin-Schreier height.
-		 * 
+		 *
 		 * This is the number of intermediate Artin-Schreier extensions over
-		 * baseField() that have been constructed using the the techniques of 
+		 * baseField() that have been constructed using the the techniques of
 		 * [\ref ISSAC "DFS '09", Sections 3 and 6].
-		 * 
+		 *
 		 * \invariant The following formula is always true:
 		 * \f$ [\mathtt{K} : \mathtt{K.baseField()}] = p^\mathtt{height} \f$
 		 */
@@ -191,7 +196,7 @@ namespace AS {
 
 
 	public:
-	/****************//** \name Instantiators 
+	/****************//** \name Instantiators
 	 * All instantiators are static. There's no constructor for
 	 * Field objects.
 	 * @{
@@ -214,8 +219,8 @@ namespace AS {
 		 * 	T::GFpE::modulus();
 		 * \endcode
 		 * is not an irreducible polynomial.
-		 * 
-		 * \warning If the current modulus has degree \a d divisible by the characteristic and if its 
+		 *
+		 * \warning If the current modulus has degree \a d divisible by the characteristic and if its
 		 * (\a d - 1)-th coefficient is 0, then you won't be able to construct Artin-Schreier
 		 * extensions through a call to ArtinSchreierExtension(). In fact in this case the generator
 		 * of the field has trace 0 and the costruction of [\ref ISSAC "DFS '09"] doesn't work.
@@ -224,7 +229,7 @@ namespace AS {
 		throw (NotPrimeException, NotIrreducibleException);
 		/**
 		 * \brief Build a field from an irreducible polynomial \a P.
-		 * 
+		 *
 		 * Build the field F[X]/\a P(X). \verbatim T::GFp::modulus \endverbatim must
 		 * be set accordingly, unless \a T is GF2_Algebra.
 		 *
@@ -239,8 +244,8 @@ namespace AS {
 		 * \endcode
 		 * is not a prime (unless \a T is GF2_Algebra).
 		 * \throws NotIrreducibleException If \a P is not an irreducible polynomial.
-		 * 
-		 * \warning If \a P has degree \a d divisible by the characteristic and if its 
+		 *
+		 * \warning If \a P has degree \a d divisible by the characteristic and if its
 		 * (\a d - 1)-th coefficient is 0, then you won't be able to construct Artin-Schreier
 		 * extensions through a call to ArtinSchreierExtension(). In fact in this case the generator
 		 * of the field has trace 0 and the costruction of [\ref ISSAC "DFS '09"] doesn't work.
@@ -250,7 +255,7 @@ namespace AS {
 		/**
 		 * \brief Build the field F<sub>p<sup>d</sup></sub> using a default
 		 * polynomial.
-		 * 
+		 *
 		 * Notice that this operation implicitely creates
 		 * the field F<sub>p</sub> too.
 		 *
@@ -262,8 +267,8 @@ namespace AS {
 		 * \throws NotPrimeException If \a p is not prime
 		 * \throws BadParametersException If \a d is less than one.
 		 * \throws BadParametersException If \a T is GF2_Algebra and \a p is different from 2.
-		 * 
-		 * \todo For the moment the default polynomial is generated randomly. When \a p divides \d ,
+		 *
+		 * \todo For the moment the default polynomial is generated randomly. When \a p divides \a d ,
 		 * this prevents from
 		 * building successive Artin-Schreier extensions if the (\a d - 1)-th
 		 * coeffcient of the randomly generated polynomial is 0.  In fact in this case the generator
@@ -280,14 +285,14 @@ namespace AS {
 	 * @{
 	 */
 		/**
-		 * \brief Build a primitive extension of degree \a p 
+		 * \brief Build a primitive extension of degree \a p
 		 * as in [\ref ISSAC "DFS '09", Section 3].
-		 * 
+		 *
 		 * \return A reference to the newly created Field object.
-		 * 
+		 *
 		 * \throws CharacteristicTooLargeException If \ref p is a multiprecision
 		 * integer larger than the largest single precision integer.
-		 * \throws NotSupportedException If \ref d is divisible by \ref p 
+		 * \throws NotSupportedException If \ref d is divisible by \ref p
 		 * and the generator of this field has trace 0. See creteField() and [\ref ISSAC "DFS '09"]
 		 * for necessary and sufficient conditions for this not to hold.
 		 */
@@ -296,24 +301,24 @@ namespace AS {
 		/**
 		 * \brief Build the splitting field of the polynomial \f$ X^p - X - \mathtt{alpha} \f$
 		 * as in [\ref ISSAC "DFS '09", Section 6].
-		 * 
+		 *
 		 * This may or may not be an extension of
 		 * degree \a p depending whether the polynomial is irreducible.
-		 * 
+		 *
 		 * - If the polynomial is reducible,
 		 *   (equivalently, if \a alpha has trace 0), then it is split and the splitting field
 		 *   is isomorphic to this one. In this case Couveignes2000() is used to find one
 		 *   of the roots and the isomorphic field is constructed. The computed root is used
 		 *   in pushDown() and liftUp() to navigate the tower as in
-		 *   [\ref ISSAC "DFS '09", Section 6.2]. 
+		 *   [\ref ISSAC "DFS '09", Section 6.2].
 		 * - If the polynomial is irreducible, a primitive Artin-Schreier extension
 		 *   is constructed using ArtinSchreierExtension(), then Couveignes2000() is used in such
 		 *   an extension as in the case where the polynomial is reducible.
-		 * 
+		 *
 		 * \return A reference to the newly created Field object.
-		 * 
+		 *
 		 * \see ArtinSchreierExtension(), Couveignes2000(), pushDown(), liftUp().
-		 * 
+		 *
 		 * \throws CharacteristicTooLargeException If \ref p is a multiprecision
 		 * integer larger than the largest single precision integer.
 		 * \throws NotSupportedException If the primitive field cannot be created. See
@@ -324,10 +329,10 @@ namespace AS {
 		const throw (CharacteristicTooLargeException, NotSupportedException, IllegalCoercionException);
 		/**
 		 * \brief Finds a root of the polynomial \f$ X^p - X - \mathtt{alpha} \f$.
-		 * 
+		 *
 		 * It uses the algorithm described in [\ref Cou00 "Couveignes '00"] and
 		 * [\ref ISSAC "DFS '09", Section 6.1].
-		 * 
+		 *
 		 * \throws IllegalCoercionException if \a alpha cannot be
 		 * 		coerced to this field.
 		 * \throws IsIrreducibleException If the polynomial is irreducible (equivalently, if
@@ -341,13 +346,13 @@ namespace AS {
 	/** @{ */
 		/**
 		 * \brief \copybrief p
-		 * 
+		 *
 		 * \return The same value as \ref p.
 		 */
 		BigInt characteristic() const throw () { return p; }
 		/**
 		 * \brief \copybrief d
-		 * 
+		 *
 		 * \return The same value as \ref d.
 		 */
 		long degree() const throw () { return d; }
@@ -355,29 +360,29 @@ namespace AS {
 		ZZ cardinality() const throw ();
 		/**
 		 * \brief \copybrief height
-		 * 
+		 *
 		 * \return The same value as \ref height.
 		 */
 		long ArtinSchreierHeight() const throw () { return height; }
 		/**
 		 * \brief The polynomial with coefficients in subField() that has been
 		 * used to generate this extension.
-		 * 
+		 *
 		 * Or X - 1 if this is a prime field.
-		 * 
+		 *
 		 * \see [\ref ISSAC "DFS '09"].
-		 * 
+		 *
 		 * \invariant This is the minimal polynomial of generator().
 		 */
 		FieldPolynomial<T> generatingPolynomial() const throw();
 		/**
 		 * \brief The polynomial with coefficients in F<sub>p</sub> used to
 		 * represent elements of this field.
-		 * 
+		 *
 		 * Or X - 1 if this is a prime field.
-		 * 
+		 *
 		 * \see [\ref ISSAC "DFS '09"].
-		 * 
+		 *
 		 * \invariant This is the minimal polynomial of primitiveElement().
 		 */
 		FieldPolynomial<T> primitivePolynomial() const throw();
@@ -389,7 +394,7 @@ namespace AS {
 	 */
 		/**
 		 * \brief The element \a i mod \a p
-		 * 
+		 *
 		 * \param [in] i An integer.
 		 * \return An element of this field.
 		 */
@@ -400,15 +405,15 @@ namespace AS {
 		FieldElement<T> one() const throw () { return scalar(1); }
 		/**
 		 * \brief The generator over subField().
-		 * 
+		 *
 		 * \return A root of generatingPolynomial().
 		 */
 		FieldElement<T> generator() const throw () { return *gen; }
 		/**
 		 * \brief The generator over F<sub>p</sub>
-		 * 
+		 *
 		 * \return A root of primitivePolynomial().
-		 * 
+		 *
 		 * \invariant This is the same as generator() for primitive fields built using
 		 * ArtinSchreierExtension().
 		 */
@@ -418,16 +423,40 @@ namespace AS {
 		FieldElement<T> random() const throw ();
 	/** @} */
 
-	/****************** Infrastructure ******************/
-		/* Use these methods only if you are sure of what you do ! */
-
+	/****************//** \name Access to the Infrastructure
+	 * These methods let you use the internal \NTL representation of elements
+	 * to build a FieldElement or a FieldPolynomial.
+	 *
+	 * \warning In general you should avoid using these methods. Use them
+	 * only if you want to use an algorithm in NTL that is not available for
+	 * FieldElement or FieldPolynomial
+	 * @{
+	 */
+		/**
+		 * \brief Set the current context to this field's context
+		 *
+		 * \NTL's context holds information about the modulus and the characteristic
+		 * of a finite field. By calling this method you set the current \NTL context
+		 * to this field's context, so that any subsequent operation on \NTL types
+		 * such as T::GFpX or T::GFpE will use that context.
+		 *
+		 * You usually shouldn't be concerned about this method as the library takes
+		 * care of switching the context for you when needed. The only time when you
+		 * have to explicitly call it is when you want to use NTL types outside
+		 * of the library and then transform the result to a FieldElement or
+		 * FieldPolynomial through a call to a fromInfrastructure() method.
+		 *
+		 * \warning Be aware that the current context is undefined after any
+		 * call to a function of this library.
+		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
+		 */
+		void switchContext() const throw();
 		/* Build elements from infrastracture */
 		FieldElement<T> fromInfrastructure(const GFp&) const throw();
 		FieldElement<T> fromInfrastructure(const GFpE&) const throw(IllegalCoercionException);
 		FieldPolynomial<T> fromInfrastructure(const GFpX&) const throw();
 		FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
-		/* Set the context to work in this field */
-		void switchContext() const throw();
+	/** @} */
 
 	/****************** Field lattice navigation ******************/
 		/* The field GF(p) */
