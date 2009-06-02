@@ -14,7 +14,6 @@ namespace AS {
 
 	/**
 	 * \ingroup Field
-	 * \nosubgrouping
 	 * \brief A finite field.
 	 *
 	 * Objects of this class can only be built through the static instantiators createField() and
@@ -35,6 +34,9 @@ namespace AS {
 		 * This example illustrates how to use the AS::Field::switchContext(),
 		 * AS::FieldElement::toInfrastructure(), AS::FieldPolynomial::toInfrastructure()
 		 * and AS::Field::fromInfrastructure() methods.
+		 * 
+		 * \warning This is for advanced use only, you shouldn't care about this on an
+		 * ordinary use of the library.
 		 */
 
 	friend class FieldElement<T>;
@@ -427,8 +429,8 @@ namespace AS {
 	 * These methods let you use the internal \NTL representation of elements
 	 * to build a FieldElement or a FieldPolynomial.
 	 *
-	 * \warning In general you should avoid using these methods. Use them
-	 * only if you want to use an algorithm in NTL that is not available for
+	 * \warning These methods are for advanced use only. Use them
+	 * if you want to use an algorithm by you or in NTL that is not available for
 	 * FieldElement or FieldPolynomial
 	 * @{
 	 */
@@ -451,78 +453,247 @@ namespace AS {
 		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
 		 */
 		void switchContext() const throw();
-		/* Build elements from infrastracture */
-		FieldElement<T> fromInfrastructure(const GFp&) const throw();
-		FieldElement<T> fromInfrastructure(const GFpE&) const throw(IllegalCoercionException);
-		FieldPolynomial<T> fromInfrastructure(const GFpX&) const throw();
-		FieldPolynomial<T> fromInfrastructure(const GFpEX&) const throw(IllegalCoercionException);
+		/**
+		 * \brief Build an element of this field from an \NTL type.
+		 * 
+		 * Returns a new element of this field having \a e as representation.
+		 * 
+		 * \param [in] e an \NTL scalar element.
+		 * \return The newly created element.
+		 * \warning \a e must have been created in the context of this field. See switchContext().
+		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
+		 */
+		FieldElement<T> fromInfrastructure(const GFp& e) const throw();
+		/**
+		 * \brief Build an element of this field from an \NTL type.
+		 * 
+		 * Returns a new element of this field having \a e as representation.
+		 * 
+		 * \param [in] e an \NTL element.
+		 * \return The newly created element.
+		 * \throws IllegalCoercionException If this field is a prime field only scalar elements
+		 * can belong to it. Use fromInfrastructure(const GFp&) const instead.
+		 * \warning \a e must have been created in the context of this field. See switchContext().
+		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
+		 */
+		FieldElement<T> fromInfrastructure(const GFpE& e) const throw(IllegalCoercionException);
+		/**
+		 * \brief Build an polynomial with coefficients in this field from an \NTL type.
+		 * 
+		 * Returns a new polynomial over this field having \a P as representation.
+		 * 
+		 * \param [in] P an \NTL scalar polynomial.
+		 * \return The newly created element.
+		 * \warning \a P must have been created in the context of this field. See switchContext().
+		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
+		 */
+		FieldPolynomial<T> fromInfrastructure(const GFpX& P) const throw();
+		/**
+		 * \brief Build an polynomial with coefficients in this field from an \NTL type.
+		 * 
+		 * Returns a new polynomial over this field having \a P as representation.
+		 * 
+		 * \param [in] P an \NTL polynomial.
+		 * \return The newly created element.
+		 * \throws IllegalCoercionException If this field is a prime field only scalar polynomials
+		 * can belong to it. Use fromInfrastructure(const GFpX&) const instead.
+		 * \warning \a P must have been created in the context of this field. See switchContext().
+		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
+		 */
+		FieldPolynomial<T> fromInfrastructure(const GFpEX& P) const throw(IllegalCoercionException);
 	/** @} */
 
-	/****************** Field lattice navigation ******************/
-		/* The field GF(p) */
+	/****************//** \name Field lattice navigation
+	 * These routines permit to move around in the lattice of fields
+	 * created by calls to ArtinSchreierExtension() as described in 
+	 * section \ref Field_lattices.
+	 * @{
+	 */
+		/** \brief The prime field F<sub>p</sub> of this field. */
 		const Field<T>& primeField() const throw();
-		/* The base field of the tower */
+		/**
+		 * \brief The base field of the Artin-Schreier tower.
+		 * 
+		 * The Artin-Schreier height 0 subfield of this field.
+		 * \return A reference to the base field.
+		 * \see ArtinSchreierExtension(), height, ArtinSchreierHeight(), \ref Field_lattices.
+		 */
 		const Field<T>& baseField() const throw();
+		/**
+		 * \brief The immediate subfield in the primitive tower.
+		 * 
+		 * If this field belongs to the primitive tower (the stem),
+		 * then its immediate subfield is returned. Otherwise
+		 * stemField().subField() is returned.
+		 * 
+		 * \return A reference to the subfield.
+		 * \throws NoSubFieldException If this is a prime field.
+		 * \see ArtinSchreierExtension(), \ref Field_lattices.
+		 */
 		const Field<T>& subField() const throw(NoSubFieldException) {
-			if (!subfield) throw NoSubFieldException();
-			return *subfield;
+#ifdef AS_DEBUG
+			if (!stem) throw ASException("No stem in stemField().");
+#endif
+			if (!stem->subfield) throw NoSubFieldException();
+			return *(stem->subfield);
 		}
+		/**
+		 * \brief The immediate overfield in the primitive tower.
+		 * 
+		 * If this field belongs to the primitive tower (the stem),
+		 * then its immediate overfield is returned. Otherwise
+		 * stemField().overField() is returned.
+		 * 
+		 * \return A reference to the overfield.
+		 * \throws NoOverFieldException If no overfield as been constructed
+		 * through a call to ArtinSchreierExtension()
+		 * \see ArtinSchreierExtension(), \ref Field_lattices.
+		 */
 		const Field<T>& overField() const throw(NoOverFieldException) {
-			if (!overfield) throw NoOverFieldException();
-			return *overfield;
+#ifdef AS_DEBUG
+			if (!stem) throw ASException("No stem in stemField().");
+#endif
+			if (!stem->overfield) throw NoOverFieldException();
+			return *(stem->overfield);
 		}
+		/**
+		 * \brief The field on the primitive tower isomorphic to this
+		 * field.
+		 * 
+		 * If this field belongs to the primitive tower, then it returns itself.
+		 * Otherwise it returns the field in the primitive tower (the stem) that
+		 * is isomorphic to this field. The isomorphism has been computed through
+		 * Couveignes2000(const FieldElement<T>&) const as described in 
+		 * ArtinSchreierExtension(const FieldElement<T>&) const. 
+		 * 
+		 * \return A reference to the stem field.
+		 * \see ArtinSchreierExtension(), Couveignes2000, \ref Field_lattices
+		 */
 		const Field<T>& stemField() const throw() {
 #ifdef AS_DEBUG
 			if (!stem) throw ASException("No stem in stemField().");
 #endif
 			return *stem;
 		}
+	/** @} */
 
 
-	/****************** Level embedding ******************/
-		/* Push the element e down to this field and store
-		 * the result in v.
+	/****************//** \name Applying the isomorphism
+	 * These routines implement the algorithms of [\ref ISSAC "DFS '09", Section 6.2]
+	 * that convert elements written on the univariate basis of the primitive Artin-Schreier
+	 * tower to and from the multivariate basis of any isomorphic tower.
+	 * @{
+	 */
+		/**
+		 * \brief Convert the univariate representation of \a e to the
+		 * multivariate representation over this field.
+		 * 
+		 * Let
+		 * \code
+		 * alpha = e.parent().generator();
+		 * \endcode
+		 * This method fills the vector \a v with \ref p elements of this field such that
+		 * \f{equation}{
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{alpha} + ... 
+		 * 		+ \mathtt{v[p-1]}*\mathtt{alpha}^{p-1}
+		 * 		\mathrm{.}
+		 * \f}
+		 * 
+		 * Let \b K be this field, this corresponds to convert \a e from its internal (univariate) 
+		 * representation to the bivariate representation as an element of \b K[\c alpha].
+		 * A repeated application of this method implements \c ApplyInverse of
+		 * [\ref ISSAC "DFS '09", Section 6.2].
 		 *
-		 * throw : IllegalCoercionException if the field e belongs to
-		 *         is not the immediate overfield of this.
+		 * \param [in] e An element of any field isomorphic to overField().
+		 * \param [out] v A vector of elements of this field that satisfies condition (1).
+		 * \throw IllegalCoercionException If the field \a e belongs to
+		 *         is not isomorphic to overField().
+		 * \see pushDown().
 		 */
-		void pushDown(const FieldElement<T>& e, vector<FieldElement<T> >& v) const
+		void toBivariate(const FieldElement<T>& e, vector<FieldElement<T> >& v) const
 			 throw(IllegalCoercionException);
 
-		/* Lift the elements in v up to this field and store the result in e.
-		 * If v is too short, it is filled with zeros. If v is too
+		/**
+		 * \brief Convert the multivariate representation of \a v to the
+		 * univariate representation of this field.
+		 * 
+		 * Let
+		 * \code
+		 * alpha = generator();
+		 * \endcode
+		 * This method stores in \a e an element of this field such that
+		 * \f{equation}{
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{alpha} + ... 
+		 * 		+ \mathtt{v[p-1]}*\mathtt{alpha}^{p-1}
+		 * 		\mathrm{,}
+		 * \f}
+		 * If \a v is too short, it is filled with zeros. If \a v is too
 		 * long, the unnecessary elements are ignored.
+		 * 
+		 * Let \b K be the field containing the elements of \a v, this corresponds to convert
+		 * \a v from the multivariate 
+		 * representation as an element of \b K[\c alpha] to the internal (univariate) representation
+		 * of this field.
+		 * A repeated application of this method implements
+		 * \c ApplyIsomorphism of [\ref ISSAC "DFS '09", Section 6.2].
 		 *
-		 * throw : NotInSameFieldException if the elements of v do not
+		 * \param [in] v A vector of elements all belonging to a field isomorphic to subField().
+		 * \param [out] e An element of this field satisfying condition (1).
+		 * \throw NotInSameFieldException If the elements of \a v do not
 		 *         belong all to the same field.
-		 * throw : IllegalCoercionException if the field e belongs to
-		 *         is not the immediate subfield of this.
+		 * \throw IllegalCoercionException If the field the elements of \a v belong to
+		 *         is not isomorphic to subField().
+		 * \see liftUp().
 		 */
-		void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e) const
+		void toUnivariate(const vector<FieldElement<T> >& v, FieldElement<T>& e) const
 			throw(NotInSameFieldException, IllegalCoercionException);
+	/** @} */
 
-	/****************** Comparison ******************/
-		/* Two fields are the same only if they are the same
-		 * object.
+	/****************//** \name Predicates ******************/
+	/** @{ */
+		/** \brief Equality.
+		 * 
+		 * \note Comparison on the address of the object.
 		 */
-		bool operator==(const Field<T>& f) const throw () { return this==&f; }
-		bool operator!=(const Field<T>& f) const throw () { return !(*this==f); }
-		/* Two fields are isomorphic if the isomorphism between them
-		 * has actually been computed
+		bool operator==(const Field<T>& F) const throw () { return this==&f; }
+		/** \brief Inequality.
+		 * 
+		 * \note Comparison on the address of the object.
 		 */
-		bool isIsomorphic(const Field<T>& f) const throw () { return stem==f.stem; }
-		/* There is inclusion between two fields only if the inclusion
-		 * has actually been computed.
+		bool operator!=(const Field<T>& F) const throw () { return !(*this==f); }
+		/**
+		 * \brief This field is isomorphic to F.
+		 * \return \c true only if the isomorphism has been computed.
+		 * \see stemField().
 		 */
-		bool isSubFieldOf(const Field<T>& f) const throw ();
-		bool isOverFieldOf(const Field<T>& f) const throw ()
+		bool isIsomorphic(const Field<T>& F) const throw () { return stem==f.stem; }
+		/**
+		 * \brief This field is contained in \a F.
+		 * \return \c true only if the inclusion has been computed.
+		 * \see subField().
+		 */
+		bool isSubFieldOf(const Field<T>& F) const throw ();
+		/**
+		 * \brief This field contains \a F
+		 * \return \c true only if the inclusion has been computed.
+		 * \see overField()
+		 */
+		bool isOverFieldOf(const Field<T>& F) const throw ()
 		{ return isIsomorphic(f) || f.isSubFieldOf(*this); }
+		/**
+		 * \brief This is a prime field.
+		 */
 		bool isPrimeField() const throw ()
-		{ return subfield == NULL; }
+		{ return stem->subfield == NULL; }
+		/** This is the base field of an ArtinSchreier tower */
 		bool isBaseField() const throw ()
-		{ return height == 0; }
-	/****************** Printing ******************/
-		ostream& print(ostream&) const;
+		{ return !stem->overfield || stem->overfield->height == 1; }
+	/** @} */
+	/****************//** \name Printing ******************/
+	/** @{ */
+		/** \brief Print details about the field to \a o */
+		ostream& print(ostream& o) const;
+	/** @} */
 	/****************** Destructor ******************/
 		~Field() throw (ASException)
 		{ throw ASException("Destroying fields is no good."); }
@@ -531,26 +702,35 @@ namespace AS {
 	/*****************************************************/
 	/****************** Private section ******************/
 	/*****************************************************/
-
+	/** \cond DEV */
 	private:
-	/****************** Copy prohibited ******************/
-		void operator=(const Field<T>&);
-		Field(const Field<T>&);
-
-	/****************** Access to precomputed values ******************/
+	/****************//** \name Access to precomputed values
+	 * These methods grant acces to precomputed values. They compute the values
+	 * on-demand when called the first time.
+	 * @{ */
 		const FieldElement<T>& getPseudotrace(const long i) const;
 		const FieldElement<T>& getLiftup() const;
 		const MatGFp& getArtinMatrix() const;
 		const Context& getCyclotomic() const;
+	/** @} */
+
+	/****************** Copy prohibited ******************/
+		void operator=(const Field<T>&);
+		Field(const Field<T>&);
 
 	/****************** Couveignes 2000 subroutines ******************/
-		/* Couveignes' algorithm (Section 6).
-		 * Assumes Tr(alpha) = 0
+		/**
+		 * \brief Couveignes' algorithm as in [\ref ISSAC "DFS '09", Section 6.1]. 
+		 * 
+		 * This routine is internally called by Couveignes2000().
+		 * 
+		 * \pre Assumes Tr(\a alpha) = 0.
 	 	 */
 		void couveignes00(FieldElement<T>& res, const FieldElement<T>& alpha) const;
 
-	/****************** Internal Constructors ******************/
-		/* Construct a field with specified parameters */
+	/****************//** \name Constructors ******************/
+	/** @{ */
+		/** \brief Construct a field with specified parameters */
 		Field<T> (
 			const Field<T>* sub,
 			const Field<T>* over,
@@ -583,7 +763,7 @@ namespace AS {
 		gen(g), alpha(a),
 		p(cha), d(deg), height(h)
 		{}
-		/* Private constructor for base fields */
+		/** \brief Construct a base fields */
 		Field<T> (
 			const Field<T>* sub,
 			const Context& ctxt,
@@ -605,7 +785,7 @@ namespace AS {
 		alpha(),
 		p(cha), d(deg), height(0)
 		{}
-		/* Private constructor for GF(p) */
+		/** \brief Construct F<sub>p</sub> */
 		Field<T> (
 			const Context& ctxt,
 			const GFp& pri,
@@ -624,7 +804,7 @@ namespace AS {
 		alpha(),
 		p(cha), d(1), height(0)
 		{}
-		/* Private constructor for primitive stem fields */
+		/** \brief Construct a field of the primitive tower (the stem). */
 		Field<T> (
 			const Field<T>* sub,
 			const Context& ctxt,
@@ -650,7 +830,7 @@ namespace AS {
 		alpha(aleph),
 		p(cha), d(deg), height(h)
 		{}
-		/* Private constructor for non-stem fields */
+		/** \brief Construct a generic field (not on the stem) */
 		Field<T> (
 			const Field<T>* st,
 			const FieldElement<T>& gen,
@@ -670,11 +850,15 @@ namespace AS {
 		alpha(aleph),
 		p(st->p), d(st->d), height(st->height)
 		{}
-
+	/** @} */
+	/** \endcond */
 	};
 
-	/****************** Printing ******************/
-	template <class T> ostream& operator<<(ostream& o, const Field<T>& f) {
+	/****************** \name Printing ******************/
+	/** \brief Print details about \a F to \a o
+	 * \relates Field
+	 */
+	template <class T> ostream& operator<<(ostream& o, const Field<T>& F) {
 		return f.print(o);
 	}
 }

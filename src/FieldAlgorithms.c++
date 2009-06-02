@@ -232,7 +232,7 @@ namespace AS {
 	 * throw : IllegalCoercionException if the field e belongs to
 	 *         is not the immediate overfield of this.
 	 */
-	template <class T> void Field<T>::pushDown(
+	template <class T> void Field<T>::toBivariate(
 	const FieldElement<T>& e, vector<FieldElement<T> >& v)
 	const throw(IllegalCoercionException) {
 		const Field<T>* parent = e.parent_field;
@@ -281,7 +281,7 @@ namespace AS {
 	 * throw : IllegalCoercionException if the field e belongs to
 	 *         is not the immediate subfield of this.
 	 */
-	template <class T> void Field<T>::liftUp(
+	template <class T> void Field<T>::toUnivariate(
 	const vector<FieldElement<T> >& v, FieldElement<T>& e) const
 	throw(NotInSameFieldException, IllegalCoercionException) {
 		// if this is a stem field, use the standard lift-up

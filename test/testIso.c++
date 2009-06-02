@@ -43,12 +43,12 @@ int main(int argv, char* argc[]) {
 		vector<gfp_E> v;
 		gfp_E a = K->random(), b;
 		cputime = -NTL::GetTime();
-		L.pushDown(a, v);
+		L.toBivariate(a, v);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
 
 		cputime = -NTL::GetTime();
-		K->liftUp(v, b);
+		K->toUnivariate(v, b);
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
 

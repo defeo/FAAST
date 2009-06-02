@@ -426,7 +426,7 @@ namespace AS {
 			return o;
 		} else {
 			vector<FieldElement<T> > down;
-			parent_field->vsubfield->pushDown(*this, down);
+			parent_field->vsubfield->toBivariate(*this, down);
 			typename vector<FieldElement<T> >::iterator it;
 			bool first = true;
 			for (long i = 0 ; i < long(down.size()) ; i++) {

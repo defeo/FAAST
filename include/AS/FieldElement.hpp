@@ -11,38 +11,62 @@ namespace AS {
 	template <class T> class FieldPolynomial;
 
 /****************** Level embedding ******************/
-	/* Push the element e down along the stem and store
-	 * the result in v.
-	 *
-	 * throw : NoSubFieldException if e belongs to GF(p)
-	 */
+/* Find docs for these functions in the friends section of FieldElement */
 	template <class T>
 	void pushDown(const FieldElement<T>& e, vector<FieldElement<T> >& v)
 	throw(NoSubFieldException);
 
-	/* Lift the elements in v up along the stem and store
-	 * the result in e.
-	 * If v is too short, it is filled with zeros.
-	 * If v is too long, the unnecessary elements are ignored.
-	 *
-	 * throw : NotInSameFieldException if the elements of v do not
-	 *         belong all to the same field.
-	 * throw : NoOverFieldException if there's no extension to lift
-	 *         up to.
-	 */
 	template <class T>
 	void liftUp(const vector<FieldElement<T> >& v, FieldElement<T>& e)
 	throw(NotInSameFieldException, NoOverFieldException);
 
 
 /****************** Class FieldElement ******************/
+	/**
+	 * \ingroup Field
+	 * \brief An element of a finite field.
+	 *
+	 * The way the arithmetics of the field are actually implemented is
+	 * given by the template parameter \a T that must be one of the \ref Infrastructures.
+	 * Note that changing the Infrastructure may sensibly change the speed of your code.
+	 *
+	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
+	 * the arithmetic operations.
+	 * 
+	 * \see Field
+	 */
 	template <class T> class FieldElement {
 
 	friend class Field<T>;
 	friend class FieldPolynomial<T>;
+	/**
+	 * \brief Push the element e down along the stem and store
+	 * the result in v.
+	 *
+	 * \throw NoSubFieldException if e belongs to GF(p)
+	 * \relates FieldElement
+	 */
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
-	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e)	throw(NotInSameFieldException, NoOverFieldException);
+	/** \brief Lift the elements in v up along the stem and store
+	 * the result in e.
+	 * If v is too short, it is filled with zeros.
+	 * If v is too long, the unnecessary elements are ignored.
+	 *
+	 * \throw NotInSameFieldException if the elements of v do not
+	 *         belong all to the same field.
+	 * \throw NoOverFieldException if there's no extension to lift
+	 *         up to.
+	 * \relates FieldElement
+	 */
+	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e) throw(NotInSameFieldException, NoOverFieldException);
 
+	/** \name Local types
+	 * Local types defined in this class. They are aliases to simplify the access
+	 * to the \ref Infrastructures "Infrastructure" \a T and its subtypes.
+	 *
+	 * \see \ref Infrastructures
+	 * @{
+	 */
 	public:
 		typedef T Infrastructure;
 
@@ -54,7 +78,7 @@ namespace AS {
 		typedef typename T::GFpEX   GFpEX;
 		typedef typename T::BigInt  BigInt;
 		typedef typename T::Context Context;
-
+	/** @} */
 
 	/****************** Members ******************/
 		/* The representation of this element */
