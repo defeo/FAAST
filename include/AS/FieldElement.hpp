@@ -25,7 +25,34 @@ namespace AS {
 	/**
 	 * \ingroup Field
 	 * \brief An element of a finite field.
-	 *
+	 * 
+	 * Objects of this class represent elements of a finite field, as represented by the class Field.
+	 * With the exception of the zero element created by the \link FieldElement() default constructor\endlink,
+	 * any element belongs to one field and binary operations can combine two elements only in one of the
+	 * following two cases:
+	 *  - the two elements belong to the same field,
+	 *  - one element belongs to a field and the other one to its \link Field::primeField() prime field\endlink.
+	 * 
+	 * Elements created through the \link FieldElement() default constructor\endlink, as for example
+	 * \code
+	 * FieldElement<T> elt;
+	 * \endcode
+	 * have a special status as they don't belong to any specific field: their default value is 0 and they
+	 * can be combined with any other element. The result of a binary operation involving such a special
+	 * element is one of the following:
+	 *  - A DivisionByZeroException if the operation is division and the divisor is the special 0 element.
+	 *  - An element of field \b K, if the other element belongs to \b K.
+	 *  - The special 0 element if the other element is the special 0 element.
+	 *  - An UndefinedFieldException if the other element is not the special 0 element and yet does
+	 *    not belong to any field, as in this example
+	 *    \code
+	 *    FieldElement<T> elt;
+	 *    return elt + 1;
+	 *    \endcode
+	 *    See UndefinedFieldException for more details.
+	 * 
+	 * Elements are internally represented as univariate polynomials with coefficients in F<sub>p</sub>
+	 * modulo an irreducible polynomial as described in [\ref ISSAC "DFS '09", Section 3].
 	 * The way the arithmetics of the field are actually implemented is
 	 * given by the template parameter \a T that must be one of the \ref Infrastructures.
 	 * Note that changing the Infrastructure may sensibly change the speed of your code.
@@ -33,29 +60,91 @@ namespace AS {
 	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
 	 * the arithmetic operations.
 	 * 
-	 * \see Field
+	 * \see Field, UndefinedFieldException
 	 */
 	template <class T> class FieldElement {
 
 	friend class Field<T>;
 	friend class FieldPolynomial<T>;
 	/**
-	 * \brief Push the element e down along the stem and store
-	 * the result in v.
+	 * \brief Convert \a e from the internal (univariate) representation to the bivariate representation
+	 * over the immediate subfield in the primitive tower (the stem).
+	 * 
+	 * If \a e belongs to the base field of an Artin-Schreier tower, then \a v is filled with the
+	 * coefficients in F<sub>p</sub> of its univariate representation. Otherwise let
+	 * \code
+	 * x = e.parent().primitiveElement();
+	 * \endcode
+	 * This method fills the vector \a v with \ref p elements of 
+	 * \link Field::subField() \c e.parent()\c.subField() \endlink such that
+	 * \f{equation}{
+	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+	 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
+	 * 		\mathrm{.}
+	 * \f}
+	 * 
+	 * Let \b K be the field in the primitive tower (the stem) isomorphic to
+	 * \link Field::subField() \c e.parent()\c.subField() \endlink, this corresponds to convert \a e from
+	 * its internal (univariate) 
+	 * representation to the bivariate representation as an element of \b K[\a x].
+	 * This routine implements the algorithm \c PushDown of [\ref ISSAC "DFS '09", Section 4.2].
+	 * 
+	 * \param [in] e An element of any field.
+	 * \param [out] v A vector of elements of \link Field::stemField() \c e.parent()\c.stemField() \endlink
+	 * that satisfies condition (1).
+	 * \throw NoSubFieldException If \a e belongs to F<sub>p</sub>.
+	 * \note The result always lies in the primitive tower (the stem), even if \a e does not.
+	 * \invariant If \a e belongs to a field in the primitive tower (the stem), this is equivalent to
+	 * \code
+	 * e.parent().subField().toBivariate(e, v);
+	 * \endcode
+	 * and this latter form should be preferred for the sake of clarity.
+	 * \see Field::toBivariate().
 	 *
-	 * \throw NoSubFieldException if e belongs to GF(p)
 	 * \relates FieldElement
 	 */
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
-	/** \brief Lift the elements in v up along the stem and store
-	 * the result in e.
-	 * If v is too short, it is filled with zeros.
-	 * If v is too long, the unnecessary elements are ignored.
+	/**
+	 * \brief Convert \a v from the bivariate representation 
+	 * over the immediate subfield in the primitive tower (the stem) to the internal
+	 * (univariate) representation.
+	 * 
+	 * If the elements of \a v belong to the prime field, then \a e is the element whose univariate
+	 * representation has \a v as cofficients. Otherwise let
+	 * \code
+	 * x = v[0].parent().primitiveElement();
+	 * \endcode
+	 * This method stores in \a e an element of
+	 * \link Field::overField() \c e.parent()\c.overField() \endlink such that
+	 * \f{equation}{
+	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+	 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
+	 * 		\mathrm{,}
+	 * \f}
+	 * If \a v is too short, it is filled with zeros. If \a v is too
+	 * long, the unnecessary elements are ignored.
+	 * 
+	 * Let \b K be the field in the primitive tower (the stem) isomorphic to
+	 * the field containing the elements of \a v, this corresponds to convert \a v from the
+	 * multivariate 
+	 * representation as an element of \b K[\a x] to the internal (univariate) representation.
+	 * This routine implements the algorithm \c LiftUp of [\ref ISSAC "DFS '09", Section 4.4].
 	 *
-	 * \throw NotInSameFieldException if the elements of v do not
-	 *         belong all to the same field.
-	 * \throw NoOverFieldException if there's no extension to lift
-	 *         up to.
+	 * \param [in] v A vector of elements all belonging to the same field.
+	 * \param [out] e An element satisfying condition (2).
+	 * \throw NotInSameFieldException If the elements of \a v do not all
+	 * belong to the same field.
+	 * \throw NoOverFieldException If the field the elements of \a v belong to has no
+	 * \link Field::overField() overfield\endlink.
+	 * \note The result always lies in the primitive tower (the stem), even if the elements of \a v do not.
+	 * \invariant If the elements of \a v belong to a field in the primitive tower (the stem),
+	 * this is equivalent to
+	 * \code
+	 * v[0].parent().overField().toUnivariate(e, v);
+	 * \endcode
+	 * and this latter form should be preferred for the sake of clarity.
+	 * \see Field::toUnivariate().
+	 * 
 	 * \relates FieldElement
 	 */
 	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e) throw(NotInSameFieldException, NoOverFieldException);
@@ -64,7 +153,7 @@ namespace AS {
 	 * Local types defined in this class. They are aliases to simplify the access
 	 * to the \ref Infrastructures "Infrastructure" \a T and its subtypes.
 	 *
-	 * \see \ref Infrastructures
+	 * \see \ref Infrastructures.
 	 * @{
 	 */
 	public:
@@ -81,37 +170,73 @@ namespace AS {
 	/** @} */
 
 	/****************** Members ******************/
-		/* The representation of this element */
+	/** \cond DEV */
+		/** \brief The \NTL representation of this element if it belongs to a prime field. */
 		GFp repBase;
+		/** \brief The \NTL representation of this element if it belongs to an extension field. */
 		GFpE repExt;
+		/** \brief Whether this element belongs to a prime or an extension field. */
 		bool base;
-		/* The field this element belongs to */
+		/** \brief The field this element belongs to. NULL if no parent field. */
 		const Field<T>* parent_field;
-
+	/** \endcond */
 
 	public:
-	/****************** Constructors ******************/
-		/* Constructor by default.
-		 * Constructs the 0 element (of any field).
+	/****************//** \name Constructors ******************/
+	/** @{ */
+		/**
+		 * \brief Construct the special 0 element.
+		 * 
+		 * The special 0 element does not belong to any field, yet it can be added, multiplied, etc.
+		 * to any other FieldElement. See the \link FieldElement introduction \endlink for more details.
+		 * If you want to construct the 0 element of a specific field, use Field::zero() instead.
+		 * 
+		 * \see UndefinedFieldException, Field::zero().
 		 */
 		FieldElement() throw() : parent_field(NULL) {}
-	/****************** Properties ******************/
-		/* The field this element belongs to */
+	/** @} */
+	/****************//** \name Properties ******************/
+	/** @{ */
+		/**
+		 * \brief The field this element belongs to.
+		 * \throw UndefinedFieldException If this element does not belong to any field.
+		 * \see FieldElement(), UndefinedFieldException.
+		 */
 		const Field<T>& parent() const
 		throw(UndefinedFieldException) {
 			if (!parent_field)
 				throw UndefinedFieldException();
 			return *parent_field;
 		}
+	/** @} */
 
-	/****************** Copy ******************/
+	/****************//** \name Copy
+	 * You can copy elements using assignment.
+	 * @{
+	 */
 		FieldElement(const FieldElement<T>& e) throw();
 		FieldElement<T>& operator=(const FieldElement<T>& e) throw();
+		/**
+		 * \brief Assign a scalar value to this element.
+		 * 
+		 * The result belongs to the same field as the element before the assignment.
+		 * 
+		 * \return A reference to the result. 
+		 * \throw UndefinedFieldException If this is the \link FieldElement() special 0 element \endlink
+		 * and \a i is different from 0.
+		 */
 		FieldElement<T>& operator=(const BigInt& i)
 		throw(UndefinedFieldException);
+	/** @} */
 
 	/****************** Arithmetics ******************/
-		/* Binary operations */
+		/** \name Binary operators
+		 * All binary operations throw a NotInSameFieldException if neither of this two conditions
+		 * is satisfied:
+		 *  - the two operands belong to the same field,
+		 *  - one of the elements belongs to a field and the other to its prime field.
+		 * @{
+		 */
 		FieldElement<T> operator+(const FieldElement<T>& e)
 		const throw(NotInSameFieldException) {
 			FieldElement<T> tmp = *this;
@@ -137,7 +262,7 @@ namespace AS {
 			return tmp;
 		}
 
-		/* Self-incrementing binary operations. */
+		/* Self-incrementing binary operators. */
 		void operator+=(const FieldElement<T>&)
 			throw(NotInSameFieldException);
 		void operator-=(const FieldElement<T>&)
@@ -147,58 +272,72 @@ namespace AS {
 		void operator/=(const FieldElement<T>&)
 			throw(NotInSameFieldException, DivisionByZeroException);
 
-		/* Memory-efficient (NTL-like) binary operations.
-		 * Aplly on the arguments and store in this.
-		 */
+		/** \brief Stores \a a + \a b in this element. */
 		void sum(const FieldElement<T>& a, const FieldElement<T>& b)
 			throw(NotInSameFieldException)
 		{ operator=(a); operator+=(b); }
+		/** \brief Stores \a a - \a b in this element. */
 		void difference(const FieldElement<T>& a, const FieldElement<T>& b)
 			throw(NotInSameFieldException)
 		{ operator=(a); operator-=(b); }
+		/** \brief Stores \a a * \a b in this element. */
 		void product(const FieldElement<T>& a, const FieldElement<T>& b)
 			throw(NotInSameFieldException)
 		{ operator=(a); operator*=(b); }
+		/** \brief Stores \a a / \a b in this element. */
 		void division(const FieldElement<T>& a, const FieldElement<T>& b)
 			throw(NotInSameFieldException, DivisionByZeroException)
 		{ operator=(a); operator/=(b); }
+		/** @} */
 
-		/* Unary operations */
+
+		/** \name Unary operators */
+		/** @{ */
+		/** \brief Additive inverse. */
 		FieldElement<T> operator-() const throw() {
 			FieldElement<T> tmp = *this;
 			tmp.negate();
 			return tmp;
 		}
+		/** \brief Multiplicative inverse. */
 		FieldElement<T> inv() const throw(DivisionByZeroException) {
 			FieldElement<T> tmp = *this;
 			tmp.self_inv();
 			return tmp;
 		}
+		/** \brief Power. */
 		FieldElement<T> operator^(const ZZ& i) const throw() {
 			FieldElement<T> tmp = *this;
 			tmp ^= i;
 			return tmp;
 		}
+		/** \brief \copybrief operator^() */
 		FieldElement<T> operator^(const long i) const throw() {
 			FieldElement<T> tmp = *this;
 			tmp ^= i;
 			return tmp;
 		}
 		/* Frobenius and iterated frobenius */
+		/** \brief <i>p</i>-th power (frobenius morphism). */
 		FieldElement<T> frobenius() const throw() {
 			FieldElement<T> tmp = *this;
 			tmp.self_frobenius();
 			return tmp;
 		}
+		/** \brief <i>p<sup>n</sup></i>-th power (iterated frobenius morphism).
+		 * 
+		 * This method relies on the algorithm \c IterFrobenius of [\ref ISSAC "DFS '09", Section 5].
+		 */
 		FieldElement<T> frobenius(const long n) const throw() {
 			FieldElement<T> tmp = *this;
 			tmp.self_frobenius(n);
 			return tmp;
 		}
-		/* Trace over the field F.
+		/**
+		 * \brief Trace over the field \a F.
 		 *
-		 * throws : NotASubFieldException if this does not belong to
-		 *          an overfield of F.
+		 * \throws NotASubFieldException If this element does not belong to
+		 *          an overfield of \a F.
 		 */
 		FieldElement<T> trace(const Field<T>& F)
 		const throw(NotASubFieldException) {
@@ -206,27 +345,55 @@ namespace AS {
 			tmp.self_trace(F);
 			return tmp;
 		}
-		/* Absolute trace over GF(p) */
+		/** \brief Trace over F<sub>p</sub> */
 		FieldElement<T> trace() const throw();
-		/* n-th pseudotrace */
+		/**
+		 * \brief <i>n</i>-th pseudotrace
+		 * 
+		 * Let \a x be this element, the <i>n</i>-th pseudotrace, noted
+		 * T<sub>n</sub>(x) is
+		 * \f[
+		 * 	\mathrm{T}_n(x) = \sum_{\ell=0}^{n-1} x^{p^\ell}
+		 * 	\mathrm{.}
+		 * \f]
+		 * This method relies on the algorithm \c Pseudotrace of [\ref ISSAC "DFS '09", Section 5].
+		 */
 		FieldElement<T> pseudotrace(unsigned long n) const throw() {
 			FieldElement<T> tmp = *this;
 			tmp.self_pseudotrace(n);
 			return tmp;
 		}
+		/** @} */
 
-		/* Self-incrementing Unary operations */
+		/** \name Self-incrementing Unary operations
+		 * These operators store the result of the operation into the element itself.
+		 * @{
+		 */
+		/** \brief Flip the sign of this element. */
 	 	void negate() throw();
+	 	/** \brief Invert this element. */
 		void self_inv() throw(DivisionByZeroException);
+		/** \brief \copybrief operator^() */
 		void operator^=(const ZZ&) throw();
+		/** \brief \copybrief operator^() */
 		void operator^=(const long) throw();
+		/** \brief \copybrief frobenius() const */
 		void self_frobenius() throw();
+		/** \brief \copybrief frobenius(const long) const */
 		void self_frobenius(long) throw();
+		/** \brief \copybrief trace(const Field<T>&) const */
 		void self_trace(const Field<T>& F) throw(NotASubFieldException);
+		/** \brief \copybrief trace() const */
 		void self_trace() throw();
+		/** \brief \copybrief pseudotrace()
+		 * 
+		 * \copydetails pseudotrace()
+		 */
 		void self_pseudotrace(unsigned long) throw();
+		/** @} */
 
-	/****************** Minimal polynomials and Evaluation******************/
+	/****************//** \name Minimal polynomials and Evaluation******************/
+	/** @{ */
 		/* The minimal polynomial over the base field. */
 		FieldPolynomial<T> minimalPolynomial() const throw() {
 			parent_field->switchContext();
@@ -303,6 +470,8 @@ namespace AS {
 			vector<FieldPolynomial<T> > minpols;
 			return evaluate(P, minpols);
 		}
+	/** @} */
+
 	/****************** Coercion of elements ******************/
 		FieldElement<T> toScalar() const throw(IllegalCoercionException);
 		FieldElement<T> operator>>(const Field<T>& F) const

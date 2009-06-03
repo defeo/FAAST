@@ -588,19 +588,20 @@ namespace AS {
 		 * \brief Convert the univariate representation of \a e to the
 		 * multivariate representation over this field.
 		 * 
-		 * Let
+		 * If this is a prime field, then \a v is filled with the
+		 * coefficients in F<sub>p</sub> of its univariate representation. Otherwise let
 		 * \code
-		 * alpha = e.parent().generator();
+		 * x = e.parent().generator();
 		 * \endcode
 		 * This method fills the vector \a v with \ref p elements of this field such that
 		 * \f{equation}{
-		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{alpha} + ... 
-		 * 		+ \mathtt{v[p-1]}*\mathtt{alpha}^{p-1}
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+		 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 		 * 		\mathrm{.}
 		 * \f}
 		 * 
 		 * Let \b K be this field, this corresponds to convert \a e from its internal (univariate) 
-		 * representation to the bivariate representation as an element of \b K[\c alpha].
+		 * representation to the bivariate representation as an element of \b K[\a x].
 		 * A repeated application of this method implements \c ApplyInverse of
 		 * [\ref ISSAC "DFS '09", Section 6.2].
 		 *
@@ -608,6 +609,9 @@ namespace AS {
 		 * \param [out] v A vector of elements of this field that satisfies condition (1).
 		 * \throw IllegalCoercionException If the field \a e belongs to
 		 *         is not isomorphic to overField().
+		 * \invariant When \a e belongs to a field in the primitive tower (the stem),
+		 * this is equivalent to
+		 * \link FieldElement::pushDown() \c pushDown(e, v) \endlink and then coerce all the contents of \a v to this field.
 		 * \see pushDown().
 		 */
 		void toBivariate(const FieldElement<T>& e, vector<FieldElement<T> >& v) const
@@ -617,14 +621,15 @@ namespace AS {
 		 * \brief Convert the multivariate representation of \a v to the
 		 * univariate representation of this field.
 		 * 
-		 * Let
+		 * If the elements of \a v belong to the prime field, then \a e is the element whose univariate
+		 * representation has \a v as cofficients. Otherwise let
 		 * \code
-		 * alpha = generator();
+		 * x = generator();
 		 * \endcode
 		 * This method stores in \a e an element of this field such that
 		 * \f{equation}{
-		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{alpha} + ... 
-		 * 		+ \mathtt{v[p-1]}*\mathtt{alpha}^{p-1}
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+		 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 		 * 		\mathrm{,}
 		 * \f}
 		 * If \a v is too short, it is filled with zeros. If \a v is too
@@ -632,17 +637,20 @@ namespace AS {
 		 * 
 		 * Let \b K be the field containing the elements of \a v, this corresponds to convert
 		 * \a v from the multivariate 
-		 * representation as an element of \b K[\c alpha] to the internal (univariate) representation
+		 * representation as an element of \b K[\a x] to the internal (univariate) representation
 		 * of this field.
 		 * A repeated application of this method implements
 		 * \c ApplyIsomorphism of [\ref ISSAC "DFS '09", Section 6.2].
 		 *
 		 * \param [in] v A vector of elements all belonging to a field isomorphic to subField().
-		 * \param [out] e An element of this field satisfying condition (1).
+		 * \param [out] e An element of this field satisfying condition (2).
 		 * \throw NotInSameFieldException If the elements of \a v do not
 		 *         belong all to the same field.
 		 * \throw IllegalCoercionException If the field the elements of \a v belong to
 		 *         is not isomorphic to subField().
+		 * \invariant When this field is in the primitive tower (the stem), this is equivalent to
+		 * coerce all the contents of \a v to the stem and then
+		 * \link FieldElement::liftUp() \c liftUp(v, e) \endlink. 
 		 * \see liftUp().
 		 */
 		void toUnivariate(const vector<FieldElement<T> >& v, FieldElement<T>& e) const
