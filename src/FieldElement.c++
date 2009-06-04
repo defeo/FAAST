@@ -420,7 +420,7 @@ namespace AS {
 		if (isZero()) return o << 0;
 		if (base) return o << repBase;
 		if (long(vars.size()) < parent_field->height + 1)
-			throw ASException("Not enough variables");
+			throw BadParametersException("Not enough variables");
 		if (parent_field->height == 0) {
 			print(o, vars[0]);
 			return o;

@@ -431,7 +431,7 @@ namespace AS {
 	 *
 	 * \warning These methods are for advanced use only. Use them
 	 * if you want to use an algorithm by you or in NTL that is not available for
-	 * FieldElement or FieldPolynomial
+	 * FieldElement or FieldPolynomial.
 	 * @{
 	 */
 		/**
@@ -458,7 +458,7 @@ namespace AS {
 		 * 
 		 * Returns a new element of this field having \a e as representation.
 		 * 
-		 * \param [in] e an \NTL scalar element.
+		 * \param [in] e An \NTL scalar element.
 		 * \return The newly created element.
 		 * \warning \a e must have been created in the context of this field. See switchContext().
 		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink
@@ -663,18 +663,18 @@ namespace AS {
 		 * 
 		 * \note Comparison on the address of the object.
 		 */
-		bool operator==(const Field<T>& F) const throw () { return this==&f; }
+		bool operator==(const Field<T>& F) const throw () { return this==&F; }
 		/** \brief Inequality.
 		 * 
 		 * \note Comparison on the address of the object.
 		 */
-		bool operator!=(const Field<T>& F) const throw () { return !(*this==f); }
+		bool operator!=(const Field<T>& F) const throw () { return !(*this==F); }
 		/**
 		 * \brief This field is isomorphic to F.
 		 * \return \c true only if the isomorphism has been computed.
 		 * \see stemField().
 		 */
-		bool isIsomorphic(const Field<T>& F) const throw () { return stem==f.stem; }
+		bool isIsomorphic(const Field<T>& F) const throw () { return stem==F.stem; }
 		/**
 		 * \brief This field is contained in \a F.
 		 * \return \c true only if the inclusion has been computed.
@@ -687,7 +687,7 @@ namespace AS {
 		 * \see overField()
 		 */
 		bool isOverFieldOf(const Field<T>& F) const throw ()
-		{ return isIsomorphic(f) || f.isSubFieldOf(*this); }
+		{ return isIsomorphic(F) || F.isSubFieldOf(*this); }
 		/**
 		 * \brief This is a prime field.
 		 */
@@ -862,12 +862,12 @@ namespace AS {
 	/** \endcond */
 	};
 
-	/****************** \name Printing ******************/
+	/****************** Printing ******************/
 	/** \brief Print details about \a F to \a o
 	 * \relates Field
 	 */
 	template <class T> ostream& operator<<(ostream& o, const Field<T>& F) {
-		return f.print(o);
+		return F.print(o);
 	}
 }
 
