@@ -75,7 +75,7 @@ namespace AS {
 	 * \code
 	 * x = e.parent().primitiveElement();
 	 * \endcode
-	 * This method fills the vector \a v with \ref p elements of 
+	 * This method fills the vector \a v with \ref Field::p "p" elements of 
 	 * \link Field::subField() \c e.parent()\c.subField() \endlink such that
 	 * \f{equation}{
 	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
@@ -238,7 +238,7 @@ namespace AS {
 
 	/****************** Arithmetics ******************/
 		/** \name Binary operators
-		 * All binary operations throw a NotInSameFieldException if neither of this two conditions
+		 * All binary operators throw a NotInSameFieldException if neither of this two conditions
 		 * is satisfied:
 		 *  - the two operands have the same \parent,
 		 *  - the \parent of one operand is the prime field of the other's.
@@ -699,12 +699,12 @@ namespace AS {
 		ostream& print(ostream& o) const;
 		/**
 		 * \brief Print this element to \a o as a polynomial over F<sub>p</sub> in the
-		 * variable \a var
+		 * variable \a var.
 		 */
 		ostream& print(ostream& o, const string& var) const;
 		/**
 		 * \brief Print this element to \a o as a multivariate polynomial over
-		 * F<sub>p<sub>.
+		 * F<sub>p</sub>.
 		 * 
 		 * The number of variables in \a vars must be at least
 		 * one plus the \link Field::ArtinSchreierHeight Artin-Schreier height\endlink
@@ -713,6 +713,9 @@ namespace AS {
 		 * is internally stored and reproduces backwards the list of calls to
 		 * Field::ArtinSchreierExtension that have created the \parent.
 		 *
+		 * \param [in,out] o An output stream.
+		 * \param [in] vars A vector of variable names.
+		 * \return A pointer to the modified stream.
 		 * \throws BadParametersException If there is not enough variables
 		 *          in \a vars.
 		 * \todo This method sucks!
