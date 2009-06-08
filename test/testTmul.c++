@@ -1,6 +1,6 @@
 /* Courtesy of E. Schost */
 
-#include "AS/Tmul.hpp"
+#include "FAAST/Tmul.hpp"
 #include <assert.h>
 #include <NTL/ZZ_pXFactoring.h>
 

@@ -1,8 +1,8 @@
-#include "Artin-Schreier.hpp"
+#include "faast.hpp"
 #include <cstdlib>
 
 using namespace std;
-using namespace AS;
+using namespace FAAST;
 
 typedef Field<ZZ_p_Algebra> gfp;
 typedef Field<zz_p_Algebra> GFp;

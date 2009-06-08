@@ -1,8 +1,8 @@
-#include "Artin-Schreier.hpp"
+#include "faast.hpp"
 #include <cstdlib>
 
 using namespace std;
-using namespace AS;
+using namespace FAAST;
 
 typedef Field<GF2_Algebra> gfp;
 typedef FieldElement<GF2_Algebra> gfp_E;
