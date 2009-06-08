@@ -1,6 +1,6 @@
-#include "AS/utilities.hpp"
+#include "FAAST/utilities.hpp"
 
-namespace AS {
+namespace FAAST {
 	template <class T> typename T::MatGFp artinMatrix
 	(const typename T::BigInt& p, const long line, const typename T::GFpXModulus& P) {
 		typedef typename T::MatGFp      MatGFp;
@@ -32,7 +32,7 @@ namespace AS {
 /****************** Access to precomputed values ******************/
 	template <class T> const FieldElement<T>&
 	Field<T>::getPseudotrace(const long j) const {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (j < 0 || j >= height)
 			throw ASException("Bad input to getPseudotrace.");
 #endif
@@ -41,7 +41,7 @@ namespace AS {
 		if (size > j) return pseudotraces[j];
 		if (this != stem) return stem->getPseudotrace(j);
 
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PSEUDOTRACES = -GetTime();
 #endif
 		pseudotraces.resize(j+1);
@@ -58,7 +58,7 @@ namespace AS {
 				pseudotraces[i] += t;
 			}
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PSEUDOTRACES += GetTime();
 #endif
 
@@ -70,7 +70,7 @@ namespace AS {
 
 		if ( !(liftuphelper.get()) ) {
 			switchContext();
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.LIFTUP = -GetTime();
 #endif
 			GFpX diffQ; diff(diffQ, GFpE::modulus());
@@ -81,7 +81,7 @@ namespace AS {
 
 			helper->self_inv();
 			liftuphelper.reset(helper);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.LIFTUP += GetTime();
 #endif
 		}
@@ -98,12 +98,12 @@ namespace AS {
 			// The residue formula tells us that Tr(x^dep) != 0
 			switchContext();
 			GFpXModulus P = GFpE::modulus();
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.ARTINMATRIX = -GetTime();
 #endif
 			artinLine = d - 1 - deg(diff(P));
 			artin = artinMatrix<T>(p,artinLine,P);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.ARTINMATRIX += GetTime();
 #endif
 		}
@@ -117,11 +117,11 @@ namespace AS {
 		switchContext();
 		if ( !(Phi.get()) ) {
 			GFpX phi;
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.CYCLOTOMIC = -GetTime();
 #endif
 			cyclotomic<T>(phi, 2*long(p)-1, p);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 			TIME.CYCLOTOMIC += GetTime();
 #endif
 			GFpE::init(phi);

@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-namespace AS {
+namespace FAAST {
 /****************** Constructors ******************/
 	/* All constructors are static. There's no way to directly
 	 * create a Field object. Field objects are permanent and
@@ -29,23 +29,23 @@ namespace AS {
 		long d = deg(P);
 		Context context; context.p.save(); context.P.save();
 		// test primality
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PRIMETEST = -GetTime();
 #endif
 		if ( p <= long(1) || (test && !ProbPrime(p)) ) {
 			throw NotPrimeException();
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PRIMETEST += GetTime();
 #endif
 		// test irreducibility
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.IRREDTEST = -GetTime();
 #endif
 		if (d > 1 && test && !DetIrredTest(P)) {
 			throw NotIrreducibleException();
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.IRREDTEST += GetTime();
 #endif
 		// build GF(p^d)
@@ -77,13 +77,13 @@ namespace AS {
 		long d = deg(P);
 		Context context; context.P.save();
 		// test irreducibility
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.IRREDTEST = -GetTime();
 #endif
 		if (d > 1 && test && !IterIrredTest(P)) {
 			throw NotIrreducibleException();
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.IRREDTEST += GetTime();
 #endif
 
@@ -146,24 +146,24 @@ namespace AS {
 		if (p <= long(1)) {
 			throw NotPrimeException();
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PRIMETEST = -GetTime();
 #endif
 		if (test && !ProbPrime(p)) {
 			throw NotPrimeException();
 		}
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.PRIMETEST += GetTime();
 #endif
 
 		GFp::init(p);
 		GFpX P;
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDIRRED = -GetTime();
 #endif
 		if (d >= 2) BuildIrred(P, d);
 		else SetX(P);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDIRRED += GetTime();
 #endif
 		return createField(P, false);
@@ -182,12 +182,12 @@ namespace AS {
 		}
 
 		GFpX P;
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDIRRED = -GetTime();
 #endif
 		if (d >= 2) BuildIrred(P, d);
 		else SetX(P);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDIRRED += GetTime();
 #endif
 		return createField(P, false);
@@ -326,7 +326,7 @@ namespace AS {
 	template <class T> bool Field<T>::isSubFieldOf(const Field<T>& f)
 	const throw () {
 		const Field<T>* stemf = f.stem;
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (!stemf || !stem) throw ASException("Error : Stem is NULL.");
 #endif
 		while (stemf != stem && (stemf = stemf->subfield));

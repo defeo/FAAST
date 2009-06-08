@@ -1,4 +1,24 @@
 /**
 	\mainpage
-	\subpage Bibliography
+	
+	Welcome to FAAST, the library for Fast Arithmetics in Artin-Schreier Towers.
+
+	This manual describes how to install and use the FAAST library, 
+	
+	Copyright &copy; 2009 <a href="http://www.lix.polytechnique.fr">Luca De Feo</a>
+	and <a href="http://www.cs.uwo.ca/~schost">Éric Schost</a>.
+	
+	Permission is granted to copy, distribute and/or modify this document under the terms of the GNU 
+	Free Documentation License, Version 1.2 or any later version published by the Free Software Foundation.
+	A copy of the license is included in GNU Free Documentation License. 
+	
+	\subpage Copying
+
+	\subpage Introduction
+
+	\subpage Install
+
+	\subpage Using
+
+	\subpage References
 */

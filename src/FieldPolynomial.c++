@@ -1,4 +1,4 @@
-namespace AS {
+namespace FAAST {
 /****************** Properties ******************/
 	/* Degree. Returns -1 if the polynomial is 0. */
 	template <class T> long FieldPolynomial<T>::degree()
@@ -327,7 +327,7 @@ namespace AS {
 		if (parent_field->d == 1)
 			return *this >> parent_field->primeField();
 
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (base) throw
 			ASException("Malformed element in isScalarPolynomial().");
 #endif
@@ -422,7 +422,7 @@ namespace AS {
 	FieldPolynomial<T>::isScalarPolynomial() const throw() {
 		if (!parent_field || parent_field->d == 1) return true;
 
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (base) throw
 			ASException("Malformed element in isScalarPolynomial().");
 #endif

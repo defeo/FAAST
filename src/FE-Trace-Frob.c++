@@ -1,10 +1,10 @@
-#import "AS/utilities.hpp"
-#ifdef AS_DEBUG
+#import "FAAST/utilities.hpp"
+#ifdef FAAST_DEBUG
 #import <string>
 #import <sstream>
 #endif
 
-namespace AS {
+namespace FAAST {
 /****************** Arithmetics ******************/
 	/* n-th iterated frobenius. This algorithm is detailed in the
 	 * long version.
@@ -54,7 +54,7 @@ namespace AS {
 
 			vector<FieldElement<T> > down;
 			while (parent_field != F.stem) {
-				AS::pushDown(*this, down);
+				FAAST::pushDown(*this, down);
 				if (down.size() == unsigned(parent_field->p)) {
 					*this = down[long(parent_field->p) - 1];
 					negate();
@@ -127,7 +127,7 @@ namespace AS {
 
 	/* p^j-th iterated frobenius */
 	template <class T> void FieldElement<T>::BigFrob(const long j) {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigFrob : " << j << ".";
@@ -139,7 +139,7 @@ namespace AS {
 		BigInt p = parent_field->p;
 		// step 2
 		vector<FieldElement<T> > down;
-		AS::pushDown(*this, down);
+		FAAST::pushDown(*this, down);
 		down.resize(p);
 		// step 3
 		if (j < parent_field->height - 1) {
@@ -160,13 +160,13 @@ namespace AS {
 		}
 		// step 6
 		const Field<T>* parent = parent_field;
-		AS::liftUp(result, *this);
+		FAAST::liftUp(result, *this);
 		parent_field = parent;
 	}
 
 	/* n-th iterated frobenius, n < d */
 	template <class T> void FieldElement<T>::SmallFrob(const long n) {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (n < 0 || n >= parent_field->baseField().d) {
 			stringstream msg;
 			msg << "Bad input to SmallFrob : " << n << ".";
@@ -181,7 +181,7 @@ namespace AS {
 
 	/* p^j-th pseudotrace */
 	template <class T> void FieldElement<T>::BigPTrace(const long j) {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigPTrace : " << j << ".";
@@ -204,7 +204,7 @@ namespace AS {
 	template <class T> void
 	FieldElement<T>::BigPTraceVector(vector<FieldElement<T> >& v,
 	const long j) const {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigPTraceVector : " << j << ".";
@@ -226,7 +226,7 @@ namespace AS {
 
 	/* n-th pseudotrace, n < d */
 	template <class T> void FieldElement<T>::SmallPTrace(const long n) {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (n < 0 || n > parent_field->baseField().d) {
 			stringstream msg;
 			msg << "Bad input to SmallPTrace : " << n << ".";

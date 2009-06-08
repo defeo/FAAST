@@ -7,7 +7,7 @@
  *      Author: defeo
  */
 
-namespace AS {
+namespace FAAST {
 	template <> FieldPolynomial<GF2_Algebra>&
 	FieldPolynomial<GF2_Algebra>::operator=(const FieldPolynomial<GF2_Algebra>& e)
 	throw() {

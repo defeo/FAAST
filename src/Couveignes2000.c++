@@ -1,4 +1,4 @@
-namespace AS {
+namespace FAAST {
 	/* The algorithm ApproximateAS from Section 6 */
 	template <class T> void approximateAS(
 	vector<FieldElement<T> >& v, const FieldElement<T>& tr) {
@@ -25,7 +25,7 @@ namespace AS {
 	 */
 	template <class T> void Field<T>::couveignes00(
 	FieldElement<T>& res, const FieldElement<T>& alpha) const {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (alpha.trace() != 0)
 			throw ASException("Bad input to couveignes00.");
 #endif
@@ -41,7 +41,7 @@ namespace AS {
 		if (i == 0) {
 			parent.switchContext();
 			const MatGFp& artin = parent.getArtinMatrix();
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 			if (parent.stem->artinLine < 0)
 				throw ASException("Bad Artin Matrix.");
 #endif
@@ -66,16 +66,16 @@ namespace AS {
 		eta.BigPTrace(i-1);
 		// step 3
 		vector<FieldElement<T> > etas;
-		AS::pushDown(eta, etas);
+		FAAST::pushDown(eta, etas);
 		etas.resize(p);
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (etas[long(parent.p)-1] != 0)
 			throw ASException("Error in couveignes00.");
 #endif
 		approximateAS<T>(etas, parent.stem->alpha->trace());
 		// step 4
 		vector<FieldElement<T> > alphas;
-		AS::pushDown(alpha, alphas);
+		FAAST::pushDown(alpha, alphas);
 		alphas.resize(1);
 		FieldElement<T> alpha1 = alphas[0];
 		FieldElement<T> gamma = alphas[0].parent_field->one();
@@ -89,7 +89,7 @@ namespace AS {
 		// step5
 		couveignes00(etas[0], alpha1);
 		// step 6
-		AS::liftUp(etas, res);
+		FAAST::liftUp(etas, res);
 	}
 
 	/* Return a root in this field of the polynomial
@@ -132,7 +132,7 @@ namespace AS {
 				couveignes00(v[0], v[0]);
 				v[1] >>= *(v[0].parent_field);
 				FieldElement<T> res;
-				AS::liftUp(v, res);
+				FAAST::liftUp(v, res);
 				return res >> *this;
 			}
 		}

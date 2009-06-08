@@ -9,7 +9,15 @@
     
     
     
+    
+    
+    
+    
     <item id="scannerConfiguration">
+      
+      
+      
+      
       
       
       
@@ -23,6 +31,10 @@
       
       
       
+      
+      
+      
+      
       <profile id="org.eclipse.cdt.make.core.GCCStandardMakePerProjectProfile">
         
         
@@ -30,7 +42,15 @@
         
         
         
+        
+        
+        
+        
         <buildOutputProvider>
+          
+          
+          
+          
           
           
           
@@ -44,14 +64,26 @@
           
           
           
+          
+          
+          
+          
           <parser enabled="true"/>
           
           
           
+          
+          
+        
+        
         
         
         
         </buildOutputProvider>
+        
+        
+        
+        
         
         
         
@@ -65,7 +97,15 @@
           
           
           
+          
+          
+          
+          
           <runAction useDefault="true" command="gcc" arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}"/>
+          
+          
+          
+          
           
           
           
@@ -76,6 +116,10 @@
           
           
           
+          
+          
+        
+        
         
         
         
@@ -83,10 +127,18 @@
         
         
         
+        
+        
+      
+      
       
       
       
       </profile>
+      
+      
+      
+      
       
       
       
@@ -100,7 +152,15 @@
         
         
         
+        
+        
+        
+        
         <buildOutputProvider>
+          
+          
+          
+          
           
           
           
@@ -114,14 +174,26 @@
           
           
           
+          
+          
+          
+          
           <parser enabled="true"/>
           
           
           
+          
+          
+        
+        
         
         
         
         </buildOutputProvider>
+        
+        
+        
+        
         
         
         
@@ -135,7 +207,15 @@
           
           
           
+          
+          
+          
+          
           <runAction useDefault="true" command="gcc" arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}"/>
+          
+          
+          
+          
           
           
           
@@ -146,6 +226,10 @@
           
           
           
+          
+          
+        
+        
         
         
         
@@ -153,10 +237,18 @@
         
         
         
+        
+        
+      
+      
       
       
       
       </profile>
+      
+      
+      
+      
       
       
       
@@ -170,7 +262,15 @@
         
         
         
+        
+        
+        
+        
         <buildOutputProvider>
+          
+          
+          
+          
           
           
           
@@ -184,14 +284,26 @@
           
           
           
+          
+          
+          
+          
           <parser enabled="true"/>
           
           
           
+          
+          
+        
+        
         
         
         
         </buildOutputProvider>
+        
+        
+        
+        
         
         
         
@@ -205,7 +317,15 @@
           
           
           
+          
+          
+          
+          
           <runAction useDefault="true" command="gcc" arguments="-E -P -v -dD ${plugin_state_location}/${specs_file}"/>
+          
+          
+          
+          
           
           
           
@@ -216,6 +336,10 @@
           
           
           
+          
+          
+        
+        
         
         
         
@@ -223,10 +347,18 @@
         
         
         
+        
+        
+      
+      
       
       
       
       </profile>
+      
+      
+      
+      
       
       
       
@@ -240,7 +372,15 @@
         
         
         
+        
+        
+        
+        
         <buildOutputProvider>
+          
+          
+          
+          
           
           
           
@@ -254,14 +394,26 @@
           
           
           
+          
+          
+          
+          
           <parser enabled="true"/>
           
           
           
+          
+          
+        
+        
         
         
         
         </buildOutputProvider>
+        
+        
+        
+        
         
         
         
@@ -275,7 +427,15 @@
           
           
           
+          
+          
+          
+          
           <runAction useDefault="true" command="make" arguments="-f ${project_name}_scd.mk"/>
+          
+          
+          
+          
           
           
           
@@ -286,6 +446,10 @@
           
           
           
+          
+          
+        
+        
         
         
         
@@ -293,6 +457,10 @@
         
         
         
+        
+        
+      
+      
       
       
       
@@ -300,10 +468,18 @@
       
       
       
+      
+      
+    
+    
     
     
     
     </item>
+    
+    
+    
+    
     
     
     
@@ -318,6 +494,10 @@
     
     
     
+    
+    
+  
+  
   
   
   

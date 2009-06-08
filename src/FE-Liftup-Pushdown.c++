@@ -1,5 +1,5 @@
-#include "AS/utilities.hpp"
-#include "AS/Tmul.hpp"
+#include "FAAST/utilities.hpp"
+#include "FAAST/Tmul.hpp"
 
 NTL_OPEN_NNS
 void ShiftAdd(GF2X& c, const GF2X& a, long n);
@@ -17,7 +17,7 @@ void ComputeTraceVec(const GF2XModulus& F)
 }
 NTL_CLOSE_NNS
 
-namespace AS {
+namespace FAAST {
 /****************** Level embedding ******************/
 	// The routine MulMod from Section 4
 	template <class T> void MulMod(
@@ -220,7 +220,7 @@ namespace AS {
 			vector<GFpX> W;
 			BigInt p = parent->p;
 			pushDownRec<T>(rep(e.repExt), 0, deg(rep(e.repExt)), W, p);
-#if AS_DEBUG >= 2
+#if FAAST_DEBUG >= 2
 			for (BigInt i = 0 ; i < p ; i++) {
 				if (deg(W[i]) * p > deg(rep(e.repExt)))
 					throw ASException("Problem in pushDownRec.");
@@ -365,11 +365,11 @@ namespace AS {
 
 			// get the trace form
 			if (Q.tracevec.length() == 0) {
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 				Field<T>::TIME.TRACEVEC = -GetTime();
 #endif
 				ComputeTraceVec(Q);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 				Field<T>::TIME.TRACEVEC += GetTime();
 #endif
 			}

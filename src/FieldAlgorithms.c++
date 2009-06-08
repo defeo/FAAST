@@ -1,10 +1,10 @@
-#include "AS/utilities.hpp"
+#include "FAAST/utilities.hpp"
 
 /* This file contains algorithms from Sections 3 and 6
  * of the paper
  */
 
-namespace AS {
+namespace FAAST {
 
 	/* Cantor's algorithm to compute the minimal polynomial
 	 * of the primitive generator of the Artin-Schreier
@@ -49,7 +49,7 @@ namespace AS {
 		for (long i = 0 ; i <= deg(Qstar) ; i += 2*p-1) {
 			SetCoeff(qstar, c, coeff(rep(coeff(Qstar, i)), 0));
 			c++;
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 			if (deg(rep(coeff(Qstar, i))) > 0) throw
 				ASException("Error in Cantor89");
 			for (long j = 1 ; j < 2*p-1 ; j++) {
@@ -72,7 +72,7 @@ namespace AS {
 	 */
 	template <class T> const Field<T>& Field<T>::ArtinSchreierExtension()
 	const throw (CharacteristicTooLargeException, NotSupportedException) {
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (!stem) throw ASException("Error : Stem is NULL.");
 #endif
 		// if the extension already exists, return it
@@ -85,7 +85,7 @@ namespace AS {
 		// test if the characteristic stays in one word
 		if (p != long(p)) throw CharacteristicTooLargeException();
 
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDSTEM = -GetTime();
 #endif
 		switchContext();
@@ -163,7 +163,7 @@ namespace AS {
 			*alpha ^= long(2)*p - 1;
 		}
 
-#if AS_DEBUG >= 3
+#if FAAST_DEBUG >= 3
 		if (!IterIrredTest(Q))
 			throw ASException("The defining polynomial of the extension is not irreducible.");
 #endif
@@ -181,7 +181,7 @@ namespace AS {
 
 		stem->overfield = new Field<T>(stem, ctxt, pri, po, tpmo, p,
 										long(p)*d, height+1, alpha, vsub);
-#ifdef AS_TIMINGS
+#ifdef FAAST_TIMINGS
 		TIME.BUILDSTEM += GetTime();
 #endif
 
@@ -248,7 +248,7 @@ namespace AS {
 		// if the overfield is a stem field, use the standard
 		// push-down algorithm from Section 4
 		if (parent == parent->stem) {
-			AS::pushDown(e, v);
+			FAAST::pushDown(e, v);
 			typename vector<FieldElement<T> >::iterator it;
 			for (it = v.begin() ; it != v.end() ; it++)
 				*it >>= *this;
@@ -287,7 +287,7 @@ namespace AS {
 		// if this is a stem field, use the standard lift-up
 		// algorithm from Section 4
 		if (this == stem) {
-			AS::liftUp(v, e);
+			FAAST::liftUp(v, e);
 			return;
 		}
 

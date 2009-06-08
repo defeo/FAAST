@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 CC = g++
-OPT = -g -Wall -DAS_TIMINGS
+OPT = -g -Wall -DFAAST_TIMINGS
 
 # Linked libraries
 # For cvs compatibilty reasons, library files must be in /usr/local/lib,
@@ -26,7 +26,7 @@ IPATH=-I$(INC)
 LIB=$(NTLLIB) $(GMPLIB) $(MLIB) $(ZLIB) $(CPROFLIB)
 
 # Objects being prerequisites for every build
-COMMONOBJS := Artin-Schreier.o
+COMMONOBJS := faast.o
 COMMONOBJS := $(COMMONOBJS:%=$(BIN)/%)
 
 ########## targets
@@ -77,80 +77,74 @@ $(BIN)/testTmul: $(COMMONOBJS) $(TESTTMUL)
 
 ########## object files
 
-$(BIN)/Artin-Schreier.o: $(SRC)/explicit_instantiation.c++ $(INC)/Artin-Schreier.hpp \
+$(BIN)/faast.o: $(SRC)/explicit_instantiation.c++ $(INC)/faast.hpp \
 	$(SRC)/Couveignes2000.c++ $(SRC)/FE-Liftup-Pushdown.c++ $(SRC)/FE-Trace-Frob.c++ \
 	$(SRC)/Field.c++ $(SRC)/FieldAlgorithms.c++ $(SRC)/FieldElement.c++ $(SRC)/FieldPolynomial.c++ \
 	$(SRC)/FieldPrecomputations.c++ $(SRC)/Minpols.c++ $(SRC)/utilities.c++ $(SRC)/NTLhacks.c++ \
 	$(SRC)/Types.c++
-	$(CC) -c $(OPT) $(IPATH) $(SRC)/explicit_instantiation.c++ -o $(BIN)/Artin-Schreier.o
+	$(CC) -c $(OPT) $(IPATH) $(SRC)/explicit_instantiation.c++ -o $(BIN)/faast.o
 
 ########## object files for test routines
 
-$(BIN)/test.o: $(TESTDIR)/test.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/test.o: $(TESTDIR)/test.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/test.c++ -o $(BIN)/test.o
 
-$(BIN)/testIso.o: $(TESTDIR)/testIso.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/testIso.o: $(TESTDIR)/testIso.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testIso.c++ -o $(BIN)/testIso.o
 
-$(BIN)/testStem.o: $(TESTDIR)/testStem.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/testStem.o: $(TESTDIR)/testStem.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testStem.c++ -o $(BIN)/testStem.o
 
-$(BIN)/testTraceFrob.o: $(TESTDIR)/testTraceFrob.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/testTraceFrob.o: $(TESTDIR)/testTraceFrob.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testTraceFrob.c++ -o $(BIN)/testTraceFrob.o
 
-$(BIN)/testLE.o: $(TESTDIR)/testLE.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/testLE.o: $(TESTDIR)/testLE.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testLE.c++ -o $(BIN)/testLE.o
 
-$(BIN)/testCyclotomic.o: $(TESTDIR)/testCyclotomic.c++ $(INC)/Artin-Schreier.hpp
+$(BIN)/testCyclotomic.o: $(TESTDIR)/testCyclotomic.c++ $(INC)/faast.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testCyclotomic.c++ -o $(BIN)/testCyclotomic.o
 
-$(BIN)/testTmul.o: $(TESTDIR)/testTmul.c++ $(INC)/AS/Tmul.hpp
+$(BIN)/testTmul.o: $(TESTDIR)/testTmul.c++ $(INC)/FAAST/Tmul.hpp
 	$(CC) -c $(OPT) $(IPATH) $(TESTDIR)/testTmul.c++ -o $(BIN)/testTmul.o
 
 ########## other files
 
-$(INC)/Artin-Schreier.hpp: $(INC)/AS/Exceptions.hpp $(INC)/AS/Field.hpp $(INC)/AS/Types.hpp
-	touch $(INC)/Artin-Schreier.hpp
+$(INC)/faast.hpp: $(INC)/FAAST/Exceptions.hpp $(INC)/FAAST/Field.hpp $(INC)/FAAST/Types.hpp
+	touch $(INC)/faast.hpp
 
-$(INC)/AS/Types.hpp: $(INC)/AS/NTLhacks.hpp
-	touch $(INC)/AS/Types.hpp
+$(INC)/FAAST/Types.hpp: $(INC)/FAAST/NTLhacks.hpp
+	touch $(INC)/FAAST/Types.hpp
 
-$(INC)/AS/Field.hpp: $(INC)/AS/Exceptions.hpp $(INC)/AS/FieldElement.hpp $(INC)/AS/FieldPolynomial.hpp
-	touch $(INC)/AS/Field.hpp
+$(INC)/FAAST/Field.hpp: $(INC)/FAAST/Exceptions.hpp $(INC)/FAAST/FieldElement.hpp $(INC)/FAAST/FieldPolynomial.hpp
+	touch $(INC)/FAAST/Field.hpp
 
-$(INC)/AS/FieldElement.hpp: $(INC)/AS/Exceptions.hpp
-	touch $(INC)/AS/FieldElement.hpp
+$(INC)/FAAST/FieldElement.hpp: $(INC)/FAAST/Exceptions.hpp
+	touch $(INC)/FAAST/FieldElement.hpp
 
-$(INC)/AS/FieldPolynomial.hpp: $(INC)/AS/Exceptions.hpp
-	touch $(INC)/AS/FieldPolynomial.hpp
+$(INC)/FAAST/FieldPolynomial.hpp: $(INC)/FAAST/Exceptions.hpp
+	touch $(INC)/FAAST/FieldPolynomial.hpp
 
-$(INC)/AS/utilities.hpp: $(INC)/AS/Types.hpp $(INC)/AS/Exceptions.hpp
-	touch $(INC)/AS/utilities.hpp
+$(INC)/FAAST/utilities.hpp: $(INC)/FAAST/Types.hpp $(INC)/FAAST/Exceptions.hpp
+	touch $(INC)/FAAST/utilities.hpp
 
-$(SRC)/FieldAlgorithms.c++: $(INC)/AS/utilities.hpp
+$(SRC)/FieldAlgorithms.c++: $(INC)/FAAST/utilities.hpp
 	touch $(SRC)/FieldAlgorithms.c++
 
-$(SRC)/FE-Liftup-Pushdown.c++: $(INC)/AS/utilities.hpp $(INC)/AS/Tmul.hpp
+$(SRC)/FE-Liftup-Pushdown.c++: $(INC)/FAAST/utilities.hpp $(INC)/FAAST/Tmul.hpp
 	touch $(SRC)/FE-Liftup-Pushdown.c++
 
-$(SRC)/FE-Trace-Frob.c++: $(INC)/AS/utilities.hpp
+$(SRC)/FE-Trace-Frob.c++: $(INC)/FAAST/utilities.hpp
 	touch $(SRC)/FE-Trace-Frob.c++
 
-$(SRC)/FieldPrecomputations.c++: $(INC)/AS/utilities.hpp
+$(SRC)/FieldPrecomputations.c++: $(INC)/FAAST/utilities.hpp
 	touch $(SRC)/FieldPrecomputations.c++
-
-######################################################################
-########## Obsolete
-
-# Artin-Schreier.hpp.gch: $(INC)/Artin-Schreier.hpp
-#	$(CC) -x c++-header -c $(OPT) $(IPATH) $(INC)/Artin-Schreier.hpp -o Artin-Schreier.hpp.gch
 
 ######################################################################
 ########## Other targets
 
 .PHONY: library
 library: $(COMMONOBJS)
-	ar rcs libArtin-Schreier.a $(BIN)/Artin-Schreier.o
+	ar rcs libfaast.a $(BIN)/faast.o
 
 .PHONY: test
 test: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
@@ -166,7 +160,7 @@ doc-dev:
 	(cat doxy.conf; \
 	echo "ENABLED_SECTIONS=DEV"; \
 	echo "OUTPUT_DIRECTORY=doc-dev"; \
-	echo "PREDEFINED = AS_TIMINGS"; \
+	echo "PREDEFINED = FAAST_TIMINGS"; \
 	echo "SHOW_USED_FILES = YES"; \
 	echo "SHOW_FILES = YES") | doxygen -
 

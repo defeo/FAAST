@@ -5,7 +5,7 @@
  *      Author: defeo
  */
 
-#include "Artin-Schreier.hpp"
+#include "faast.hpp"
 
 #include "Types.c++"
 #include "Couveignes2000.c++"
@@ -20,7 +20,7 @@
 #include "utilities.c++"
 #include "NTLhacks.c++"
 
-using namespace AS;
+using namespace FAAST;
 
 /* Classes */
 template class Field<zz_p_Algebra>;

@@ -1,4 +1,4 @@
-namespace AS {
+namespace FAAST {
 /****************** Copy ******************/
 	template <class T>
 	FieldElement<T>::FieldElement(const FieldElement<T>& e) throw() :
@@ -249,7 +249,7 @@ namespace AS {
 		if (parent_field->d == 1)
 			return *this >> parent_field->primeField();
 
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (base) throw
 			ASException("Malformed element in isScalar().");
 #endif
@@ -276,7 +276,7 @@ namespace AS {
 				vector<FieldElement<T> > v;
 				v.resize(1);
 				v[0] = *this;
-				AS::liftUp(v, *this);
+				FAAST::liftUp(v, *this);
 			}
 		}
 		// or go down ...
@@ -284,7 +284,7 @@ namespace AS {
 			FieldElement<T> bak = *this;
 			while (parent_field->stem != F.stem) {
 				vector<FieldElement<T> > v;
-				AS::pushDown(*this, v);
+				FAAST::pushDown(*this, v);
 				// verify coercibility
 				typename vector<FieldElement<T> >::iterator it = v.begin();
 				if (it != v.end()) {
@@ -316,7 +316,7 @@ namespace AS {
 		else if (parent_field->isOverFieldOf(F)) {
 			while (parent_field->stem != F.stem) {
 				vector<FieldElement<T> > v;
-				AS::pushDown(*this, v);
+				FAAST::pushDown(*this, v);
 				// verify coercibility
 				typename vector<FieldElement<T> >::iterator it = v.begin();
 				if (it == v.end()) return true;
@@ -349,7 +349,7 @@ namespace AS {
 	template <class T> bool FieldElement<T>::isScalar() const
 	throw() {
 		if (!parent_field  || parent_field->d == 1) return true;
-#ifdef AS_DEBUG
+#ifdef FAAST_DEBUG
 		if (base) throw
 			ASException("Malformed element in isScalar().");
 #endif

@@ -1,5 +1,5 @@
 #include <Artin-Schreier.hpp>
-using namespace AS;
+using namespace FAAST;
 void main() {
 	Field<zz_p_algebra>& K = Field<zz_p_Algebra>::createField(2, 3);
 	Field<zz_p_algebra>& L = K.ArtinSchreierExtension();

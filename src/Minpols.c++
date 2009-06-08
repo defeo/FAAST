@@ -1,4 +1,4 @@
-namespace AS {
+namespace FAAST {
 /****************** Minimal polynomials ******************/
 	/* All the minimal polynomials up to the field F.
 	 *		res = minimalPolynomials(F);
