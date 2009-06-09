@@ -6,3 +6,4 @@ nohup.out
 libArtin-Schreier.a
 doc-dev
 doc
+*.a
