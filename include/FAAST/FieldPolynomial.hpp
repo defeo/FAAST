@@ -1,3 +1,24 @@
+/*
+	This file is part of the FAAST library.
+
+	Copyright (c) 2009 Luca De Feo and Éric Schost.
+
+	The most recent version of FAAST is available at http://www.lix.polytechnique.fr/~defeo/FAAST
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; see file COPYING. If not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #ifndef FIELDPOLYNOMIAL_H_
 #define FIELDPOLYNOMIAL_H_
 
@@ -11,14 +32,14 @@ namespace FAAST {
 	/**
 	 * \ingroup Field
 	 * \brief An polynomial with coefficients over a finite field.
-	 * 
+	 *
 	 * Objects of this class represent polynomials over a finite field, as represented by the class Field.
 	 * With the exception of the zero polynomial created by the \link FieldPolynomial() default constructor\endlink,
 	 * any element has an unique \e parent \e field and binary operations can combine two elements only in one of the
 	 * following two cases:
 	 *  - the two polynomials have the same parent field,
 	 *  - the parent element of one polynomial is the \link Field::primeField() prime field\endlink of the other's.
-	 * 
+	 *
 	 * Polynomials created through the \link FieldPolynomial() default constructor\endlink, as for example
 	 * \code
 	 * FieldPolynomial<T> P;
@@ -36,14 +57,14 @@ namespace FAAST {
 	 *    return P + 1;
 	 *    \endcode
 	 *    See UndefinedFieldException for more details.
-	 * 
+	 *
 	 * The way the arithmetics of the field are actually implemented is
 	 * given by the template parameter \a T that must be one of the \ref Infrastructures.
 	 * Note that changing the Infrastructure may sensibly change the speed of your code.
 	 *
 	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
 	 * the arithmetic operations.
-	 * 
+	 *
 	 * \see Field, FieldElement, UndefinedFieldException
 	 */
 	template <class T> class FieldPolynomial {
@@ -90,12 +111,12 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief Construct the special 0 polynomial.
-		 * 
+		 *
 		 * The special 0 polynomial has no coefficient field, yet it can be added, multiplied, etc.
 		 * to any other FieldPolynomial. See the \link FieldPolynomial introduction \endlink for more details.
-		 * If you want to construct the 0 polynomial of a specific field, use Field::zero() in 
+		 * If you want to construct the 0 polynomial of a specific field, use Field::zero() in
 		 * conjunction with FieldPolynomial(const FieldElement<T>&) instead.
-		 * 
+		 *
 		 * \see UndefinedFieldException, Field::zero(), FieldPolynomial(const FieldElement<T>&).
 		 */
 		FieldPolynomial() throw() : parent_field(NULL) {}
@@ -104,13 +125,13 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief The \e parent \e field.
-		 * 
+		 *
 		 * With the exception of the zero polynomial created by the \link FieldPolynomial() default constructor\endlink,
 		 * any polynomial has an unique \e parent \e field and binary operations can combine two polynomials only in one of the
 		 * following two cases:
 		 *  - the two polynomials have the same parent field,
 		 *  - the parent element of one polynomial is the \link Field::primeField() prime field\endlink of the other's.
-		 * 
+		 *
 		 * \throw UndefinedFieldException If this polynomial has no coefficient field.
 		 * \see FieldElement(), UndefinedFieldException.
 		 */
@@ -121,7 +142,7 @@ namespace FAAST {
 			return *parent_field;
 		}
 		/** \brief Degree of the polynomial.
-		 * 
+		 *
 		 * \return The degree of the polynomial or -1 if the polynomial is 0.
 		 */
 		long degree() const throw();
@@ -139,10 +160,10 @@ namespace FAAST {
 		FieldPolynomial<T>& operator=(const FieldElement<T>& e) throw();
 		/**
 		 * \brief The degree 0 polynomial with constant coefficient \a i.
-		 * 
+		 *
 		 * The \parent of the polynomial does not change through the assignment.
-		 * 
-		 * \return A reference to the result. 
+		 *
+		 * \return A reference to the result.
 		 * \throw UndefinedFieldException If this is the \link FieldPolynomial() special 0 element \endlink
 		 * and \a i is different from 0.
 		 */
@@ -153,7 +174,7 @@ namespace FAAST {
 	/****************//** \name Access to coefficients ******************/
 	/** @{ */
 		/** \brief Store in \a e the <i>i</i>-th coefficient.
-		 * 
+		 *
 		 * \param [in] i A positive integer.
 		 * \param [out] e A FieldElement to hold the result.
 		 * \throw BadParametersException If \a i is negative.
@@ -162,11 +183,11 @@ namespace FAAST {
 		const throw(BadParametersException);
 		/**
 		 * \brief Set the <i>i</i>-th coefficient to \a e.
-		 * 
+		 *
 		 * If this polynomial is the special 0 polynomial, its \parent becomes
-		 * the \parent of \a e after this call. If moreover \a e is the 
+		 * the \parent of \a e after this call. If moreover \a e is the
 		 * \link FieldElement::FieldElement() special 0 element\endlink, this method does nothing.
-		 * 
+		 *
 		 * \param [in] i A positive integer.
 		 * \param [out] e A FieldElement having the same \parent as this polynomial or the
 		 * \link FieldElement::FieldElement() special 0 element\endlink.
@@ -178,7 +199,7 @@ namespace FAAST {
 		throw(NotInSameFieldException, BadParametersException);
 		/**
 		 * \brief Set the <i>i</i>-th coefficient to \a c.
-		 * 
+		 *
 		 * \param [in] i A positive integer.
 		 * \param [out] c An integer.
 		 * \throw BadParametersException If \a i is negative.
@@ -189,7 +210,7 @@ namespace FAAST {
 		throw(UndefinedFieldException, BadParametersException);
 		/**
 		 * \brief Set the <i>i</i>-th coefficient to 1.
-		 * 
+		 *
 		 * \param [in] i A positive integer.
 		 * \throw BadParametersException If \a i is negative.
 		 * \throw UndefinedFieldException If this is the special 0 polynomial.
@@ -301,7 +322,7 @@ namespace FAAST {
 			return tmp;
 		}
 		/** \brief <i>p</i>-th power (frobenius morphism) of the coefficients.
-		 * 
+		 *
 		 * Apply the frobenius morphism to the coefficients of this polynomial.
 		 * \see FieldElement::frobenius().
 		 */
@@ -311,7 +332,7 @@ namespace FAAST {
 			return tmp;
 		}
 		/** \brief <i>p<sup>n</sup></i>-th power (iterated frobenius morphism) of the coefficients.
-		 * 
+		 *
 		 * Apply the iterated frobenius morphism to the coefficients of this polynomial.
 		 * \see FieldElement::frobenius(const long) const.
 		 */
@@ -352,9 +373,9 @@ namespace FAAST {
 	 */
 	 	/**
 	 	 * \brief Coerce to a scalar polynomial.
-	 	 * 
+	 	 *
 	 	 * Coerce to a polynomial with coefficients in F<sub>p</sub>.
-	 	 * 
+	 	 *
 	 	 * \return The newly created polynomial.
 	 	 * \throw IllegalCoercionException If the polynomial is not a scalar polynomial.
 	 	 * \invariant This is the same as doing
@@ -365,7 +386,7 @@ namespace FAAST {
 		FieldPolynomial<T> toScalarPolynomial() const throw(IllegalCoercionException);
 		/**
 		 * \brief Coerce to the field \a F.
-		 * 
+		 *
 		 * \param [in] F A finite subfield or overfield of the \parent, containing the coefficients of
 		 * the polynomial.
 		 * \return The newly created polynomial.
@@ -375,7 +396,7 @@ namespace FAAST {
 		FieldPolynomial<T> operator>>(const Field<T>&) const throw(IllegalCoercionException);
 		/**
 		 * \brief Coerce to the field \a F and store the result in this polynomial.
-		 * 
+		 *
 		 * \param [in] F A finite subfield or overfield of the \parent, containing the coefficients of
 		 * the polynomial.
 		 * \throw IllegalCoercionException If no embedding is known between the \parent and \a F or
@@ -417,7 +438,7 @@ namespace FAAST {
 		const throw(NotInSameFieldException);
 		/**
 		 * \brief XGCD between this polynomial and \a Q.
-		 * 
+		 *
 		 * \param [in] Q A polynomial having the same \parent as this polynomial.
 		 * \param [out] U A polynomial to hold the result.
 		 * \param [out] V A polynomial to hold the result.
@@ -438,7 +459,7 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief Equality.
-		 * 
+		 *
 		 * This method does not try to coerce the polynomials to the same field to test equality.
 		 * \throw NotInSameFieldException If the two polynomials do not have de same \parent.
 		 */
@@ -450,7 +471,7 @@ namespace FAAST {
 
 		/**
 		 * \brief Inequality.
-		 * 
+		 *
 		 * This method does not try to coerce the polynomials to the same field to test equality.
 		 * \throw NotInSameFieldException If the two polynomials do not have de same \parent.
 		 */
@@ -490,7 +511,7 @@ namespace FAAST {
 	 */
 		/**
 		 * \brief Get the representation of polynomials whose \parent is F<sub>p</sub>.
-		 * 
+		 *
 		 * \param [out] e An \NTL scalar polynomial to hold the result.
 		 * \throw IllegalCoercionException If the \parent is not a prime field
 		 * \note This method automatically switches the context to the \parent context.
@@ -501,7 +522,7 @@ namespace FAAST {
 		void toInfrastructure(GFpX& ) const throw(IllegalCoercionException);
 		/**
 		 * \brief Get the representation of polynomials whose \parent is an extension field.
-		 * 
+		 *
 		 * \param [out] e An \NTL polynomial to hold the result.
 		 * \throw IllegalCoercionException If the \parent is a prime field
 		 * \note This method automatically switches the context to the \parent context.
@@ -518,12 +539,12 @@ namespace FAAST {
 		ostream& print(ostream&) const;
 		/**
 		 * \brief Print this element to \a o as a polynomial over its \parent.
-		 * 
+		 *
 		 * Print as a polynomial in the variable \a varPoly
 		 * and print elements of the \parent as polynomials over F<sub>p</sub>
 		 * in the variable \a varField. The coefficients of the polynomial are
 		 * printed as through \link FieldElement::print(ostream&, const string&) const \c FieldElement::print(o,varField) \endlink.
-		 * 
+		 *
 		 * \param [in,out] o An output stream.
 		 * \param [in] varPoly A variable name.
 		 * \param [in] varField A variable name.
@@ -533,13 +554,13 @@ namespace FAAST {
 		ostream& print(ostream&, const string& varPoly, const string& varField) const;
 		/**
 		 * \brief Print this element to \a o as a polynomial over its \parent.
-		 * 
+		 *
 		 * Print as a polynomial in the variable \a varPoly
 		 * and print elements of the \parent as multivariate polynomials over F<sub>p</sub>
 		 * in the variables \a varsField. The coefficients of the polynomial are
 		 * printed as through
 		 * \link FieldElement::print(ostream&, const vector<string>&) const \c FieldElement::print(o,varsField) \endlink.
-		 * 
+		 *
 		 * \param [in,out] o An output stream.
 		 * \param [in] varPoly A variable name.
 		 * \param [in] varsField A vector of variable names.
@@ -573,7 +594,7 @@ namespace FAAST {
 	/****************** Utility Routines ******************/
 		/**
 		 * \brief Check if \a e has the same \parent as this polynomial.
-		 * 
+		 *
 		 * If the two have the same \parent, this method does nothing,
 		 * otherwise it throws a NotInSameFieldException.
 		 */
@@ -584,7 +605,7 @@ namespace FAAST {
 		}
 		/**
 		 * \brief Check if \a e has the same \parent as this polynomial.
-		 * 
+		 *
 		 * If the two have the same \parent, this method does nothing,
 		 * otherwise it throws a NotInSameFieldException.
 		 */

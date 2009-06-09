@@ -1,17 +1,32 @@
+##############################################################################
+##                            Configuration section                         ##
+## Edit this variables if you installed NTL, GMP or GF2X in some exotic     ##
+## directory, if you compiled NTL as a static library or if you want to     ##
+## install the library in a different location.                             ##
+##############################################################################
+
+# The paths were NTL, GMP and gf2x libraries are to be found.
+NTLLIBPATH = # -L$HOME/lib
+
+# The paths were NTL, GMP and gf2x headers are to be found.
+NTLINCPATH = # -I$HOME/include  
+
+# The libraries to link to. If you link to ntl as a static library, you must
+# uncomment the end of the line. Leave this line as is if you link to ntl as
+# a shared library.
+NTLLIB = -lntl # -lgmp -lgf2x -lm
+
+PREFIX = /usr
+##############################################################################
+##                          End of configuration section                    ##
+##############################################################################
+
+
 SHELL = /bin/bash
 CC = g++
 OPT = -g -Wall -DFAAST_TIMINGS
 
-# Linked libraries
-# For cvs compatibilty reasons, library files must be in /usr/local/lib,
-# /usr/lib, /lib or some other directory specified by the $LIBRARY_PATH
-# environment variable
-GMPLIB =
-NTLLIB = -lntl 
-MLIB =
-CPROFLIB =
-
-# Project's files
+# FAAST files
 ROOT = .
 SRC = $(ROOT)/src
 TESTDIR = $(ROOT)/test
@@ -19,11 +34,8 @@ INC = $(ROOT)/include
 BIN = $(ROOT)/bin/$(shell hostname)-$(shell uname -m)-$(CC)$(shell $(CC) -dumpversion)
 
 # Parameters for gcc
-# For cvs compatibility reasons, headers of linked libraries must be in
-# /usr/include, /usr/local/include or some other directory specified by the
-# $CPATH environment variable
-IPATH=-I$(INC)
-LIB=$(NTLLIB) $(GMPLIB) $(MLIB) $(ZLIB) $(CPROFLIB)
+IPATH=-I$(INC) $(NTLINCPATH)
+LIB=$(NTLLIBPATH) $(NTLLIB)
 
 # Objects being prerequisites for every build
 COMMONOBJS := faast.o
@@ -146,8 +158,13 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/FAAST/utilities.hpp
 library: $(COMMONOBJS)
 	ar rcs libfaast.a $(BIN)/faast.o
 
-.PHONY: test
-test: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
+.PHONY: install
+install: library
+	cp libfaast.a $(PREFIX)/lib/
+	cp -r include/* $(PREFIX)/include/
+
+.PHONY: examples
+examples: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
 	$(BIN)/testTraceFrob $(BIN)/testLE $(BIN)/testCyclotomic \
 	$(BIN)/testTmul
 
@@ -163,6 +180,10 @@ doc-dev:
 	echo "PREDEFINED = FAAST_TIMINGS"; \
 	echo "SHOW_USED_FILES = YES"; \
 	echo "SHOW_FILES = YES") | doxygen -
+
+.PHONY: package
+package:
+	tar czf faast-$Name:  $.tgz .
 
 .PHONY: clean
 clean:

@@ -1,3 +1,24 @@
+/*
+	This file is part of the FAAST library.
+
+	Copyright (c) 2009 Luca De Feo and Éric Schost.
+
+	The most recent version of FAAST is available at http://www.lix.polytechnique.fr/~defeo/FAAST
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; see file COPYING. If not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #ifndef FIELDELEMENT_H_
 #define FIELDELEMENT_H_
 
@@ -25,14 +46,14 @@ namespace FAAST {
 	/**
 	 * \ingroup Field
 	 * \brief An element of a finite field.
-	 * 
+	 *
 	 * Objects of this class represent elements of a finite field, as represented by the class Field.
 	 * With the exception of the zero element created by the \link FieldElement() default constructor\endlink,
 	 * any element has an unique \e parent \e field and binary operations can combine two elements only in one of the
 	 * following two cases:
 	 *  - the two elements have the same parent field,
 	 *  - the parent element of one element is the \link Field::primeField() prime field\endlink of the other's.
-	 * 
+	 *
 	 * Elements created through the \link FieldElement() default constructor\endlink, as for example
 	 * \code
 	 * FieldElement<T> elt;
@@ -50,7 +71,7 @@ namespace FAAST {
 	 *    return elt + 1;
 	 *    \endcode
 	 *    See UndefinedFieldException for more details.
-	 * 
+	 *
 	 * Elements are internally represented as univariate polynomials with coefficients in F<sub>p</sub>
 	 * modulo an irreducible polynomial as described in [\ref ISSAC "DFS '09", Section 3].
 	 * The way the arithmetics of the field are actually implemented is
@@ -59,7 +80,7 @@ namespace FAAST {
 	 *
 	 * \tparam T An \ref Infrastructures "Infrastructure". It specfies which \NTL types will carry out
 	 * the arithmetic operations.
-	 * 
+	 *
 	 * \see Field, UndefinedFieldException
 	 */
 	template <class T> class FieldElement {
@@ -69,26 +90,26 @@ namespace FAAST {
 	/**
 	 * \brief Convert \a e from the internal (univariate) representation to the bivariate representation
 	 * over the immediate subfield in the primitive tower (the stem).
-	 * 
+	 *
 	 * If the \parent of \a e is the base field of an Artin-Schreier tower, then \a v is filled with the
 	 * coefficients in F<sub>p</sub> of its univariate representation. Otherwise let
 	 * \code
 	 * x = e.parent().primitiveElement();
 	 * \endcode
-	 * This method fills the vector \a v with \ref Field::p "p" elements of 
+	 * This method fills the vector \a v with \ref Field::p "p" elements of
 	 * \link Field::subField() \c e.parent()\c.subField() \endlink such that
 	 * \f{equation}{
-	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ...
 	 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 	 * 		\mathrm{.}
 	 * \f}
-	 * 
+	 *
 	 * Let \b K be the field in the primitive tower (the stem) isomorphic to
 	 * \link Field::subField() \c e.parent()\c.subField() \endlink, this corresponds to convert \a e from
-	 * its internal (univariate) 
+	 * its internal (univariate)
 	 * representation to the bivariate representation as an element of \b K[\a x].
 	 * This routine implements the algorithm \c PushDown of [\ref ISSAC "DFS '09", Section 4.2].
-	 * 
+	 *
 	 * \param [in] e An element of any field.
 	 * \param [out] v A vector of elements of \link Field::stemField() \c e.parent()\c.stemField() \endlink
 	 * that satisfies condition (1).
@@ -105,10 +126,10 @@ namespace FAAST {
 	 */
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
 	/**
-	 * \brief Convert \a v from the bivariate representation 
+	 * \brief Convert \a v from the bivariate representation
 	 * over the immediate subfield in the primitive tower (the stem) to the internal
 	 * (univariate) representation.
-	 * 
+	 *
 	 * If the \parent of the elements of \a v is the prime field, then \a e is the element whose univariate
 	 * representation has \a v as cofficients. Otherwise let
 	 * \code
@@ -117,16 +138,16 @@ namespace FAAST {
 	 * This method stores in \a e an element of
 	 * \link Field::overField() \c e.parent()\c.overField() \endlink such that
 	 * \f{equation}{
-	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+	 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ...
 	 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 	 * 		\mathrm{,}
 	 * \f}
 	 * If \a v is too short, it is filled with zeros. If \a v is too
 	 * long, the unnecessary elements are ignored.
-	 * 
+	 *
 	 * Let \b K be the field in the primitive tower (the stem) isomorphic to
 	 * the \parent of the elements of \a v, this corresponds to convert \a v from the
-	 * multivariate 
+	 * multivariate
 	 * representation as an element of \b K[\a x] to the internal (univariate) representation.
 	 * This routine implements the algorithm \c LiftUp of [\ref ISSAC "DFS '09", Section 4.4].
 	 *
@@ -144,7 +165,7 @@ namespace FAAST {
 	 * \endcode
 	 * and this latter form should be preferred for the sake of clarity.
 	 * \see Field::toUnivariate().
-	 * 
+	 *
 	 * \relates FieldElement
 	 */
 	friend void liftUp<T>(const vector<FieldElement<T> >& v, FieldElement<T>& e) throw(NotInSameFieldException, NoOverFieldException);
@@ -186,11 +207,11 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief Construct the special 0 element.
-		 * 
+		 *
 		 * The special 0 element does not belong to any field, yet it can be added, multiplied, etc.
 		 * to any other FieldElement. See the \link FieldElement introduction \endlink for more details.
 		 * If you want to construct the 0 element of a specific field, use Field::zero() instead.
-		 * 
+		 *
 		 * \see UndefinedFieldException, Field::zero().
 		 */
 		FieldElement() throw() : parent_field(NULL) {}
@@ -199,13 +220,13 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief The \e parent \e field.
-		 * 
+		 *
 		 * With the exception of the zero element created by the \link FieldElement() default constructor\endlink,
 		 * any element has an unique \e parent \e field and binary operations can combine two elements only in one of the
 		 * following two cases:
 		 *  - the two elements have the same parent field,
 		 *  - the parent element of one element is the \link Field::primeField() prime field\endlink of the other's.
-		 * 
+		 *
 		 * \throw UndefinedFieldException If this element does not belong to any field.
 		 * \see FieldElement(), UndefinedFieldException.
 		 */
@@ -225,10 +246,10 @@ namespace FAAST {
 		FieldElement<T>& operator=(const FieldElement<T>& e) throw();
 		/**
 		 * \brief Assign a scalar value to this element.
-		 * 
+		 *
 		 * The \parent of the element does not change through the assignment.
-		 * 
-		 * \return A reference to the result. 
+		 *
+		 * \return A reference to the result.
 		 * \throw UndefinedFieldException If this is the \link FieldElement() special 0 element \endlink
 		 * and \a i is different from 0.
 		 */
@@ -332,7 +353,7 @@ namespace FAAST {
 			return tmp;
 		}
 		/** \brief <i>p<sup>n</sup></i>-th power (iterated frobenius morphism).
-		 * 
+		 *
 		 * This method is a generalization of the algorithm \c IterFrobenius of [\ref ISSAC "DFS '09", Section 5].
 		 */
 		FieldElement<T> frobenius(const long n) const throw() {
@@ -356,7 +377,7 @@ namespace FAAST {
 		FieldElement<T> trace() const throw();
 		/**
 		 * \brief <i>n</i>-th pseudotrace
-		 * 
+		 *
 		 * Let \a x be this element, the <i>n</i>-th pseudotrace, noted
 		 * T<sub>n</sub>(x) is
 		 * \f[
@@ -393,7 +414,7 @@ namespace FAAST {
 		/** \brief \copybrief trace() const */
 		void self_trace() throw();
 		/** \brief \copybrief pseudotrace()
-		 * 
+		 *
 		 * \copydetails pseudotrace()
 		 */
 		void self_pseudotrace(unsigned long) throw();
@@ -414,7 +435,7 @@ namespace FAAST {
 		 * This method implements a yet unpublished algorithm to compute minimal polynomials
 		 * in Artin-Schreier towers. It only works when \a F is a field of an Artin-Schreier
 		 * tower as constructed in [\ref ISSAC "DFS '09", Section 3].
-		 * 
+		 *
 		 * \param [in] F A subfield of the \parent of this element.
 		 * \return A polynomial over \a F being the minimal polynomial of this element.
 		 * \throws NotASubFieldException If the \parent is not an extension field of \a F.
@@ -427,9 +448,9 @@ namespace FAAST {
 			minimalPolynomials(F, minpols);
 			return minpols[0];
 		}
-		/** 
+		/**
 		 * \brief All the minimal polynomials up to the field \a F.
-		 * 
+		 *
 		 * The result is the same as doing
 		 * \code
 		 * res[0] = minimalPolynomial(F);
@@ -452,10 +473,10 @@ namespace FAAST {
 
 		/**
 		 * \brief \copybrief affineMinimalPolynomial(const Field<T>&, const FieldElement<T>&) const
-		 * 
+		 *
 		 * This is an optimized version of affineMinimalPolynomial(const Field<T>&, const FieldElement<T>&) const
 		 * that lets you pass an additional parameter \a minpols containing some precomputed quantities.
-		 * 
+		 *
 		 * The optional parameter \a minpols must contain either the result of
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink,
 		 * or must be an empty vector, in which
@@ -463,20 +484,20 @@ namespace FAAST {
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink.
 		 * In any other case either a
 		 * BadParametersException is thrown or the behaviour is undefined.
-		 * 
+		 *
 		 * This method should be preferred when you care about efficiency and you do many calls to
 		 * affineMinimalPolynomial() and evaluate().
 		 *
 		 * \param [in] F A subfield of the \parent.
 		 * \param [in] a An element contained in the field F[\a x], where \a x is this element.
-		 * \param [in,out] minpols If this vector is empty, then 
+		 * \param [in,out] minpols If this vector is empty, then
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink
 		 * is called, otherwise it is assumed to contain the data computed by the former method call.
 		 * \return The <i>a</i>-affine minimal polynomial over the field \a F.
 		 * \throws NotASubFieldException If the \parent is not an extension field of \a F.
 		 * \throws NotSupportedException If \a F is a prime field not being the base field of an Artin-Schreier
 		 * tower.
-		 * \throws NoSuchPolynomialException If no such polynomial exists. Equivalently, if 
+		 * \throws NoSuchPolynomialException If no such polynomial exists. Equivalently, if
 		 * \a a is not an element of F[\a x] where \a x is this element.
 		 * \throws BadParametersException If \a minpols is not empty or does not contain the result of
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink.
@@ -490,7 +511,7 @@ namespace FAAST {
 
 		/**
 		 * \brief The <i>a</i>-affine minimal polynomial over the field \a F.
-		 * 
+		 *
 		 * That is the minimum degree polynomial \a P of \a F[X] such that
 		 * \f[ P(x) = \mathtt{a}\mathrm{,} \f] where \a x is this
 		 * element. Observe that this is the same as computing the interpolation polynomial such that
@@ -498,7 +519,7 @@ namespace FAAST {
 		 * where \f$ \phi_F \f$ is the frobenius morphism fixing \a F.
 		 * This implements a yet unpublished algorithm, it only works when \a F is a field of an Artin-Schreier
 		 * tower as constructed in [\ref ISSAC "DFS '09", Section 3].
-		 * 
+		 *
 		 * \param [in] F A subfield of the \parent.
 		 * \param [in] a An element contained in the field F[\a x], where \a x is this element.
 		 * \return The <i>a</i>-affine minimal polynomial over the field \a F.
@@ -522,7 +543,7 @@ namespace FAAST {
 		 *
 		 * This is an optimized version of evaluate(const FieldPolynomial<T>&) const
 		 * that lets you pass an additional parameter \a minpols containing some precomputed quantities.
-		 * 
+		 *
 		 * The optional parameter \a minpols must contain either the result of
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink,
 		 * or must be an empty vector, in which
@@ -530,12 +551,12 @@ namespace FAAST {
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink.
 		 * In any other case either a
 		 * BadParametersException is thrown or the behaviour is undefined.
-		 * 
+		 *
 		 * This method should be preferred when you care about efficiency and you do many calls to
 		 * affineMinimalPolynomial() and evaluate().
 		 *
 		 * \param [in] P A polynomial with coefficients in a subfield or overfield of the \parent.
-		 * \param [in,out] minpols If this vector is empty, then 
+		 * \param [in,out] minpols If this vector is empty, then
 		 * \link minimalPolynomials(const Field<T>&, vector<FieldPolynomial<T> >&) const \c minimalPolynomials(F,minpols) \endlink
 		 * is called, otherwise it is assumed to contain the data computed by the former method call.
 		 * \return The evaluation of \a P at this element.
@@ -556,12 +577,12 @@ namespace FAAST {
 		 * This implements a yet unpublished algorithm for Artin-Schreier
 		 * towers constructed as in [\ref ISSAC "DFS '09", Section 3]. It uses Horner
 		 * evaluation scheme for all the other cases.
-		 * 
+		 *
 		 * The optional parameter minpols must contain either the result of
 		 * this.minimalPolynomials(P.parent,v), or must be an empty vector,
 		 * in which case it is filled with the result of
 		 * minimalPolynomials(P.parent,v).
-		 * 
+		 *
 		 * \param [in] P A polynomial with coefficients in a subfield or overfield of the \parent.
 		 * \return The evaluation of \a P at this element.
 		 * \throws IllegalCoercionException If this element cannot be coerced to the coefficient field
@@ -586,9 +607,9 @@ namespace FAAST {
 	 */
 	 	/**
 	 	 * \brief Coerce to a scalar.
-	 	 * 
+	 	 *
 	 	 * Coerce to an element of F<sub>p</sub>.
-	 	 * 
+	 	 *
 	 	 * \return The newly created element.
 	 	 * \throw IllegalCoercionException If the element is not a scalar.
 	 	 * \invariant This is the same as doing
@@ -599,7 +620,7 @@ namespace FAAST {
 		FieldElement<T> toScalar() const throw(IllegalCoercionException);
 		/**
 		 * \brief Coerce to the field \a F.
-		 * 
+		 *
 		 * \param [in] F A finite subfield or overfield of the \parent, containing this element.
 		 * \return The newly created element.
 		 * \throw IllegalCoercionException If no embedding is known between the \parent and \a F or
@@ -613,7 +634,7 @@ namespace FAAST {
 		}
 		/**
 		 * \brief Coerce to the field \a F and store the result in this element.
-		 * 
+		 *
 		 * \param [in] F A finite subfield or overfield of the \parent, containing this element.
 		 * \throw IllegalCoercionException If no embedding is known between the \parent and \a F or
 		 * if this element does not belong to \a F.
@@ -629,7 +650,7 @@ namespace FAAST {
 	/** @{ */
 		/**
 		 * \brief Equality.
-		 * 
+		 *
 		 * This method does not try to coerce the elements to the same field to test equality.
 		 * \throw NotInSameFieldException If the two elements do not have de same \parent.
 		 */
@@ -638,7 +659,7 @@ namespace FAAST {
 		bool operator==(const BigInt&) const throw();
 		/**
 		 * \brief Inequality.
-		 * 
+		 *
 		 * This method does not try to coerce the elements to the same field to test equality.
 		 * \throw NotInSameFieldException If the two elements do not have de same \parent.
 		 */
@@ -671,7 +692,7 @@ namespace FAAST {
 	 */
 		/**
 		 * \brief Get the representation of elements whose \parent is F<sub>p</sub>.
-		 * 
+		 *
 		 * \param [out] e An \NTL scalar element to hold the result.
 		 * \throw IllegalCoercionException If the \parent is not a prime field
 		 * \note This method automatically switches the context to the \parent context.
@@ -682,7 +703,7 @@ namespace FAAST {
 		void toInfrastructure(GFp& e) const throw(IllegalCoercionException);
 		/**
 		 * \brief Get the representation of elements whose \parent is an extension field.
-		 * 
+		 *
 		 * \param [out] e An \NTL element to hold the result.
 		 * \throw IllegalCoercionException If the \parent is a prime field
 		 * \note This method automatically switches the context to the \parent context.
@@ -705,10 +726,10 @@ namespace FAAST {
 		/**
 		 * \brief Print this element to \a o as a multivariate polynomial over
 		 * F<sub>p</sub>.
-		 * 
+		 *
 		 * The number of variables in \a vars must be at least
 		 * one plus the \link Field::ArtinSchreierHeight Artin-Schreier height\endlink
-		 * of the \parent. The recursive descent along the tower is done via 
+		 * of the \parent. The recursive descent along the tower is done via
 		 * Field::toBivariate(), the list of the fields involved in the descent
 		 * is internally stored and reproduces backwards the list of calls to
 		 * Field::ArtinSchreierExtension that have created the \parent.
@@ -735,29 +756,29 @@ namespace FAAST {
 	/****************//** \name Helpers for frobenius and trace ******************/
 	/** @{ */
 		/** \brief <i>p<sup>j</sup>d</i>-th iterated frobenius.
-		 * 
+		 *
 		 * This is the algorithm \c IterFrobenius of [\ref ISSAC "DFS '09"].
 		 */
 		void BigFrob(const long j);
 		/** \brief <i>n</i>-th iterated frobenius, for \a n < \a d.
-		 * 
+		 *
 		 * This implements a naive algorithm for iterated frobenius.
 		 * \todo Implement a faster algorithm using modular composition.
 		 */
 		void SmallFrob(const long n);
 		/** \brief <i>p<sup>j</sup>d</i>-th pseudotrace.
-		 * 
+		 *
 		 * This is the algorithm \c Pseudotrace of [\ref ISSAC "DFS '09"].
 		 */
 		void BigPTrace(const long j);
 		/**
 		 * \brief Put in \a v all the <i>p<sup>i</sup>d</i> pseudotraces for 0 <= i <= j
-		 * 
+		 *
 		 * Useful for precomputing pseudotrace as in [\ref ISSAC "DFS '09", Section 5].
 		 */
 		void BigPTraceVector(vector<FieldElement<T> >& v, const long j) const;
 		/** \brief <i>n</i>-th pseudotrace, for \a n < \a d.
-		 * 
+		 *
 		 * This implements a naive algorithm for pseudotrace.
 		 * \todo Implement a faster algorithm using modular composition.
 		 */
@@ -779,7 +800,7 @@ namespace FAAST {
 	/****************** Utility Routines ******************/
 		/**
 		 * \brief Check if \a e has the same \parent as this element.
-		 * 
+		 *
 		 * If the two elements have the same \parent, this method does nothing,
 		 * otherwise it throws a NotInSameFieldException.
 		 */

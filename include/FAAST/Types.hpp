@@ -1,3 +1,24 @@
+/*
+	This file is part of the FAAST library.
+
+	Copyright (c) 2009 Luca De Feo and Éric Schost.
+
+	The most recent version of FAAST is available at http://www.lix.polytechnique.fr/~defeo/FAAST
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; see file COPYING. If not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #ifndef TYPES_H_
 #define TYPES_H_
 
@@ -26,15 +47,15 @@ namespace FAAST {
 	 * \if DEV
 	 * \ingroup NTLhacks
 	 * \endif
-	 * 
+	 *
 	 * \brief A class providing automatic conversion between
 	 * \c ZZ and \c long types.
-	 * 
+	 *
 	 * You can pass a \c ZZ as well as a \c long to
 	 * any function requiring a \c ZZ_auto as parameter.
-	 * 
+	 *
 	 * This class is not meant to be used by the user. Use \c ZZ, \c long
-	 * or ZZ_p_Algebra::BigInt instead. 
+	 * or ZZ_p_Algebra::BigInt instead.
 	 */
 	class ZZ_auto : public ZZ {
 	public:
@@ -54,14 +75,14 @@ namespace FAAST {
 	 * Infrastructures are collections of types providing genericity over
 	 * NTL types. They provide an unique set of names to abstract from the
 	 * implementation details of the three NTL families \c ZZ_p*, \c zz_p* and \c GF2*.
-	 * 
+	 *
 	 * Most routines in the library take an Infrastructure as template parameter.
 	 * @{
 	 */
-	 
+
 	/**
 	 * \brief The infrastructure corresponding to \c zz_p* types.
-	 * 
+	 *
 	 * NTL's \c zz_p* types provide arithmetics modulo \a p where \a p
 	 * is a word-size integer greater than one.
 	 */
@@ -82,7 +103,7 @@ namespace FAAST {
 		typedef long            BigInt;
 		/**
 		 * \brief Modulus switching data.
-		 * 
+		 *
 		 * NTL's modulus switching mechanism permits to save the data defining a finite
 		 * field. This type groups togheter all these data.
 		 */
@@ -103,7 +124,7 @@ namespace FAAST {
 
 	/**
 	 * \brief The infrastructure corresponding to \c ZZ_p* types.
-	 * 
+	 *
 	 * NTL's \c ZZ_p* types provide arithmetics modulo \a p where \a p
 	 * is a multiprecision integer greater than one.
 	 */
@@ -124,7 +145,7 @@ namespace FAAST {
 		typedef ZZ_auto         BigInt;
 		/**
 		 * \brief \copybrief zz_p_Algebra::Context
-		 * 
+		 *
 		 * \copydetails zz_p_Algebra::Context
 		 */
 		typedef struct {
@@ -144,7 +165,7 @@ namespace FAAST {
 
 	/**
 	 * \brief The infrastructure corresponding to \c GF2* types.
-	 * 
+	 *
 	 * NTL's \c GF2* types provide highly optimized arithmetics modulo 2.
 	 */
 	struct GF2_Algebra {
@@ -164,7 +185,7 @@ namespace FAAST {
 		typedef int                 BigInt;
 		/**
 		 * \brief \copybrief zz_p_Algebra::Context
-		 * 
+		 *
 		 * \copydetails zz_p_Algebra::Context
 		 */
 		typedef struct {
@@ -179,7 +200,7 @@ namespace FAAST {
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
 	};
-	
+
 	/** @} */
 }
 

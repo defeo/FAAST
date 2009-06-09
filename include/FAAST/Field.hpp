@@ -1,3 +1,24 @@
+/*
+	This file is part of the FAAST library.
+
+	Copyright (c) 2009 Luca De Feo and Éric Schost.
+
+	The most recent version of FAAST is available at http://www.lix.polytechnique.fr/~defeo/FAAST
+
+	This program is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program; see file COPYING. If not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+*/
 #ifndef FIELD_H_
 #define FIELD_H_
 
@@ -34,7 +55,7 @@ namespace FAAST {
 		 * This example illustrates how to use the FAAST::Field::switchContext(),
 		 * FAAST::FieldElement::toInfrastructure(), FAAST::FieldPolynomial::toInfrastructure()
 		 * and FAAST::Field::fromInfrastructure() methods.
-		 * 
+		 *
 		 * \warning This is for advanced use only, you shouldn't care about this on an
 		 * ordinary use of the library.
 		 */
@@ -455,9 +476,9 @@ namespace FAAST {
 		void switchContext() const throw();
 		/**
 		 * \brief Build an element of this field from an \NTL type.
-		 * 
+		 *
 		 * Returns a new element of this field having \a e as representation.
-		 * 
+		 *
 		 * \param [in] e An \NTL scalar element.
 		 * \return The newly created element.
 		 * \warning \a e must have been created in the context of this field. See switchContext().
@@ -466,9 +487,9 @@ namespace FAAST {
 		FieldElement<T> fromInfrastructure(const GFp& e) const throw();
 		/**
 		 * \brief Build an element of this field from an \NTL type.
-		 * 
+		 *
 		 * Returns a new element of this field having \a e as representation.
-		 * 
+		 *
 		 * \param [in] e an \NTL element.
 		 * \return The newly created element.
 		 * \throws IllegalCoercionException If this field is a prime field only scalar elements
@@ -479,9 +500,9 @@ namespace FAAST {
 		FieldElement<T> fromInfrastructure(const GFpE& e) const throw(IllegalCoercionException);
 		/**
 		 * \brief Build an polynomial with coefficients in this field from an \NTL type.
-		 * 
+		 *
 		 * Returns a new polynomial over this field having \a P as representation.
-		 * 
+		 *
 		 * \param [in] P an \NTL scalar polynomial.
 		 * \return The newly created element.
 		 * \warning \a P must have been created in the context of this field. See switchContext().
@@ -490,9 +511,9 @@ namespace FAAST {
 		FieldPolynomial<T> fromInfrastructure(const GFpX& P) const throw();
 		/**
 		 * \brief Build an polynomial with coefficients in this field from an \NTL type.
-		 * 
+		 *
 		 * Returns a new polynomial over this field having \a P as representation.
-		 * 
+		 *
 		 * \param [in] P an \NTL polynomial.
 		 * \return The newly created element.
 		 * \throws IllegalCoercionException If this field is a prime field only scalar polynomials
@@ -505,7 +526,7 @@ namespace FAAST {
 
 	/****************//** \name Field lattice navigation
 	 * These routines permit to move around in the lattice of fields
-	 * created by calls to ArtinSchreierExtension() as described in 
+	 * created by calls to ArtinSchreierExtension() as described in
 	 * section \ref Field_lattices.
 	 * @{
 	 */
@@ -513,7 +534,7 @@ namespace FAAST {
 		const Field<T>& primeField() const throw();
 		/**
 		 * \brief The base field of the Artin-Schreier tower.
-		 * 
+		 *
 		 * The Artin-Schreier height 0 subfield of this field.
 		 * \return A reference to the base field.
 		 * \see ArtinSchreierExtension(), height, ArtinSchreierHeight(), \ref Field_lattices.
@@ -521,11 +542,11 @@ namespace FAAST {
 		const Field<T>& baseField() const throw();
 		/**
 		 * \brief The immediate subfield in the primitive tower.
-		 * 
+		 *
 		 * If this field belongs to the primitive tower (the stem),
 		 * then its immediate subfield is returned. Otherwise
 		 * stemField().subField() is returned.
-		 * 
+		 *
 		 * \return A reference to the subfield.
 		 * \throws NoSubFieldException If this is a prime field.
 		 * \see ArtinSchreierExtension(), \ref Field_lattices.
@@ -539,11 +560,11 @@ namespace FAAST {
 		}
 		/**
 		 * \brief The immediate overfield in the primitive tower.
-		 * 
+		 *
 		 * If this field belongs to the primitive tower (the stem),
 		 * then its immediate overfield is returned. Otherwise
 		 * stemField().overField() is returned.
-		 * 
+		 *
 		 * \return A reference to the overfield.
 		 * \throws NoOverFieldException If no overfield as been constructed
 		 * through a call to ArtinSchreierExtension()
@@ -559,13 +580,13 @@ namespace FAAST {
 		/**
 		 * \brief The field on the primitive tower isomorphic to this
 		 * field.
-		 * 
+		 *
 		 * If this field belongs to the primitive tower, then it returns itself.
 		 * Otherwise it returns the field in the primitive tower (the stem) that
 		 * is isomorphic to this field. The isomorphism has been computed through
-		 * Couveignes2000(const FieldElement<T>&) const as described in 
-		 * ArtinSchreierExtension(const FieldElement<T>&) const. 
-		 * 
+		 * Couveignes2000(const FieldElement<T>&) const as described in
+		 * ArtinSchreierExtension(const FieldElement<T>&) const.
+		 *
 		 * \return A reference to the stem field.
 		 * \see ArtinSchreierExtension(), Couveignes2000, \ref Field_lattices
 		 */
@@ -587,7 +608,7 @@ namespace FAAST {
 		/**
 		 * \brief Convert the univariate representation of \a e to the
 		 * multivariate representation over this field.
-		 * 
+		 *
 		 * If this is a prime field, then \a v is filled with the
 		 * coefficients in F<sub>p</sub> of its univariate representation. Otherwise let
 		 * \code
@@ -595,12 +616,12 @@ namespace FAAST {
 		 * \endcode
 		 * This method fills the vector \a v with \ref p elements of this field such that
 		 * \f{equation}{
-		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ...
 		 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 		 * 		\mathrm{.}
 		 * \f}
-		 * 
-		 * Let \b K be this field, this corresponds to convert \a e from its internal (univariate) 
+		 *
+		 * Let \b K be this field, this corresponds to convert \a e from its internal (univariate)
 		 * representation to the bivariate representation as an element of \b K[\a x].
 		 * A repeated application of this method implements \c ApplyInverse of
 		 * [\ref ISSAC "DFS '09", Section 6.2].
@@ -620,7 +641,7 @@ namespace FAAST {
 		/**
 		 * \brief Convert the multivariate representation of \a v to the
 		 * univariate representation of this field.
-		 * 
+		 *
 		 * If the elements of \a v belong to the prime field, then \a e is the element whose univariate
 		 * representation has \a v as cofficients. Otherwise let
 		 * \code
@@ -628,15 +649,15 @@ namespace FAAST {
 		 * \endcode
 		 * This method stores in \a e an element of this field such that
 		 * \f{equation}{
-		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... 
+		 * \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ...
 		 * 		+ \mathtt{v[p-1]}*\mathtt{x}^{p-1}
 		 * 		\mathrm{,}
 		 * \f}
 		 * If \a v is too short, it is filled with zeros. If \a v is too
 		 * long, the unnecessary elements are ignored.
-		 * 
+		 *
 		 * Let \b K be the field containing the elements of \a v, this corresponds to convert
-		 * \a v from the multivariate 
+		 * \a v from the multivariate
 		 * representation as an element of \b K[\a x] to the internal (univariate) representation
 		 * of this field.
 		 * A repeated application of this method implements
@@ -650,7 +671,7 @@ namespace FAAST {
 		 *         is not isomorphic to subField().
 		 * \invariant When this field is in the primitive tower (the stem), this is equivalent to
 		 * coerce all the contents of \a v to the stem and then
-		 * \link FieldElement::liftUp() \c liftUp(v, e) \endlink. 
+		 * \link FieldElement::liftUp() \c liftUp(v, e) \endlink.
 		 * \see liftUp().
 		 */
 		void toUnivariate(const vector<FieldElement<T> >& v, FieldElement<T>& e) const
@@ -660,12 +681,12 @@ namespace FAAST {
 	/****************//** \name Predicates ******************/
 	/** @{ */
 		/** \brief Equality.
-		 * 
+		 *
 		 * \note Comparison on the address of the object.
 		 */
 		bool operator==(const Field<T>& F) const throw () { return this==&F; }
 		/** \brief Inequality.
-		 * 
+		 *
 		 * \note Comparison on the address of the object.
 		 */
 		bool operator!=(const Field<T>& F) const throw () { return !(*this==F); }
@@ -728,10 +749,10 @@ namespace FAAST {
 
 	/****************** Couveignes 2000 subroutines ******************/
 		/**
-		 * \brief Couveignes' algorithm as in [\ref ISSAC "DFS '09", Section 6.1]. 
-		 * 
+		 * \brief Couveignes' algorithm as in [\ref ISSAC "DFS '09", Section 6.1].
+		 *
 		 * This routine is internally called by Couveignes2000().
-		 * 
+		 *
 		 * \pre Assumes Tr(\a alpha) = 0.
 	 	 */
 		void couveignes00(FieldElement<T>& res, const FieldElement<T>& alpha) const;

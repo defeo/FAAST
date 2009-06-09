@@ -1,3 +1,57 @@
 /**
 	\page Install Installing FAAST
+	
+	\section Install_Requirements Requirements
+	FAAST is built on top of Victor Shoup's NTL, you can download
+	it at http://www.shoup.net/NTL/. 
+	
+	There's a few libraries that affect how NTL works. GMP is a multiprecision
+	arithmetic library that can be used by NTL to represent large integers. Even
+	though it is not expected to affect the overall performances of FAAST, compiling
+	NTL with GMP is still the recommended method. GMP can be downloaded at
+	http://gmplib.org/.
+	
+	gf2x is a library for multiplying polynomials over the binary field. If you work on
+	characteristic 2 fields and you are interested in performance, then we recommend
+	that you install gf2x and compile NTL with support for it. gf2x can be downloaded
+	at http://gforge.inria.fr/projects/gf2x/.
+	
+	Instructions on how to compile NTL with support for GMP and/or gf2x can be found
+	at http://www.shoup.net/ntl/doc/tour.html .
+	
+	\section Install_Compile Compiling
+	To compile FAAST, simply type
+	\verbatim
+	tar xzf faast-xxx.tgz
+	cd faast-xxx/
+	make \endverbatim
+	Notice that you might have to specify the paths to NTL, GMP or gf2x if they are
+	installed in some exotic directory. Moreover, if you compiled NTL as a static
+	library, you may have to explicitly link to gmp, gf2x and libm. To do this you
+	must edit the \c Makefile by hand.
+	
+	\todo Use autotools to simplify this task.
+	
+	\section Install_Install Installing
+	To install FAAST, from the compilation directory type
+	\verbatim
+	su
+	make install\endverbatim
+	The library will be installed to \c /usr/lib and the headers to \c /usr/include.
+	To change the default directories you can edit the \c Makefile.
+	
+	\section Install_doc Generating the documentation
+	This library is documented using doxygen <http://www.doxygen.org/>.
+	You can generate \if DEV the standard \else this \endif documentation by typing
+	\verbatim
+	make doc\endverbatim
+	This creates a directory \c doc/html containing the documentation. You can
+	edit the file \c doxy.conf to access more options and output formats, refer
+	to the doxygen manual.
+	
+	If you are interested in understanding the internals of FAAST, you can generate
+	\if DEV this \else a more detailed \endif documentation by typing
+	\verbatim
+	make doc-dev\endverbatim
+	This creates a directory \c doc-dev/html containing the documentation. 
 */
