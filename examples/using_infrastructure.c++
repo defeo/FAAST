@@ -19,6 +19,16 @@
 	along with this program; see file COPYING. If not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+/**
+	\example using_infrastructure.c++
+	This example illustrates how to use the FAAST::Field::switchContext(),
+	FAAST::FieldElement::toInfrastructure(), FAAST::FieldPolynomial::toInfrastructure()
+	and FAAST::Field::fromInfrastructure() methods.
+
+	\warning This is for advanced use only, you shouldn't care about this on an
+	ordinary use of the library.
+*/
+
 #include <Artin-Schreier.hpp>
 using namespace FAAST;
 void main() {

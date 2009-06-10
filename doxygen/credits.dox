@@ -1,0 +1,10 @@
+/**
+	\page Credits Credits
+	
+	<a href="http://www.cs.uwo.ca/~eschost">Éric Schost</a> wrote code
+	for transposed modular multiplication as well as many test and benchmarking
+	routines.
+	
+	Thanks to <a href="http://www.shoup.net/">Victor Shoup</a> for useful
+	discussion about NTL.
+*/

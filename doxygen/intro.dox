@@ -1,3 +1,33 @@
 /**
 	\page Introduction Introduction to FAAST
+	
+	FAAST is an open-source C++ library providing strongly object-oriented data
+	structures and
+	high-performance algorithms for elements and polynomials in Artin-Schreier
+	towers over finite fields.
+	
+	Remind that given a field \b K of characteristic \a p, an Artin-Schreier
+	polynomial is a	polynomial of the form
+	\f[ X^p - X - a \f]
+	where \f$a\f$ is an element of \b K. When such	a polynomial is irreducible,
+	its splitting field is called an Artin-Schreier extension of \b K. Extension
+	towers of this form are called Artin-Schreier towers and are the main object
+	of this library. More details about Artin-Schreier towers can be found in
+	[\ref ISSAC "DFS '09"]; this is also the source for the majority of the algorithms
+	of FAAST.
+	
+	FAAST uses Victor Shoup's NTL to represent finite field elements and
+	polynomials and is conceived as a module on top of it. You don't need to know
+	NTL in detail in order to use FAAST, but some familiarity with it is necessary.
+	You can download NTL and read its documentation at http://www.shoup.net/ntl/.
+	
+	FAAST benefits from NTL being used in conjunction with the libraries GMP and
+	gf2x. See \ref Install for more details.
+	
+	FAAST is written and maintained by
+	<a href="http://www.lix.polytechnique.fr/~defeo">Luca De Feo</a>
+	with contributions by
+	<a href="http://www.cs.uwo.ca/~eschost">Éric Schost</a>. It is
+	released under the terms of the GNU General Public License, see
+	\ref Copying for more details.
 */

@@ -1,0 +1,7 @@
+doxygen
+examples
+include
+src
+Makefile
+doxy.conf
+COPYING

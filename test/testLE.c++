@@ -19,6 +19,12 @@
 	along with this program; see file COPYING. If not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+/**
+	\example testLE.c++
+	This example illustrates how to use FAAST::Field::ArtinSchreierExtension(),
+	pushDown() and liftUp().
+*/
+
 #include "faast.hpp"
 #include <cstdlib>
 
@@ -40,8 +46,11 @@ int main(int argv, char* argc[]) {
 	const gfp* K = &(gfp::createField(2,1));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
+#ifdef FAAST_TIMINGS
 	cout << "Time spent building the irreducible polynomial : "
-		<< gfp::TIME.BUILDIRRED << endl << endl;
+		<< gfp::TIME.BUILDIRRED << endl;
+#endif
+	cout << endl;
 
 	for (int i = 1 ; i <= 5 ; i++) {
 		cputime = -NTL::GetTime();
@@ -62,18 +71,10 @@ int main(int argv, char* argc[]) {
 			liftUp(down, b);
 			cputime += GetTime();
 			cout << "Lift-up computed in " << cputime << endl;
+#ifdef FAAST_TIMINGS
 			cout << "Time spent in Lift-up precomputation : " <<
 				gfp::TIME.LIFTUP << endl;
-			cout << "Time spent in Lift-up Transposed Multiplication : " <<
-				gfp::TIME.LU_TRANSMUL << endl;
-			cout << "Time spent in Lift-up Mod* : " <<
-				gfp::TIME.LU_TRANSMOD << endl;
-			cout << "Time spent in Lift-up Push-down-rec* : " <<
-				gfp::TIME.LU_TRANSPUSHDOWN << endl;
-			cout << "Time spent in Lift-up step 4 : " <<
-				gfp::TIME.LU_STEP4 << endl;
-			cout << "Time spent in Lift-up step 5 : " <<
-				gfp::TIME.LU_STEP5 << endl;
+#endif
 
 			if (a != b) {
 				cout << "ERROR : Results don't match" << endl;
@@ -87,6 +88,9 @@ int main(int argv, char* argc[]) {
 		}
 	}
 
+#ifdef FAAST_TIMINGS
 	cout << endl << "Time spent building the cyclotomic polynomial : "
-		<< gfp::TIME.CYCLOTOMIC << endl << endl;
+		<< gfp::TIME.CYCLOTOMIC << endl;
+#endif
+	cout << endl;
 }

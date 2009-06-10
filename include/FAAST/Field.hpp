@@ -28,6 +28,53 @@
 #include <memory>
 
 namespace FAAST {
+
+#ifdef FAAST_TIMINGS
+	/**
+	 * \brief This struct stores various timings related to precomputations.
+	 *
+	 * \see [\ref ISSAC "DFS '09"] for details on the computations.
+	 *
+	 * \note The preprocessor flag \c FAAST_TIMINGS has to be passed to the compiler
+	 * in order to activate this feature.
+	 */
+	typedef struct TIMINGS {
+		/** \brief The time spent precomputing the (2p-1)-th cyclotomic polynomial */
+		double CYCLOTOMIC;
+		/** \brief The time spent precomputing the pseudotraces. See [\ref ISSAC "DFS '09", Section 5]. */
+		double PSEUDOTRACES;
+		/** \brief The time spent precomputing the inverse of the derivative of the defining polynomial.
+		 * See [\ref ISSAC "DFS '09", Section 4]. */
+		double LIFTUP;
+		/** \brief The time spent precomputing the coefficients of the trace form over the bivariate
+		 * basis. See [\ref ISSAC "DFS '09", Section 4]. */
+		double TRACEVEC;
+		/** \brief The time spent precomputing irreducible polynomials for base fields. */
+		double BUILDIRRED;
+		/** \brief The time spent testing the irreducibility of polynomials defining base fields. */
+		double IRREDTEST;
+		/** \brief The time spent testing primality of cardinalities */
+		double PRIMETEST;
+		/** \brief The time spent precomputing and inverting the matrix of the application
+		 * X<sup>p</sup> - X in base fields. See [\ref ISSAC "DFS '09", Section 6]. */
+		double ARTINMATRIX;
+		/** \brief The time spent computing the primitive tower. See [\ref ISSAC "DFS '09", Section 3]. */
+		double BUILDSTEM;
+
+		TIMINGS() : CYCLOTOMIC(0),
+		PSEUDOTRACES(0),
+		LIFTUP(0),
+		TRACEVEC(0),
+		BUILDIRRED(0),
+		IRREDTEST(0),
+		PRIMETEST(0),
+		ARTINMATRIX(0),
+		BUILDSTEM(0)
+		{}
+	} TIMINGS;
+#endif
+
+
 	/**
 	 * \defgroup Field Finite Field Arithmetics
 	 * This is the core of the library.
@@ -51,14 +98,6 @@ namespace FAAST {
 	 * implemented one day.
 	 */
 	template <class T> class Field {
-		/** \example using_infrastructure.c++
-		 * This example illustrates how to use the FAAST::Field::switchContext(),
-		 * FAAST::FieldElement::toInfrastructure(), FAAST::FieldPolynomial::toInfrastructure()
-		 * and FAAST::Field::fromInfrastructure() methods.
-		 *
-		 * \warning This is for advanced use only, you shouldn't care about this on an
-		 * ordinary use of the library.
-		 */
 
 	friend class FieldElement<T>;
 	friend void pushDown<T>(const FieldElement<T>& e, vector<FieldElement<T> >& v) throw(NoSubFieldException);
@@ -66,58 +105,10 @@ namespace FAAST {
 
 #ifdef FAAST_TIMINGS
 	public:
-	/** \name Timings
-	 * Data structures to hold timing informations.
-	 * @{
-	 */
-		/**
-		 * \brief This struct stores various timings related to precomputations.
-		 *
-		 * \see [\ref ISSAC "DFS '09"] for details on the computations.
-		 *
-		 * \note The preprocessor flag \c FAAST_TIMINGS has to be passed to the compiler
-		 * in order to activate this feature.
-		 */
-		struct TIMINGS {
-			/** \brief The time spent precomputing the (2p-1)-th cyclotomic polynomial */
-			double CYCLOTOMIC;
-			/** \brief The time spent precomputing the pseudotraces. See [\ref ISSAC "DFS '09", Section 5]. */
-			double PSEUDOTRACES;
-			/** \brief The time spent precomputing the inverse of the derivative of the defining polynomial.
-			 * See [\ref ISSAC "DFS '09", Section 4]. */
-			double LIFTUP;
-			/** \brief The time spent precomputing the coefficients of the trace form over the bivariate
-			 * basis. See [\ref ISSAC "DFS '09", Section 4]. */
-			double TRACEVEC;
-			/** \brief The time spent precomputing irreducible polynomials for base fields. */
-			double BUILDIRRED;
-			/** \brief The time spent testing the irreducibility of polynomials defining base fields. */
-			double IRREDTEST;
-			/** \brief The time spent testing primality of cardinalities */
-			double PRIMETEST;
-			/** \brief The time spent precomputing and inverting the matrix of the application
-			 * X<sup>p</sup> - X in base fields. See [\ref ISSAC "DFS '09", Section 6]. */
-			double ARTINMATRIX;
-			/** \brief The time spent computing the primitive tower. See [\ref ISSAC "DFS '09", Section 3]. */
-			double BUILDSTEM;
-
-			TIMINGS() : CYCLOTOMIC(0),
-			PSEUDOTRACES(0),
-			LIFTUP(0),
-			TRACEVEC(0),
-			BUILDIRRED(0),
-			IRREDTEST(0),
-			PRIMETEST(0),
-			ARTINMATRIX(0),
-			BUILDSTEM(0)
-			{}
-		};
-
 		/**
 		 * \brief \copybrief TIMINGS See TIMINGS.
 		 */
-		static struct TIMINGS TIME;
-	/** @} */
+		static TIMINGS TIME;
 #endif
 
 	/** \name Local types

@@ -185,8 +185,8 @@ doc-dev:
 
 .PHONY: package
 package:
-	tar czf faast-$Name:  $.tgz --transform='s|\(.*\)|faast-$Name:  $/\1|' \
-		doxygen examples include src Makefile doxy.conf COPYING
+	tar czf faast-$Name:  $.tgz --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
+	tar cjf faast-$Name:  $.bz2 --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
 
 .PHONY: clean
 clean:

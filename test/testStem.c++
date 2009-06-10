@@ -19,6 +19,12 @@
 	along with this program; see file COPYING. If not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+/**
+	\example testStem.c++
+	This example illustrates how to use FAAST::Field::ArtinSchreierExtension(),
+	pushDown() and liftUp().
+*/
+
 #include "faast.hpp"
 #include <cstdlib>
 
@@ -40,8 +46,11 @@ int main(int argv, char* argc[]) {
 	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
+#ifdef FAAST_TIMINGS
 	cout << "Time spent building the irreducible polynomial : "
-		<< gfp::TIME.BUILDIRRED << endl << endl;
+		<< gfp::TIME.BUILDIRRED << endl;
+#endif
+	cout << endl;
 
 	cout << "\tCreate\tPushDow\tLiftUp\tPreLift\tMul" << endl;
 	totaltime = -GetTime();
@@ -66,7 +75,10 @@ int main(int argv, char* argc[]) {
 		liftUp(down, b);
 		cputime += GetTime();
 		cout << cputime << "\t";
-		cout << gfp::TIME.LIFTUP << "\t";
+#ifdef FAAST_TIMINGS
+		cout << gfp::TIME.LIFTUP;
+#endif
+		cout << "\t";
 
 		if (a != b) {
 			cout << "ERROR : Results don't match" << endl;
@@ -82,20 +94,13 @@ int main(int argv, char* argc[]) {
 		a*b;
 		cputime += GetTime();
 		cout << cputime << endl;
-
-		/** Iterated frobenius **/
-/*		long n = RandomBnd(K->d - K->subField().d) + K->subField().d;
-		cputime = -GetTime();
-		a.self_frobenius(n);
-		cputime += GetTime();
-		cout << n << "-th frobenius computed in " << cputime << endl;
-		cout << "Pseudotraces precomputed in " <<
-			gfp::TIME.PSEUDOTRACES << endl;
-*/
 	}
 	totaltime += GetTime();
 
+#ifdef FAAST_TIMINGS
 	cout << endl << "Time spent building the cyclotomic polynomial : "
-		<< gfp::TIME.CYCLOTOMIC << endl << endl;
+		<< gfp::TIME.CYCLOTOMIC << endl;
+#endif
+	cout << endl;
 	cout << "Total duration : " << totaltime << endl;
 }

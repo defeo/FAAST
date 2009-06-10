@@ -451,7 +451,7 @@ namespace FAAST {
 		 * \endcode
 		 * \todo Write non-member functions with a more familiar sintax.
 		 */
-		FieldPolynomial<T> XGCD(const FieldPolynomial<T>& P,
+		FieldPolynomial<T> XGCD(const FieldPolynomial<T>& Q,
 		FieldPolynomial<T>& U, FieldPolynomial<T>& V)
 		const throw(NotInSameFieldException);
 	/** @} */
@@ -512,25 +512,25 @@ namespace FAAST {
 		/**
 		 * \brief Get the representation of polynomials whose \parent is F<sub>p</sub>.
 		 *
-		 * \param [out] e An \NTL scalar polynomial to hold the result.
+		 * \param [out] P An \NTL scalar polynomial to hold the result.
 		 * \throw IllegalCoercionException If the \parent is not a prime field
 		 * \note This method automatically switches the context to the \parent context.
 		 * See Field::switchContext().
 		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink,
 		 * Field::fromInfrastructure(), Field::switchContext().
 		 */
-		void toInfrastructure(GFpX& ) const throw(IllegalCoercionException);
+		void toInfrastructure(GFpX& P) const throw(IllegalCoercionException);
 		/**
 		 * \brief Get the representation of polynomials whose \parent is an extension field.
 		 *
-		 * \param [out] e An \NTL polynomial to hold the result.
+		 * \param [out] P An \NTL polynomial to hold the result.
 		 * \throw IllegalCoercionException If the \parent is a prime field
 		 * \note This method automatically switches the context to the \parent context.
 		 * See Field::switchContext().
 		 * \see \link using_infrastructure.c++ using_infrastructure.c++ \endlink,
 		 * Field::fromInfrastructure(), Field::switchContext().
 		 */
-		void toInfrastructure(GFpEX& ) const throw(IllegalCoercionException);
+		void toInfrastructure(GFpEX& P) const throw(IllegalCoercionException);
 	/** @} */
 
 	/****************//** \name Printing ******************/

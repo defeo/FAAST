@@ -19,6 +19,14 @@
 	along with this program; see file COPYING. If not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+/**
+	\example testIso.c++
+	This example illustrates how to navigate a \ref Field_lattices "field lattice"
+	and how to use FAAST::Field::ArtinSchreierExtension(),
+	FAAST::Field::toBivariate() and FAAST::Field::toUnivariate().
+
+*/
+
 #include "faast.hpp"
 #include <cstdlib>
 
@@ -44,8 +52,11 @@ int main(int argv, char* argc[]) {
 	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
+#ifdef FAAST_TIMINGS
 	cout << "Time spent building the irreducible polynomial : "
-		<< gfp::TIME.BUILDIRRED << endl << endl;
+		<< gfp::TIME.BUILDIRRED << endl;
+#endif
+	cout << endl;
 
 	cout << "\tCreate\tCrStem\tPushDow\tLiftUp\tPrePseu\tPreLift" << endl;
 	for (int i = 1 ; i <= l ; i++) {
@@ -58,7 +69,10 @@ int main(int argv, char* argc[]) {
 		K = &(K->ArtinSchreierExtension(alpha));
 		cputime += NTL::GetTime();
 		cout << cputime << "\t";
-		cout << gfp::TIME.BUILDSTEM << "\t";
+#ifdef FAAST_TIMINGS
+		cout << gfp::TIME.BUILDSTEM;
+#endif
+		cout << "\t";
 
 		const gfp& L = K->stemField().subField();
 		vector<gfp_E> v;
@@ -83,9 +97,14 @@ int main(int argv, char* argc[]) {
 			cout << endl;
 		}
 
+#ifdef FAAST_TIMINGS
 		cout << gfp::TIME.PSEUDOTRACES << "\t";
-		cout << gfp::TIME.LIFTUP << endl;
+		cout << gfp::TIME.LIFTUP;
+#endif
+		cout << endl;
 	}
+#ifdef FAAST_TIMINGS
 	cout << endl << "Time spent inverting the matrix" <<
 		gfp::TIME.ARTINMATRIX << endl;
+#endif
 }

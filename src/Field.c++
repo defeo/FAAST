@@ -26,6 +26,10 @@
 #include <sstream>
 
 namespace FAAST {
+/****************** Timings ******************/
+#ifdef FAAST_TIMINGS
+	template <class T> TIMINGS Field<T>::TIME;
+#endif
 /****************** Constructors ******************/
 	/* All constructors are static. There's no way to directly
 	 * create a Field object. Field objects are permanent and

@@ -19,6 +19,12 @@
 	along with this program; see file COPYING. If not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
+/**
+	\example test.c++
+	This example illustrates how to use FAAST::FieldElement::minimalPolynomials(),
+	FAAST::FieldElement::affineMinimalPolynomial() and FAAST::FieldElement::evaluate().
+*/
+
 #include "faast.hpp"
 #include <cstdlib>
 
@@ -41,8 +47,11 @@ int main(int argv, char* argc[]) {
 	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
+#ifdef FAAST_TIMINGS
 	cout << "Time spent building the irreducible polynomial : "
-		<< gfp::TIME.BUILDIRRED << endl << endl;
+		<< gfp::TIME.BUILDIRRED << endl;
+#endif
+	cout << endl;
 
 	cout << "\tCreate\tMinPol\tInterp\tEval" << endl;
 	for (int i = 1 ; i <= l ; i++) {
