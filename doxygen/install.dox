@@ -41,8 +41,11 @@
 	To change the default directories you can edit the \c Makefile.
 	
 	\section Install_doc Generating the documentation
-	This library is documented using doxygen <http://www.doxygen.org/>.
-	You can generate \if DEV the standard \else this \endif documentation by typing
+	This library is documented using doxygen and you must have it installed in order
+	to generate the documentation. You can download doxygen at http://www.doxygen.org/.
+	
+	Once doxygen is installed, you can generate \if DEV the standard \else this \endif
+	documentation by typing
 	\verbatim
 	make doc\endverbatim
 	This creates a directory \c doc/html containing the documentation. You can

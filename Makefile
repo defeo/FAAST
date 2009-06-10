@@ -16,6 +16,8 @@ NTLINCPATH = # -I$HOME/include
 # a shared library.
 NTLLIB = -lntl # -lgmp -lgf2x -lm
 
+# The location where the library will be installed. The library itself will
+# be installed in PREFIX/lib and the headers in PREFIX/include
 PREFIX = /usr
 ##############################################################################
 ##                          End of configuration section                    ##
@@ -183,7 +185,8 @@ doc-dev:
 
 .PHONY: package
 package:
-	tar czf faast-$Name:  $.tgz .
+	tar czf faast-$Name:  $.tgz --transform='s|\(.*\)|faast-$Name:  $/\1|' \
+		doxygen examples include src Makefile doxy.conf COPYING
 
 .PHONY: clean
 clean:
