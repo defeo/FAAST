@@ -1,5 +1,28 @@
 /**
 	\page Using How to use FAAST
+	
+	FAAST offers an intuitive object-oriented interface to handle finite fields and
+	their extensions; see the \ref Refman for a list of available objects and methods.
+	If you want to use FAAST in your programs, simply add to your
+	header files the following lines
+	\code
+	#include <faast.hpp>
 
-	\section Field_lattices Lattices of fields
+	using namespace FAAST;
+	\endcode
+	The \c using line is optional, but it will save you a lot of typing.
+	
+	Assuming you have installed FAAST and NTL in \c $HOME, compile your program with
+	\code
+	g++ -I$HOME/include my_program.c -o my_program -L$HOME/lib -lfaast -lntl
+	\endcode
+	or, if you compiled NTL as a static library,
+	\code
+	g++ -I$HOME/include my_program.c -o my_program -L$HOME/lib -lfaast -lntl -lgmp -lgf2x -lm
+	\endcode
+	(\c -lgmp and \c -lgf2x must be used only if you compiled NTL with support for
+	those libraries).
+	
+	\todo For the moment FAAST is only built as a static library, it is one of our
+	priorities to make it available as a shared object.
 */

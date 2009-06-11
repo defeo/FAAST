@@ -72,11 +72,60 @@ namespace FAAST {
 
 	/**
 	 * \defgroup Infrastructures Infrastructures
-	 * Infrastructures are collections of types providing genericity over
-	 * NTL types. They provide an unique set of names to abstract from the
-	 * implementation details of the three NTL families \c ZZ_p*, \c zz_p* and \c GF2*.
+	 * \NTL provides three different ways of representing modular integers:
+	 *  - \c zz_p is a class representing modular integers with word-sized
+	 *  modulus,
+	 *  - \c ZZ_p is a class representing modular integers with arbitrary sized
+	 *  modulus,
+	 *  - \c GF2 is a class representing integers modulo 2.
 	 *
-	 * Most routines in the library take an Infrastructure as template parameter.
+	 * To each of these types corresponds a whole family of types (\c ZZ_p_X,
+	 * \c GF2_E, etc.) representing
+	 * polynomials with modular coefficients, modular polynomials with modular
+	 * coefficients, etc. The actual algorithms implementing arithmetics
+	 * for such types vary and affect remarkably the performances of FAAST.
+	 * See the \NTL manual for more details.
+	 *
+	 * \ref Infrastructures are collections (\c struct 's) of types providing
+	 * genericity over
+	 * \NTL types. They provide an unique set of names to abstract from the
+	 * implementation details of the three NTL families \c ZZ_p*, \c zz_p*
+	 * and \c GF2*. You must provide an Infrastructure as template parameter to
+	 * the types and most of the functions of FAAST. This parameter tells FAAST
+	 * which of the three \NTL families it should use to perform modular
+	 * arithmetics.
+	 *
+	 * Here's an example of how to use the infrastructure FAAST::zz_p_Algebra.
+	 * First some \c typedef 's to save typing:
+	 * \dontinclude test.c++
+	 * \skipline typedef
+	 * \line typedef
+	 * \line typedef
+	 * Then define some parameters (characteristic, degree, etc.),
+	 * notice the use of FAAST::Field::Infrastructure as an alias for
+	 * FAAST::zz_p_Algebra (useful if you later change your mind about
+	 * the Infrastructure):
+	 * \skipline gfp
+	 * \line long
+	 * Finally create a finite field:
+	 * \skipline K
+	 *
+	 * If you are wondering which Infrastructure you should use, then use
+	 * FAAST::zz_p_Algebra, as it is quite flexible and way faster than
+	 * FAAST::ZZ_p_Algebra.
+	 *
+	 * If you plan to construct fields with huge characteristics (larger than the
+	 * largest \c long),
+	 * then you should opt for FAAST::ZZ_p_Algebra; notice however that FAAST does
+	 * not let you build Artin-Schreier extensions in characteristics greater than
+	 * the greatest \c long, so you will probably miss its most exciting features.
+	 *
+	 * Finally, if you only work in characteristic 2 and care about
+	 * performance, you should consider compiling \NTL with the \gf2x library
+	 * and using FAAST::GF2_Algebra as Infrastructure. If you don't use the
+	 * \gf2x library, then FAAST::GF2_Algebra will only be interesting for moderate
+	 * field cardinalities, but it will give the pace up to FAAST::zz_p_Algebra
+	 * for huge fields.
 	 * @{
 	 */
 

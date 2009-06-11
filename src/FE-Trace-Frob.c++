@@ -152,7 +152,7 @@ namespace FAAST {
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigFrob : " << j << ".";
-			throw ASException(msg.str().c_str());
+			throw FAASTException(msg.str().c_str());
 		}
 #endif
 		if (isScalar()) return;
@@ -191,7 +191,7 @@ namespace FAAST {
 		if (n < 0 || n >= parent_field->baseField().d) {
 			stringstream msg;
 			msg << "Bad input to SmallFrob : " << n << ".";
-			throw ASException(msg.str().c_str());
+			throw FAASTException(msg.str().c_str());
 		}
 #endif
 		if (isScalar()) return;
@@ -206,7 +206,7 @@ namespace FAAST {
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigPTrace : " << j << ".";
-			throw ASException(msg.str().c_str());
+			throw FAASTException(msg.str().c_str());
 		}
 #endif
 		if (isZero()) return;
@@ -229,7 +229,7 @@ namespace FAAST {
 		if (j < 0 || j >= parent_field->height) {
 			stringstream msg;
 			msg << "Bad input to BigPTraceVector : " << j << ".";
-			throw ASException(msg.str().c_str());
+			throw FAASTException(msg.str().c_str());
 		}
 #endif
 		v.clear(); v.resize(j+1);
@@ -251,7 +251,7 @@ namespace FAAST {
 		if (n < 0 || n > parent_field->baseField().d) {
 			stringstream msg;
 			msg << "Bad input to SmallPTrace : " << n << ".";
-			throw ASException(msg.str().c_str());
+			throw FAASTException(msg.str().c_str());
 		}
 #endif
 		if (isZero()) return;

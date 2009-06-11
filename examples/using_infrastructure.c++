@@ -29,7 +29,7 @@
 	ordinary use of the library.
 */
 
-#include <Artin-Schreier.hpp>
+#include <faast.hpp>
 using namespace FAAST;
 void main() {
 	Field<zz_p_algebra>& K = Field<zz_p_Algebra>::createField(2, 3);

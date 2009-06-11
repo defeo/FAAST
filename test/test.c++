@@ -25,7 +25,7 @@
 	FAAST::FieldElement::affineMinimalPolynomial() and FAAST::FieldElement::evaluate().
 */
 
-#include "faast.hpp"
+#include <faast.hpp>
 #include <cstdlib>
 
 using namespace std;

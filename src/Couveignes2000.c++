@@ -48,7 +48,7 @@ namespace FAAST {
 	FieldElement<T>& res, const FieldElement<T>& alpha) const {
 #ifdef FAAST_DEBUG
 		if (alpha.trace() != 0)
-			throw ASException("Bad input to couveignes00.");
+			throw FAASTException("Bad input to couveignes00.");
 #endif
 		// step 0
 		if (alpha.isZero()) {
@@ -64,7 +64,7 @@ namespace FAAST {
 			const MatGFp& artin = parent.getArtinMatrix();
 #ifdef FAAST_DEBUG
 			if (parent.stem->artinLine < 0)
-				throw ASException("Bad Artin Matrix.");
+				throw FAASTException("Bad Artin Matrix.");
 #endif
 			VecGFp low, high;
 			VectorCopy(low, rep(alpha.repExt), parent.stem->artinLine);
@@ -91,7 +91,7 @@ namespace FAAST {
 		etas.resize(p);
 #ifdef FAAST_DEBUG
 		if (etas[long(parent.p)-1] != 0)
-			throw ASException("Error in couveignes00.");
+			throw FAASTException("Error in couveignes00.");
 #endif
 		approximateAS<T>(etas, parent.stem->alpha->trace());
 		// step 4

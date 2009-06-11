@@ -76,12 +76,29 @@ namespace FAAST {
 
 
 	/**
-	 * \defgroup Field Finite Field Arithmetics
-	 * This is the core of the library.
+	 * \defgroup Fields Finite Field Arithmetics
+	 * This module contains three types, namely FAAST::Field, FAAST::FieldElement and
+	 * FAAST::FieldPolynomial, which represent, respectively, finite fields, elements
+	 * of finite fields and polynomials with coefficient over finite fields.
+	 *
+	 * With some notable exception (see
+	 * \link FAAST::FieldElement::FieldElement() FieldElement()\endlink and
+	 * \link FAAST::FieldPolynomial::FieldPolynomial() FieldPolynomial()\endlink),
+	 * each FAAST::FieldElement and FAAST::FieldPolynomial
+	 * belongs to a FAAST::Field object called its \e parent \e field.
+	 * Elements (and polynomials) having the same parent field can be
+	 * combined (added, multiplied, etc.) freely, while limitations
+	 * apply for combining elements belonging to two different fields; see
+	 * FAAST::FieldElement and FAAST::FieldPolynomial.
+	 *
+	 * Elements
+	 * (and polynomials) can be moved from one field to another when a morphism
+	 * is known; see \ref Field_lattices.
+	 *
 	 */
 
 	/**
-	 * \ingroup Field
+	 * \ingroup Fields
 	 * \brief A finite field.
 	 *
 	 * Objects of this class can only be built through the static instantiators createField() and
@@ -316,18 +333,13 @@ namespace FAAST {
 		 * \brief Build the splitting field of the polynomial \f$ X^p - X - \mathtt{alpha} \f$
 		 * as in [\ref ISSAC "DFS '09", Section 6].
 		 *
-		 * This may or may not be an extension of
-		 * degree \a p depending whether the polynomial is irreducible.
-		 *
-		 * - If the polynomial is reducible,
-		 *   (equivalently, if \a alpha has trace 0), then it is split and the splitting field
-		 *   is isomorphic to this one. In this case Couveignes2000() is used to find one
-		 *   of the roots and the isomorphic field is constructed. The computed root is used
-		 *   in pushDown() and liftUp() to navigate the tower as in
-		 *   [\ref ISSAC "DFS '09", Section 6.2].
-		 * - If the polynomial is irreducible, a primitive Artin-Schreier extension
-		 *   is constructed using ArtinSchreierExtension(), then Couveignes2000() is used in such
-		 *   an extension as in the case where the polynomial is reducible.
+		 * The polynomial must be reducible (equivalently \a alpha must have trace 0).
+		 * A primitive Artin-Schreier extension
+		 * is constructed using ArtinSchreierExtension(), then Couveignes2000() is used in such
+		 * an extension to find one
+		 * of the roots and the isomorphic field is constructed. The computed root is used
+		 * in pushDown() and liftUp() to navigate the tower as in
+		 * [\ref ISSAC "DFS '09", Section 6.2].
 		 *
 		 * \return A reference to the newly created Field object.
 		 *
@@ -335,12 +347,14 @@ namespace FAAST {
 		 *
 		 * \throws CharacteristicTooLargeException If \ref p is a multiprecision
 		 * integer larger than the largest single precision integer.
+		 * \throws NotIrreducibleException If \a alpha has trace 0.
 		 * \throws NotSupportedException If the primitive field cannot be created. See
 		 * ArtinSchreierExtension() for details
 		 * \throws IllegalCoercionException If \a alpha cannot be coerced to an element of this field.
 		 */
 		const Field<T>& ArtinSchreierExtension(const FieldElement<T>& alpha)
-		const throw (CharacteristicTooLargeException, NotSupportedException, IllegalCoercionException);
+		const throw (CharacteristicTooLargeException, NotIrreducibleException,
+				NotSupportedException, IllegalCoercionException);
 		/**
 		 * \brief Finds a root of the polynomial \f$ X^p - X - \mathtt{alpha} \f$.
 		 *
@@ -544,7 +558,7 @@ namespace FAAST {
 		 */
 		const Field<T>& subField() const throw(NoSubFieldException) {
 #ifdef FAAST_DEBUG
-			if (!stem) throw ASException("No stem in stemField().");
+			if (!stem) throw FAASTException("No stem in stemField().");
 #endif
 			if (!stem->subfield) throw NoSubFieldException();
 			return *(stem->subfield);
@@ -563,7 +577,7 @@ namespace FAAST {
 		 */
 		const Field<T>& overField() const throw(NoOverFieldException) {
 #ifdef FAAST_DEBUG
-			if (!stem) throw ASException("No stem in stemField().");
+			if (!stem) throw FAASTException("No stem in stemField().");
 #endif
 			if (!stem->overfield) throw NoOverFieldException();
 			return *(stem->overfield);
@@ -583,7 +597,7 @@ namespace FAAST {
 		 */
 		const Field<T>& stemField() const throw() {
 #ifdef FAAST_DEBUG
-			if (!stem) throw ASException("No stem in stemField().");
+			if (!stem) throw FAASTException("No stem in stemField().");
 #endif
 			return *stem;
 		}
@@ -715,8 +729,8 @@ namespace FAAST {
 		ostream& print(ostream& o) const;
 	/** @} */
 	/****************** Destructor ******************/
-		~Field() throw (ASException)
-		{ throw ASException("Destroying fields is no good."); }
+		~Field() throw (FAASTException)
+		{ throw FAASTException("Destroying fields is no good."); }
 
 
 	/*****************************************************/

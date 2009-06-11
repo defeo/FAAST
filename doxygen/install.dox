@@ -1,5 +1,11 @@
 /**
-	\page Install Installing FAAST
+	\page Install Obtaining and Installing FAAST
+	
+	You can download the latest stable release of FAAST from
+	http://www.lix.polytechnique.fr/~defeo/FAAST/download . It comes as a zipped
+	source
+	distribution named \c faast-xxx.tgz or \c faast-xxx.bz2, where \c xxx is the
+	version number. No binary distributions are available for the moment.
 	
 	\section Install_Requirements Requirements
 	FAAST is built on top of Victor Shoup's NTL, you can download
@@ -43,6 +49,8 @@
 	\section Install_doc Generating the documentation
 	This library is documented using doxygen and you must have it installed in order
 	to generate the documentation. You can download doxygen at http://www.doxygen.org/.
+	You will also need \f$\mbox{\LaTeX}\f$ and \f$\mbox{\Xy-pic}\f$ to generate some
+	formulae, graphs and the two logos in this paragraph.
 	
 	Once doxygen is installed, you can generate \if DEV the standard \else this \endif
 	documentation by typing

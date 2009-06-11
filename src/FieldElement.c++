@@ -272,7 +272,7 @@ namespace FAAST {
 
 #ifdef FAAST_DEBUG
 		if (base) throw
-			ASException("Malformed element in isScalar().");
+			FAASTException("Malformed element in isScalar().");
 #endif
 
 		parent_field->switchContext();
@@ -372,7 +372,7 @@ namespace FAAST {
 		if (!parent_field  || parent_field->d == 1) return true;
 #ifdef FAAST_DEBUG
 		if (base) throw
-			ASException("Malformed element in isScalar().");
+			FAASTException("Malformed element in isScalar().");
 #endif
 		parent_field->switchContext();
 		return deg(rep(repExt)) <= 0;
@@ -432,7 +432,7 @@ namespace FAAST {
 	 * one plus the Artin-Schreier height of the field the
 	 * element belongs to.
 	 *
-	 * throws : ASException if there's not enough variables
+	 * throws : FAASTException if there's not enough variables
 	 *          in var
 	 */
 	template <class T> ostream&

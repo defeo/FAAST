@@ -44,7 +44,7 @@ namespace FAAST {
 
 /****************** Class FieldElement ******************/
 	/**
-	 * \ingroup Field
+	 * \ingroup Fields
 	 * \brief An element of a finite field.
 	 *
 	 * Objects of this class represent elements of a finite field, as represented by the class Field.

@@ -350,7 +350,7 @@ namespace FAAST {
 
 #ifdef FAAST_DEBUG
 		if (base) throw
-			ASException("Malformed element in isScalarPolynomial().");
+			FAASTException("Malformed element in isScalarPolynomial().");
 #endif
 
 		parent_field->switchContext();
@@ -445,7 +445,7 @@ namespace FAAST {
 
 #ifdef FAAST_DEBUG
 		if (base) throw
-			ASException("Malformed element in isScalarPolynomial().");
+			FAASTException("Malformed element in isScalarPolynomial().");
 #endif
 
 		parent_field->switchContext();
@@ -555,7 +555,7 @@ namespace FAAST {
 	 * multivariate basis. The number of variables in vars must match
 	 * one plus the Artin-Schreier height of the base field.
 	 *
-	 * throws : ASException if there's not enough variables
+	 * throws : FAASTException if there's not enough variables
 	 *          in var
 	 */
 	template <class T> ostream&

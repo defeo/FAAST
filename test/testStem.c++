@@ -25,7 +25,7 @@
 	pushDown() and liftUp().
 */
 
-#include "faast.hpp"
+#include <faast.hpp>
 #include <cstdlib>
 
 using namespace std;

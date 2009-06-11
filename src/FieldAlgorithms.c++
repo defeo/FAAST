@@ -72,10 +72,10 @@ namespace FAAST {
 			c++;
 #ifdef FAAST_DEBUG
 			if (deg(rep(coeff(Qstar, i))) > 0) throw
-				ASException("Error in Cantor89");
+				FAASTException("Error in Cantor89");
 			for (long j = 1 ; j < 2*p-1 ; j++) {
 				if (coeff(Qstar, i+j) != 0) throw
-				ASException("Error in Cantor89");
+				FAASTException("Error in Cantor89");
 			}
 #endif
 		}
@@ -94,7 +94,7 @@ namespace FAAST {
 	template <class T> const Field<T>& Field<T>::ArtinSchreierExtension()
 	const throw (CharacteristicTooLargeException, NotSupportedException) {
 #ifdef FAAST_DEBUG
-		if (!stem) throw ASException("Error : Stem is NULL.");
+		if (!stem) throw FAASTException("Error : Stem is NULL.");
 #endif
 		// if the extension already exists, return it
 		// WARNING : this behavior is not correct when
@@ -186,7 +186,7 @@ namespace FAAST {
 
 #if FAAST_DEBUG >= 3
 		if (!IterIrredTest(Q))
-			throw ASException("The defining polynomial of the extension is not irreducible.");
+			throw FAASTException("The defining polynomial of the extension is not irreducible.");
 #endif
 		// prepare the new context
 		GFpE::init(Q);
@@ -216,33 +216,31 @@ namespace FAAST {
 	 */
 	template <class T> const Field<T>&
 	Field<T>::ArtinSchreierExtension(const FieldElement<T>& alpha)
-	const throw (CharacteristicTooLargeException,
+	const throw (CharacteristicTooLargeException, NotIrreducibleException,
 	NotSupportedException, IllegalCoercionException) {
 		// check that alpha belongs to here
 		if ( !isOverFieldOf(*(alpha.parent_field)) )
 			throw IllegalCoercionException();
-		if (alpha.isZero()) return *this;
+		if (alpha.isZero())
+			throw NotIrreducibleException();
 
-		FieldElement<T> root;
-		FieldElement<T>* aleph = new FieldElement<T>(alpha);
-		const Field<T> *vsub, *st;
 		// if X^p - X - alpha generates an extension of degree p
 		if (alpha.parent_field->stem == stem && alpha.trace() != 0) {
+			FieldElement<T> root;
+			FieldElement<T>* aleph = new FieldElement<T>(alpha);
+			const Field<T> *vsub, *st;
 			// first build the stem if needed
 			const Field<T>& up = ArtinSchreierExtension();
 			// find a root in the overfield
 			root = up.Couveignes2000(alpha);
 			vsub = this; st = up.stem;
+			// move alpha in here
+			*aleph >>= *this;
+			return *(new Field<T>(st, root, aleph, vsub));
 		}
 		// if X^p - X - alpha generates an extension of degree 1
-		else {
-			// find a root in here
-			root = Couveignes2000(alpha);
-			vsub = stem; st = stem;
-		}
-		// move alpha in here
-		*aleph >>= *this;
-		return *(new Field<T>(st, root, aleph, vsub));
+		else
+			throw NotIrreducibleException();
 	}
 
 

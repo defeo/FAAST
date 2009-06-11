@@ -55,7 +55,7 @@ namespace FAAST {
 	Field<T>::getPseudotrace(const long j) const {
 #ifdef FAAST_DEBUG
 		if (j < 0 || j >= height)
-			throw ASException("Bad input to getPseudotrace.");
+			throw FAASTException("Bad input to getPseudotrace.");
 #endif
 
 		long size = pseudotraces.size();

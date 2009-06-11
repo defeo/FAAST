@@ -244,7 +244,7 @@ namespace FAAST {
 #if FAAST_DEBUG >= 2
 			for (BigInt i = 0 ; i < p ; i++) {
 				if (deg(W[i]) * p > deg(rep(e.repExt)))
-					throw ASException("Problem in pushDownRec.");
+					throw FAASTException("Problem in pushDownRec.");
 			}
 #endif
 			// if this extension was built modulo

@@ -160,7 +160,7 @@ namespace FAAST {
 	 * tests
 	 *
 	 * throws : NotPrimeException if p is not prime
-	 * throws : ASException if d less than one
+	 * throws : FAASTException if d less than one
 	 */
 	template <class T> const Field<T>& Field<T>::createField
 	(const BigInt& p, const long d, const bool test)
@@ -352,7 +352,7 @@ namespace FAAST {
 	const throw () {
 		const Field<T>* stemf = f.stem;
 #ifdef FAAST_DEBUG
-		if (!stemf || !stem) throw ASException("Error : Stem is NULL.");
+		if (!stemf || !stem) throw FAASTException("Error : Stem is NULL.");
 #endif
 		while (stemf != stem && (stemf = stemf->subfield));
 		return stemf == stem;

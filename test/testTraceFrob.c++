@@ -25,7 +25,7 @@
 	FAAST::FieldElement::pseudotrace().
 */
 
-#include "faast.hpp"
+#include <faast.hpp>
 #include <cstdlib>
 
 using namespace std;

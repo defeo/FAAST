@@ -27,19 +27,19 @@
 namespace FAAST {
 	/**
 	 * \defgroup Exceptions Exceptions
-	 * These are the exceptions thrown by the functions of AS.
+	 * These are the exceptions thrown by the functions of FAAST.
 	 * @{
 	 */
 
 	/**
 	 * \brief A generic exception.
 	 */
-	class ASException : public std::exception {
+	class FAASTException : public std::exception {
 	private:
 		const char* message;
 	public:
-		ASException() {}
-		ASException(const char* m) : message(m) {}
+		FAASTException() {}
+		FAASTException(const char* m) : message(m) {}
 		virtual const char* what() const throw() {
 			return message;
 		}
@@ -48,7 +48,7 @@ namespace FAAST {
 	/**
 	 * \brief The polynomial is not irreducible.
 	 */
-	class NotIrreducibleException : public ASException {
+	class NotIrreducibleException : public FAASTException {
 	public:
 		virtual const char* what() const throw() {
 			return "NotIrreducibleException";
@@ -57,7 +57,7 @@ namespace FAAST {
 	/**
 	 * \brief The polynomial is irreducible.
 	 */
-	class IsIrreducibleException : public ASException {	public:
+	class IsIrreducibleException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "IsIrreducibleException";
 		}
@@ -65,7 +65,7 @@ namespace FAAST {
 	/**
 	 * \brief The number is not a prime.
 	 */
-	class NotPrimeException : public ASException {	public:
+	class NotPrimeException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NotPrimeException";
 		}
@@ -73,7 +73,7 @@ namespace FAAST {
 	/**
 	 * \brief No overfield is known for the given field.
 	 */
-	class NoOverFieldException : public ASException {	public:
+	class NoOverFieldException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NoOverFieldException";
 		}
@@ -81,7 +81,7 @@ namespace FAAST {
 	/**
 	 * \brief No subfield is known for the given field.
 	 */
-	class NoSubFieldException : public ASException {	public:
+	class NoSubFieldException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NoSubFieldException";
 		}
@@ -89,7 +89,7 @@ namespace FAAST {
 	/**
 	 * \brief The field is not a subfield of the given field.
 	 */
-	class NotASubFieldException : public ASException {	public:
+	class NotASubFieldException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NotASubFieldException";
 		}
@@ -97,7 +97,7 @@ namespace FAAST {
 	/**
 	 * \brief The two elements do not belong to the same field.
 	 */
-	class NotInSameFieldException : public ASException {	public:
+	class NotInSameFieldException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NotInSameFieldException";
 		}
@@ -105,7 +105,7 @@ namespace FAAST {
 	/**
 	 * \brief Division by zero.
 	 */
-	class DivisionByZeroException : public ASException {	public:
+	class DivisionByZeroException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "DivisionByZeroException";
 		}
@@ -113,7 +113,7 @@ namespace FAAST {
 	/**
 	 * \brief The element cannot be coerced to the given field.
 	 */
-	class IllegalCoercionException : public ASException {	public:
+	class IllegalCoercionException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "IllegalCoercionException";
 		}
@@ -121,7 +121,7 @@ namespace FAAST {
 	/**
 	 * \brief There is no polynomial with the given property.
 	 */
-	class NoSuchPolynomialException : public ASException {	public:
+	class NoSuchPolynomialException : public FAASTException {	public:
 		virtual const char* what() const throw() {
 			return "NoSuchPolynomialException";
 		}
@@ -129,10 +129,10 @@ namespace FAAST {
 	/**
 	 * \brief The operation is not supported (yet?)
 	 */
-	class NotSupportedException : public ASException {
+	class NotSupportedException : public FAASTException {
 	public:
-		NotSupportedException() : ASException("NotSupportedException") {}
-		NotSupportedException(const char* m) : ASException(m) {}
+		NotSupportedException() : FAASTException("NotSupportedException") {}
+		NotSupportedException(const char* m) : FAASTException(m) {}
 	};
 	/**
 	 * \brief The element has no parent field specified.
@@ -167,7 +167,7 @@ namespace FAAST {
 	 * x += K.scalar(1);
 	 * \endcode
 	 */
-	class UndefinedFieldException : public ASException {
+	class UndefinedFieldException : public FAASTException {
 	public:
 		virtual const char* what() const throw() {
 			return "This is the 0 element of any field.";
@@ -176,15 +176,15 @@ namespace FAAST {
 	/**
 	 * \brief The function does not accept such parameters.
 	 */
-	class BadParametersException : public ASException {
+	class BadParametersException : public FAASTException {
 	public:
-		BadParametersException() : ASException("BadParametersException") {}
-		BadParametersException(const char* m) : ASException(m) {}
+		BadParametersException() : FAASTException("BadParametersException") {}
+		BadParametersException(const char* m) : FAASTException(m) {}
 	};
 	/**
 	 * \brief The characteristic is larger than what AS can handle.
 	 */
-	class CharacteristicTooLargeException : public ASException {
+	class CharacteristicTooLargeException : public FAASTException {
 	public:
 		virtual const char* what() const throw() {
 			return "Do you really think it is wise to do computational\n Artin-Schreier theory in characteristic\n >= 2^(your machine word length) ?!";

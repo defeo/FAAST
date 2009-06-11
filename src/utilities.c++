@@ -248,7 +248,7 @@ namespace FAAST {
 				GFpX Phip; expand<T>(Phip, Phi, q);
 #ifdef FAAST_DEBUG
 				if (Phip % Phi != 0)
-					throw ASException("Error : computing the cyclotomic polynomial.");
+					throw FAASTException("Error : computing the cyclotomic polynomial.");
 #endif
 				Phi = Phip / Phi;
 			}

@@ -30,7 +30,7 @@ namespace FAAST {
 	template <class T> class Field;
 
 	/**
-	 * \ingroup Field
+	 * \ingroup Fields
 	 * \brief An polynomial with coefficients over a finite field.
 	 *
 	 * Objects of this class represent polynomials over a finite field, as represented by the class Field.
