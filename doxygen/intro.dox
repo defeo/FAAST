@@ -13,7 +13,7 @@
 	its splitting field is called an Artin-Schreier extension of \b K. Extension
 	towers of this form are called Artin-Schreier towers and are the main object
 	of this library. More details about Artin-Schreier towers can be found in
-	[\ref ISSAC "DFS '09"]; this is also the source for the majority of the algorithms
+	[\ref ISSAC "DFS '09"]; that paper is also the source for the majority of the algorithms
 	of FAAST.
 	
 	FAAST uses Victor Shoup's NTL to represent finite field elements and

@@ -184,9 +184,10 @@ doc-dev:
 	echo "SHOW_FILES = YES") | doxygen -
 
 .PHONY: package
-package:
+package: doc
 	tar czf faast-$Name:  $.tgz --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
 	tar cjf faast-$Name:  $.bz2 --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
+	tar czf faast-$Name:  $-refman.tgz --transform='s|^doc|faast-$Name:  $-refman' 1 doc/html
 
 .PHONY: clean
 clean:

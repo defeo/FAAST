@@ -129,7 +129,8 @@ namespace FAAST {
 	to both fields. So for example you can move elements from <b>K</b><sub>0</sub>
 	or <b>M</b><sub>1</sub> to <b>L</b><sub>1</sub>, but it will not always
 	be possible to move an element from <b>K</b><sub>2</sub> to <b>K</b><sub>1</sub>.
-	Coercion from <b>K</b><sub>0</sub> to <b>K</b><sub>1</sub> is as easy as
+	For example, coercion from <b>K</b><sub>0</sub> to <b>K</b><sub>1</sub> is
+	as easy as
 	\code
 	e0 = K0.random();
 	e1 = e0 >> K1;
@@ -141,8 +142,8 @@ namespace FAAST {
 	liftUp() let you express the morphism between two adjacent levels of the
 	stem, while Field::toBivariate() and Field::toUnivariate() let you express
 	the morphisms between to arbitrary spurs in two adjacent levels. Notice
-	that there is no need to know what was the order of the calls to
-	Field::ArtinSchreierExtension() in order to apply these methods: any
+	that there is no need to know what the order of the calls to
+	Field::ArtinSchreierExtension() was in order to apply these methods: any
 	field of a level can be considered as an Artin-Schreier extension over any
 	other field in the lower level.
 	 

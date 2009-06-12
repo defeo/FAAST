@@ -57,7 +57,7 @@
 	\verbatim
 	make doc\endverbatim
 	This creates a directory \c doc/html containing the documentation. You can
-	edit the file \c doxy.conf to access more options and output formats, refer
+	edit the file \c doxy.conf to enable more options and output formats, refer
 	to the doxygen manual.
 	
 	If you are interested in understanding the internals of FAAST, you can generate
