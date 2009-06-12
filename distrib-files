@@ -2,6 +2,8 @@ doxygen
 examples
 include
 src
+test
 Makefile
-doxy.conf
+doxy.conf.in
 COPYING
+README

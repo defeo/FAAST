@@ -28,6 +28,10 @@ SHELL = /bin/bash
 CC = g++
 OPT = -g -Wall -DFAAST_TIMINGS
 
+# Lib details
+LIBNAME = FAAST
+LIBVER = 0.1.0beta
+
 # FAAST files
 ROOT = .
 SRC = $(ROOT)/src
@@ -170,12 +174,22 @@ examples: createbin $(BIN)/test $(BIN)/testIso $(BIN)/testStem \
 	$(BIN)/testTraceFrob $(BIN)/testLE $(BIN)/testCyclotomic \
 	$(BIN)/testTmul
 
+.PHONY: clean
+clean:
+	rm -f $(BIN)/*.o
+
+######################################################################
+########## Docs
+
+doxy.conf: doxy.conf.in
+	sed 's/@VERSION@/$(LIBVER)/g' doxy.conf.in > doxy.conf
+
 .PHONY: doc
-doc:
+doc: doxy.conf
 	doxygen doxy.conf
 
 .PHONY: doc-dev
-doc-dev:
+doc-dev: doxy.conf
 	(cat doxy.conf; \
 	echo "ENABLED_SECTIONS=DEV"; \
 	echo "OUTPUT_DIRECTORY=doc-dev"; \
@@ -183,12 +197,11 @@ doc-dev:
 	echo "SHOW_USED_FILES = YES"; \
 	echo "SHOW_FILES = YES") | doxygen -
 
+######################################################################
+########## Shipping
+
 .PHONY: package
 package: doc
-	tar czf faast-$Name:  $.tgz --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
-	tar cjf faast-$Name:  $.bz2 --transform='s|\(.*\)|faast-$Name:  $/\1|' -T distrib-files
-	tar czf faast-$Name:  $-refman.tgz --transform='s|^doc|faast-$Name:  $-refman' 1 doc/html
-
-.PHONY: clean
-clean:
-	rm -f $(BIN)/*.o
+	tar czf faast-$(LIBVER).tgz --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T distrib-files
+	tar cjf faast-$(LIBVER).bz2 --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T distrib-files
+	tar czf faast-$(LIBVER)-refman.tgz --transform='s|^doc|faast-$(LIBVER)-refman' 1 doc/html

@@ -1,0 +1,125 @@
+Copyright (C) 2009 Luca De Feo and Eric Schost.
+
+FAAST is an open-source C++ library providing strongly object-oriented
+data structures and high-performance algorithms for elements and
+polynomials in Artin-Schreier towers over finite fields.
+
+The most recent version of FAAST is available at
+http://www.lix.polytechnique.fr/~defeo/FAAST
+
+Contents:
++++++++++
+
+This README contains
+
+ - Package Contents
+ - Copying Conditions
+ - Installing Instructions
+ - Using FAAST
+
+
+Package Contents:
++++++++++++++++++
+
+Source Files:
+  include/
+  src/
+
+Test files and examples:
+  examples/
+  test/
+
+Documentation:
+  doxygen/
+  doxy.conf.in
+
+Miscellaneous
+  COPYING
+  Makefile
+  README
+
+
+Copying Conditions:
++++++++++++++++++++
+
+FAAST is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your
+option) any later version.
+
+FAAST is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with FAAST; see the file COPYING. If not, write to the Free
+Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+02110-1301, USA.
+
+
+Installing Instructions:
+++++++++++++++++++++++++
+
+Requirements
+------------
+FAAST is built on top of Victor Shoup's NTL, you can download it at
+http://www.shoup.net/NTL/.
+
+There's a few libraries that affect how NTL works. GMP is a
+multiprecision arithmetic library that can be used by NTL to represent
+large integers. Even though it is not expected to affect the overall
+performances of FAAST, compiling NTL with GMP is still the recommended
+method. GMP can be downloaded at http://gmplib.org/.
+
+gf2x is a library for multiplying polynomials over the binary
+field. If you work on characteristic 2 fields and you are interested
+in performance, then we recommend that you install gf2x and compile
+NTL with support for it. gf2x can be downloaded at
+http://gforge.inria.fr/projects/gf2x/.
+
+Instructions on how to compile NTL with support for GMP and/or gf2x
+can be found at http://www.shoup.net/ntl/doc/tour.html .  Compiling To
+compile FAAST, simply type
+
+	tar xzf faast-xxx.tgz
+	cd faast-xxx/
+	make 
+
+Notice that you might have to specify the paths to NTL, GMP or gf2x if
+they are installed in some exotic directory. Moreover, if you compiled
+NTL as a static library, you may have to explicitly link to gmp, gf2x
+and libm. To do this you must edit the Makefile by hand.
+
+Installing
+----------
+To install FAAST, from the compilation directory type
+
+	su
+	make install
+
+The library will be installed to /usr/lib and the headers to
+/usr/include. To change the default directories you can edit the
+Makefile.
+
+Generating the documentation
+----------------------------
+This library is documented using doxygen and you must have it
+installed in order to generate the documentation. You can download
+doxygen at http://www.doxygen.org/. You will also need LaTeX and
+Xy-pic to generate some formulae, graphs and two logos.
+
+Once doxygen is installed, you can generate the documentation by typing
+
+	make doc
+
+This creates a directory doc/html containing the documentation. You
+can edit the file doxy.conf to enable more options and output formats,
+refer to the doxygen manual.
+
+If you are interested in understanding the internals of FAAST, you can
+generate a more detailed documentation by typing
+
+	make doc-dev
+
+This creates a directory doc-dev/html containing the documentation.
