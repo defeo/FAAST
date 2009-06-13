@@ -50,7 +50,7 @@ COMMONOBJS := $(COMMONOBJS:%=$(BIN)/%)
 ########## targets
 # the default target
 .PHONY: all
-all: createbin library
+all: createbin libfaast.a
 
 # Script to create the bin directory
 createbin:
@@ -161,11 +161,11 @@ $(SRC)/FieldPrecomputations.c++: $(INC)/FAAST/utilities.hpp
 ########## Other targets
 
 .PHONY: library
-library: $(COMMONOBJS)
+libfaast.a: $(COMMONOBJS)
 	ar rcs libfaast.a $(BIN)/faast.o
 
 .PHONY: install
-install: library
+install: libfaast.a
 	cp libfaast.a $(PREFIX)/lib/
 	cp -r include/* $(PREFIX)/include/
 
@@ -202,6 +202,6 @@ doc-dev: doxy.conf
 
 .PHONY: package
 package: doc
-	tar czf faast-$(LIBVER).tgz --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T distrib-files
-	tar cjf faast-$(LIBVER).bz2 --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T distrib-files
-	tar czf faast-$(LIBVER)-refman.tgz --transform='s|^doc|faast-$(LIBVER)-refman' 1 doc/html
+	tar czf faast-$(LIBVER).tgz --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T CONTENTS
+	tar cjf faast-$(LIBVER).tar.bz2 --transform='s|\(.*\)|faast-$(LIBVER)/\1|' -T CONTENTS
+	tar czf faast-$(LIBVER)-refman.tgz --transform='s|^doc|faast-$(LIBVER)-refman|' doc/html

@@ -6,4 +6,5 @@ test
 Makefile
 doxy.conf.in
 COPYING
+CONTENTS
 README
