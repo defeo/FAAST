@@ -33,19 +33,20 @@
 using namespace std;
 using namespace FAAST;
 
-typedef Field<ZZ_p_Algebra> GFp;
-typedef Field<zz_p_Algebra> GFp2;
-typedef Field<GF2_Algebra>  gfp;
-typedef FieldElement<ZZ_p_Algebra> GFp_E;
-typedef FieldElement<zz_p_Algebra> GFp2_E;
-typedef FieldElement<GF2_Algebra>  gfp_E;
+typedef Field<ZZ_p_Algebra>  gfp;
+typedef FieldElement<ZZ_p_Algebra>  gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
+	int retval = 0;
 
 	gfp::Infrastructure::BigInt p;
 	long d, l;
-	cin >> p; cin >> d; cin >> l;
+	if (cin.peek() != EOF) {
+	  cin >> p; cin >> d; cin >> l;
+	} else {
+	  p = 3; d = 2; l = 3;
+	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
@@ -95,6 +96,7 @@ int main(int argv, char* argc[]) {
 			for (it = v.begin() ; it != v.end() ; it++)
 				cout << *it << " ";
 			cout << endl;
+			retval = 1;
 		}
 
 #ifdef FAAST_TIMINGS
@@ -104,7 +106,9 @@ int main(int argv, char* argc[]) {
 		cout << endl;
 	}
 #ifdef FAAST_TIMINGS
-	cout << endl << "Time spent inverting the matrix" <<
+	cout << endl << "Time spent inverting the matrix " <<
 		gfp::TIME.ARTINMATRIX << endl;
 #endif
+
+	return retval;
 }

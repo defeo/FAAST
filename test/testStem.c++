@@ -36,10 +36,15 @@ typedef FieldElement<GF2_Algebra> gfp_E;
 
 int main(int argv, char* argc[]) {
 	double cputime, totaltime;
+	int retval = 0;
 
 	gfp::Infrastructure::BigInt p;
 	long d, l;
-	cin >> p; cin >> d; cin >> l;
+	if (cin.peek() != EOF) {
+	  cin >> p; cin >> d; cin >> l;
+	} else {
+	  p = 2; d = 1; l = 4;
+	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
@@ -87,6 +92,7 @@ int main(int argv, char* argc[]) {
 			for (it = down.begin() ; it != down.end() ; it++)
 				cout << *it << " ";
 			cout << endl;
+			retval = 1;
 		}
 
 		/** Multiplication **/
@@ -103,4 +109,6 @@ int main(int argv, char* argc[]) {
 #endif
 	cout << endl;
 	cout << "Total duration : " << totaltime << endl;
+
+	return retval;
 }

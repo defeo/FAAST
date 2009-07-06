@@ -31,19 +31,19 @@
 using namespace std;
 using namespace FAAST;
 
-typedef Field<ZZ_p_Algebra> GFp;
 typedef Field<zz_p_Algebra> gfp;
-typedef Field<GF2_Algebra>  GFp2;
-typedef FieldElement<ZZ_p_Algebra> GFp_E;
 typedef FieldElement<zz_p_Algebra> gfp_E;
-typedef FieldElement<GF2_Algebra>  GFp2_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
 
 	gfp::Infrastructure::BigInt p;
 	long d, l, t;
-	cin >> p; cin >> d; cin >> l; cin >> t;
+	if (cin.peek() != EOF) {
+	  cin >> p; cin >> d; cin >> l; cin >> t;
+	} else {
+	  p = 2; d = 3; l = 4; t = 0;
+	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
@@ -56,11 +56,12 @@ int main(int argv, char* argc[]) {
 #endif
 	cout << endl;
 
+	cout << "\t\tFrob\tPTr\tPrePTr\tNFrob\tNProj" << endl;
 	for (int i = 1 ; i <= l ; i++) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
-		cout << *K << " in " << cputime << endl;
+		cout << i << "\t" << cputime << endl;
 
 		for (int j = 0 ; j < i+t ; j++) {
 			gfp_E a = K->random(), b;
@@ -71,18 +72,16 @@ int main(int argv, char* argc[]) {
 			frobtime = -NTL::GetTime();
 			b = a.frobenius(n);
 			frobtime += NTL::GetTime();
-			cout << "Fast " << n << "-th Frobenius in "
-				<< frobtime << endl;
+			cout << "\t" << n << "\t" 
+				<< frobtime << "\t";
 
 			pseudotime = -NTL::GetTime();
 			b = a.pseudotrace(n);
 			pseudotime += NTL::GetTime();
-			cout << "Fast " << n << "-th Pseudotrace in "
-				<< pseudotime << endl;
+			cout << pseudotime << "\t";
 
 #ifdef FAAST_TIMINGS
-			cout << "Pseudotraces precomputed in " <<
-				gfp::TIME.PSEUDOTRACES << endl;
+			cout << gfp::TIME.PSEUDOTRACES << "\t";
 #endif
 
 			naivetime = -NTL::GetTime();
@@ -90,14 +89,9 @@ int main(int argv, char* argc[]) {
 				a.self_frobenius();
 			naivetime += NTL::GetTime();
 			double average = naivetime / 10;
-			cout << "Naive Frobenius in " << average
-				<< ", projected execution time " <<
+			cout <<  average << "\t" <<
 				average * n << endl;
-
-			cout << "Projected thresholds :" << endl
-				<< "\tfrobenius " << floor(frobtime / average) << endl
-				<< "\tpseudotrace " << floor(pseudotime / average) << endl;
 		}
-		cout << endl;
 	}
+	return 0;
 }

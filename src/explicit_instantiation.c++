@@ -21,18 +21,18 @@
 */
 #include "faast.hpp"
 
-#include "Types.c++"
-#include "Couveignes2000.c++"
-#include "FE-Liftup-Pushdown.c++"
-#include "FE-Trace-Frob.c++"
-#include "Field.c++"
-#include "FieldAlgorithms.c++"
-#include "FieldElement.c++"
-#include "FieldPolynomial.c++"
-#include "FieldPrecomputations.c++"
-#include "Minpols.c++"
-#include "utilities.c++"
-#include "NTLhacks.c++"
+#include "Types.hpp"
+#include "Couveignes2000.hpp"
+#include "FE-Liftup-Pushdown.hpp"
+#include "FE-Trace-Frob.hpp"
+#include "Field.hpp"
+#include "FieldAlgorithms.hpp"
+#include "FieldElement.hpp"
+#include "FieldPolynomial.hpp"
+#include "FieldPrecomputations.hpp"
+#include "Minpols.hpp"
+#include "utilities.hpp"
+#include "NTLhacks.hpp"
 
 using namespace FAAST;
 

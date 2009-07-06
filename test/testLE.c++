@@ -32,18 +32,23 @@ using namespace std;
 using namespace FAAST;
 
 typedef Field<ZZ_p_Algebra> gfp;
-typedef Field<zz_p_Algebra> GFp;
-typedef Field<GF2_Algebra>  GFp2;
 typedef FieldElement<ZZ_p_Algebra> gfp_E;
-typedef FieldElement<zz_p_Algebra> GFp_E;
-typedef FieldElement<GF2_Algebra>  GFp2_E;
 
 int main(int argv, char* argc[]) {
 	double cputime;
+	int retval = 0;
+
+	gfp::Infrastructure::BigInt p;
+	long d, l;
+	if (cin.peek() != EOF) {
+	  cin >> p; cin >> d; cin >> l;
+	} else {
+	  p = 3; d = 1; l = 4;
+	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
-	const gfp* K = &(gfp::createField(2,1));
+	const gfp* K = &(gfp::createField(p,d));
 	cputime += NTL::GetTime();
 	cout << *K << " in " << cputime << endl;
 #ifdef FAAST_TIMINGS
@@ -52,7 +57,8 @@ int main(int argv, char* argc[]) {
 #endif
 	cout << endl;
 
-	for (int i = 1 ; i <= 5 ; i++) {
+	cout << "\tPDown\tLUp\tLUPre" << endl;
+	for (int i = 1 ; i <= l ; i++) {
 		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
 		cputime += NTL::GetTime();
@@ -65,24 +71,24 @@ int main(int argv, char* argc[]) {
 			cputime = -GetTime();
 			pushDown(a, down);
 			cputime += GetTime();
-			cout << "Push-down computed in " << cputime << endl;
+			cout << cputime << "\t";
 
 			cputime = -GetTime();
 			liftUp(down, b);
 			cputime += GetTime();
-			cout << "Lift-up computed in " << cputime << endl;
+			cout << cputime << "\t";
 #ifdef FAAST_TIMINGS
-			cout << "Time spent in Lift-up precomputation : " <<
-				gfp::TIME.LIFTUP << endl;
+			cout << gfp::TIME.LIFTUP;
 #endif
 
 			if (a != b) {
-				cout << "ERROR : Results don't match" << endl;
+			  cout << endl << "ERROR : Results don't match" << endl;
 				cout << a << endl << b << endl;
 				vector<gfp_E>::iterator it;
 				for (it = down.begin() ; it != down.end() ; it++)
 					cout << *it << " ";
 				cout << endl;
+				retval = 1;
 			}
 			cout << endl;
 		}
@@ -92,5 +98,6 @@ int main(int argv, char* argc[]) {
 	cout << endl << "Time spent building the cyclotomic polynomial : "
 		<< gfp::TIME.CYCLOTOMIC << endl;
 #endif
-	cout << endl;
+	
+	return retval;
 }

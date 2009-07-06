@@ -8,3 +8,9 @@ doc-dev
 doc
 *.a
 doxy.conf
+autom4te.cache
+config
+inst
+aclocal.m4
+configure
+build

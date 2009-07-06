@@ -37,10 +37,15 @@ typedef FieldPolynomial<zz_p_Algebra>  gfp_X;
 
 int main(int argv, char* argc[]) {
 	double cputime;
+	int retval = 0;
 
 	gfp::Infrastructure::BigInt p;
 	long d, l;
-	cin >> p; cin >> d; cin >> l;
+	if (cin.peek() != EOF) {
+	  cin >> p; cin >> d; cin >> l;
+	} else {
+	  p = 3; d = 2; l = 3;
+	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
 	cputime = -NTL::GetTime();
@@ -93,6 +98,7 @@ int main(int argv, char* argc[]) {
 				cout << "ERROR 1 : Results don't match" << endl;
 				cout << a << endl << b << endl << c << endl;
 				cout << poly << endl;
+				retval = 1;
 			}
 
 			poly >>= *K;
@@ -101,7 +107,9 @@ int main(int argv, char* argc[]) {
 				cout << "ERROR 2 : Results don't match" << endl;
 				cout << a << endl << b << endl << c << endl;
 				cout << poly << endl;
+				retval = 1;
 			}
 		} else cout << "*\t" << endl;
 	}
+	return retval;
 }
