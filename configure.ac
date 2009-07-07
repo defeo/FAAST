@@ -13,13 +13,14 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 AC_PROG_LIBTOOL
 AC_CHECK_PROG([doxy], [doxygen], [yes], [no])
 if test x$doxy != xyes ; then
    AC_MSG_WARN([Cannot find doxygen. You won't be able to generate the documentation.])
 fi
 AM_CONDITIONAL([DOXY], [test x$doxy = xyes])
+
+LT_INIT
 
 # Checks for libraries.
 AC_ARG_ENABLE([ntl-static], [AS_HELP_STRING([--enable-ntl-static], 

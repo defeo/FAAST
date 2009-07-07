@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I config
 SUBDIRS=include src test doxygen examples
 EXTRA_DIST = doxy.conf.in
 
