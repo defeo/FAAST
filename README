@@ -12,31 +12,9 @@ Contents:
 
 This README contains
 
- - Package Contents
  - Copying Conditions
  - Installing Instructions
  - Using FAAST
-
-
-Package Contents:
-+++++++++++++++++
-
-Source Files:
-  include/
-  src/
-
-Test files and examples:
-  examples/
-  test/
-
-Documentation:
-  doxygen/
-  doxy.conf.in
-
-Miscellaneous
-  COPYING
-  Makefile
-  README
 
 
 Copying Conditions:
@@ -79,17 +57,25 @@ NTL with support for it. gf2x can be downloaded at
 http://gforge.inria.fr/projects/gf2x/.
 
 Instructions on how to compile NTL with support for GMP and/or gf2x
-can be found at http://www.shoup.net/ntl/doc/tour.html .  Compiling To
-compile FAAST, simply type
+can be found at http://www.shoup.net/ntl/doc/tour.html . 
+
+Compling
+--------
+To compile FAAST, simply type
 
 	tar xzf faast-xxx.tgz
 	cd faast-xxx/
-	make 
+	./configure
+	make
+	make check
 
-Notice that you might have to specify the paths to NTL, GMP or gf2x if
-they are installed in some exotic directory. Moreover, if you compiled
-NTL as a static library, you may have to explicitly link to gmp, gf2x
-and libm. To do this you must edit the Makefile by hand.
+During the configure script FAAST checks for the presence of NTL,
+GMP and gf2x; checks for GMP and gf2x are optional and can be disabled
+through --disable-ntl-static. If NTL has been built as a shared library,
+passing --disable-ntl-static might speed up the compilation.
+
+Notice that you might have to specify the paths to NTL, GMP 
+or gf2x if they are installed in some exotic directory; see configure --help.
 
 Installing
 ----------
@@ -98,9 +84,8 @@ To install FAAST, from the compilation directory type
 	su
 	make install
 
-The library will be installed to /usr/lib and the headers to
-/usr/include. To change the default directories you can edit the
-Makefile.
+The library will be installed to a default location, you can
+change this by giving a different --prefix to the configure script.
 
 Generating the documentation
 ----------------------------

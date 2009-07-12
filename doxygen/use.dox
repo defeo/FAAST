@@ -12,17 +12,8 @@
 	\endcode
 	The \c using line is optional, but it will save you a lot of typing.
 	
-	Assuming you have installed FAAST and NTL in \c $HOME, compile your program with
+	Assuming you have installed FAAST in \c $HOME, compile your program with
 	\code
-	g++ -I$HOME/include my_program.c -o my_program -L$HOME/lib -lfaast -lntl
+	g++ -I$HOME/include my_program.c -o my_program -L$HOME/lib -lfaast
 	\endcode
-	or, if you compiled NTL as a static library,
-	\code
-	g++ -I$HOME/include my_program.c -o my_program -L$HOME/lib -lfaast -lntl -lgmp -lgf2x -lm
-	\endcode
-	(\c -lgmp and \c -lgf2x must be used only if you compiled NTL with support for
-	those libraries).
-	
-	\todo For the moment FAAST is only built as a static library, it is one of our
-	priorities to make it available as a shared object.
 */

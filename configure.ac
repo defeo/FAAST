@@ -31,6 +31,9 @@ if test x$enable_ntl_static != xno ; then
    AC_CHECK_LIB([gmp], [printf])
 fi
 AC_CHECK_LIB([ntl], [printf])
+if ! echo $LIBS | grep -q ntl ; then
+   AC_MSG_ERROR([Cannot find NTL. FAAST requires NTL, install it first.])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
