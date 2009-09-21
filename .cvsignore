@@ -14,3 +14,4 @@ inst
 aclocal.m4
 configure
 build
+Makefile.in
