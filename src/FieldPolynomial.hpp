@@ -455,46 +455,6 @@ namespace FAAST {
 		return true;
 	}
 
-/****************** GCD ******************/
-	/* GCD between this and e */
-	template <class T> FieldPolynomial<T>
-	FieldPolynomial<T>::GCD(const FieldPolynomial<T>& e)
-	const throw(NotInSameFieldException) {
-		if (!e.parent_field) return *this;
-		if (!parent_field) return e;
-		sameLevel(e);
-		parent_field->switchContext();
-
-		FieldPolynomial<T> res = parent_field->zero();
-		if (base) NTL::GCD(res.repBase, repBase, e.repBase);
-		else NTL::GCD(res.repExt, repExt, e.repExt);
-
-		return res;
-	}
-
-	/* XGCD between this and e */
-	template <class T> FieldPolynomial<T>
-	FieldPolynomial<T>::XGCD(const FieldPolynomial<T>& e,
-	FieldPolynomial<T>& U, FieldPolynomial<T>& V)
-	const throw(NotInSameFieldException) {
-		if (!e.parent_field && !parent_field) return U = V = *this;
-		else if (!e.parent_field) {
-			U = V = this->parent_field->one();
-			return *this;
-		} else if (!parent_field) {
-			U = V = e.parent_field->one();
-			return e;
-		}
-		sameLevel(e);
-		parent_field->switchContext();
-
-		FieldPolynomial<T> res = U = V = parent_field->zero();
-		if (base) NTL::XGCD(res.repBase, U.repBase, V.repBase, repBase, e.repBase);
-		else NTL::XGCD(res.repExt, U.repExt, V.repExt, repExt, e.repExt);
-
-		return res;
-	}
-
 /****************** Infrastructure ******************/
 	/* Interface with infrastructure. Use this only if you are
 	 * sure of what you do !

@@ -29,6 +29,23 @@
 namespace FAAST {
 	template <class T> class Field;
 
+/****************** GCD ******************/
+/* Find docs for these functions in the friends section of FieldElement */
+	template <class T> FieldPolynomial<T>
+	GCD(const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
+	throw(NotInSameFieldException);
+
+	template <class T> void
+	XGCD(const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q,
+			FieldPolynomial<T>& U, FieldPolynomial<T>& V, FieldPolynomial<T>& G)
+	throw(NotInSameFieldException);
+
+	template <class T> void
+	HalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
+			FieldPolynomial<T>& U1, FieldPolynomial<T>& V1,
+			const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
+	throw(NotInSameFieldException);
+/****************** Class FieldPolynomial ******************/
 	/**
 	 * \ingroup Fields
 	 * \brief An polynomial with coefficients over a finite field.
@@ -71,6 +88,58 @@ namespace FAAST {
 
 	friend class Field<T>;
 	friend class FieldElement<T>;
+
+	/****************** GCD ******************/
+	/**
+	 * \brief GCD of \a P and \a Q.
+	 *
+	 * \throw NotInSameFieldException If \a P and \a Q do not have the same \parent.
+	 * \relates FieldPolynomial
+	 */
+	friend FieldPolynomial<T> GCD<T>(const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
+	throw(NotInSameFieldException);
+	/**
+	 * \brief XGCD of \a P and \a Q.
+	 *
+	 * \param [in] P A polynomial
+	 * \param [in] Q A polynomial having the same \parent as P.
+	 * \param [out] U A polynomial to hold the result.
+	 * \param [out] V A polynomial to hold the result.
+	 * \param [out] G The GCD of this polynomial and \a Q.
+	 * \throw NotInSameFieldException If \a P and \a Q do not have the same \parent.
+	 * \invariant at the end of the method the following relation holds:
+	 * \code
+	 * U*P + V*Q == G;
+	 * \endcode
+	 * \relates FieldPolynomial
+	 */
+	friend void XGCD<T>(const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q,
+	FieldPolynomial<T>& U, FieldPolynomial<T>& V, FieldPolynomial<T>& G)
+	throw(NotInSameFieldException);
+
+	/**
+	 * \brief Half GCD of \a P and \a Q.
+	 *
+	 * \param [out] U0 A polynomial to hold the result.
+	 * \param [out] V0 A polynomial to hold the result.
+	 * \param [out] U1 A polynomial to hold the result.
+	 * \param [out] V1 A polynomial to hold the result.
+	 * \param [in] P A polynomial
+	 * \param [in] Q A polynomial having the same \parent as P.
+	 * \throw NotInSameFieldException If \a P and \a Q do not have the same \parent.
+	 * \invariant at the end of the method the following relation holds:
+	 * \f[\left(\begin{array}{cc}U_0&V_0\\U_1&V_1\end{array}\right)
+	 * \left(\begin{array}{c}P\\Q\end{array}\right) =
+	 * \left(\begin{array}{c}R_j\\R_{j+1}\end{array}\right)\f]
+	 * where \f$R_j\f$ and \f$R_{j+1}\f$ are the reminders in the XGCD computation of
+	 * \a P and \a Q such that \f$\deg R_{j+1}< \max(\deg P,\deg Q)/2 \le\deg\R_j\f$.
+	 * \relates FieldPolynomial
+	 */
+	friend void
+	HalfGCD<T>(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
+				FieldPolynomial<T>& U1, FieldPolynomial<T>& V1,
+				const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
+	throw(NotInSameFieldException);
 
 	/** \name Local types
 	 * Local types defined in this class. They are aliases to simplify the access
@@ -431,30 +500,6 @@ namespace FAAST {
 		const throw(IllegalCoercionException, BadParametersException)
 		{ return e.evaluate(*this); }
 	/** @} */
-	/****************//** \name GCD ******************/
-	/** @{ */
-		/** \brief GCD between this polynomial and \a P. */
-		FieldPolynomial<T> GCD(const FieldPolynomial<T>& P)
-		const throw(NotInSameFieldException);
-		/**
-		 * \brief XGCD between this polynomial and \a Q.
-		 *
-		 * \param [in] Q A polynomial having the same \parent as this polynomial.
-		 * \param [out] U A polynomial to hold the result.
-		 * \param [out] V A polynomial to hold the result.
-		 * \return The GCD of this polynomial and \a Q.
-		 * \throw NotInSameFieldException If \a Q and this polynomial do not have the same \parent.
-		 * \invariant  If \a P is this polynomial, then at the end of the method the following
-		 * relation holds:
-		 * \code
-		 * U*P + V*Q == P.GCD(Q);
-		 * \endcode
-		 * \todo Write non-member functions with a more familiar sintax.
-		 */
-		FieldPolynomial<T> XGCD(const FieldPolynomial<T>& Q,
-		FieldPolynomial<T>& U, FieldPolynomial<T>& V)
-		const throw(NotInSameFieldException);
-	/** @} */
 	/****************//** \name Predicates ******************/
 	/** @{ */
 		/**
@@ -616,7 +661,6 @@ namespace FAAST {
 		}
 	/** \endcond */
 	};
-
 /****************** Printing ******************/
 	/** \brief Print \a P to \a o.
 	 * \relates FieldPolynomial

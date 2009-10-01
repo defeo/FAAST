@@ -28,6 +28,7 @@
 #include "Field.hpp"
 #include "FieldAlgorithms.hpp"
 #include "FieldElement.hpp"
+#include "GCD.hpp"
 #include "FieldPolynomial.hpp"
 #include "FieldPrecomputations.hpp"
 #include "Minpols.hpp"
