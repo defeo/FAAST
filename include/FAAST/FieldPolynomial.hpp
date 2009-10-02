@@ -43,7 +43,8 @@ namespace FAAST {
 	template <class T> void
 	HalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 			FieldPolynomial<T>& U1, FieldPolynomial<T>& V1,
-			const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
+			const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q,
+			const long d)
 	throw(NotInSameFieldException);
 /****************** Class FieldPolynomial ******************/
 	/**
@@ -101,7 +102,7 @@ namespace FAAST {
 	/**
 	 * \brief XGCD of \a P and \a Q.
 	 *
-	 * \param [in] P A polynomial
+	 * \param [in] P A polynomial.
 	 * \param [in] Q A polynomial having the same \parent as P.
 	 * \param [out] U A polynomial to hold the result.
 	 * \param [out] V A polynomial to hold the result.
@@ -124,22 +125,25 @@ namespace FAAST {
 	 * \param [out] V0 A polynomial to hold the result.
 	 * \param [out] U1 A polynomial to hold the result.
 	 * \param [out] V1 A polynomial to hold the result.
-	 * \param [in] P A polynomial
+	 * \param [in] P A polynomial.
 	 * \param [in] Q A polynomial having the same \parent as P.
+	 * \param [in] d A bound on the degree of the result.
 	 * \throw NotInSameFieldException If \a P and \a Q do not have the same \parent.
+	 * \throw BadParametersException If \f$d>\max(\deg P,\deg Q)\f$ or \f$d<0\f$.
 	 * \invariant at the end of the method the following relation holds:
 	 * \f[\left(\begin{array}{cc}U_0&V_0\\U_1&V_1\end{array}\right)
 	 * \left(\begin{array}{c}P\\Q\end{array}\right) =
 	 * \left(\begin{array}{c}R_j\\R_{j+1}\end{array}\right)\f]
 	 * where \f$R_j\f$ and \f$R_{j+1}\f$ are the reminders in the XGCD computation of
-	 * \a P and \a Q such that \f$\deg R_{j+1}< \max(\deg P,\deg Q)/2 \le\deg\R_j\f$.
+	 * \a P and \a Q such that \f$\deg R_{j+1}\le\max(\deg P,\deg Q)-d<\deg\R_j\f$.
 	 * \relates FieldPolynomial
 	 */
 	friend void
 	HalfGCD<T>(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 				FieldPolynomial<T>& U1, FieldPolynomial<T>& V1,
-				const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q)
-	throw(NotInSameFieldException);
+				const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q,
+				const long d)
+	throw(NotInSameFieldException, BadParametersException);
 
 	/** \name Local types
 	 * Local types defined in this class. They are aliases to simplify the access

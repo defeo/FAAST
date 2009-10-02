@@ -40,6 +40,10 @@
 #include <NTL/mat_GF2.h>
 #include "NTLhacks.hpp"
 
+NTL_OPEN_NNS
+class _NTL_GF2XMatrix;
+NTL_CLOSE_NNS
+
 NTL_CLIENT
 
 namespace FAAST {
@@ -166,6 +170,8 @@ namespace FAAST {
 		typedef zz_pXModulus    GFpXModulus;
 		/** \brief Pre-condtioned polynomials over the field F<sub>p</sub>. */
 		typedef zz_pXMultiplier GFpXMultiplier;
+		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
+		typedef zz_pXMatrix		GFpX4Mat;
 
 		/** \brief The name of the Infrastructure */
 		static char const * const name;
@@ -207,6 +213,8 @@ namespace FAAST {
 		typedef ZZ_pXModulus    GFpXModulus;
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef ZZ_pXMultiplier GFpXMultiplier;
+		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
+		typedef ZZ_pXMatrix		GFpX4Mat;
 
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
@@ -245,6 +253,8 @@ namespace FAAST {
 		typedef GF2XModulus         GFpXModulus;
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef GF2XTransMultiplier GFpXMultiplier;
+		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
+		typedef _NTL_GF2XMatrix		GFpX4Mat;
 
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
