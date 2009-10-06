@@ -40,20 +40,22 @@
 #include <NTL/mat_GF2.h>
 #include "NTLhacks.hpp"
 
-NTL_OPEN_NNS
-class _NTL_GF2XMatrix;
-NTL_CLOSE_NNS
-
 NTL_CLIENT
 
 namespace FAAST {
+	/** \brief A structure to hold predefined constants depending on the type. */
+	struct Constants {
+		const long HalfGCD_CROSSOVER;
+		Constants(const long h) : HalfGCD_CROSSOVER(h) {}
+	};
+
 	/**
 	 * \if DEV
 	 * \ingroup NTLhacks
 	 * \endif
 	 *
 	 * \brief A class providing automatic conversion between
-	 * \c ZZ and \c long types.
+	 * 22\c ZZ and \c long types.
 	 *
 	 * You can pass a \c ZZ as well as a \c long to
 	 * any function requiring a \c ZZ_auto as parameter.
@@ -170,9 +172,9 @@ namespace FAAST {
 		typedef zz_pXModulus    GFpXModulus;
 		/** \brief Pre-condtioned polynomials over the field F<sub>p</sub>. */
 		typedef zz_pXMultiplier GFpXMultiplier;
-		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
-		typedef zz_pXMatrix		GFpX4Mat;
 
+		/** \brief predefined constants */
+		static const Constants consts;
 		/** \brief The name of the Infrastructure */
 		static char const * const name;
 	};
@@ -213,9 +215,9 @@ namespace FAAST {
 		typedef ZZ_pXModulus    GFpXModulus;
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef ZZ_pXMultiplier GFpXMultiplier;
-		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
-		typedef ZZ_pXMatrix		GFpX4Mat;
 
+		/** \brief \copybrief zz_p_Algebra::consts */
+		static const Constants consts;
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
 	};
@@ -253,9 +255,9 @@ namespace FAAST {
 		typedef GF2XModulus         GFpXModulus;
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef GF2XTransMultiplier GFpXMultiplier;
-		/** \brief 2x2 matrix of polynomials over the field F<sub>p</sub>. */
-		typedef _NTL_GF2XMatrix		GFpX4Mat;
 
+		/** \brief \copybrief zz_p_Algebra::consts */
+		static const Constants consts;
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
 	};

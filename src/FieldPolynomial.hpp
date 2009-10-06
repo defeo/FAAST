@@ -267,6 +267,34 @@ namespace FAAST {
 		else repExt %= e.repExt;
 	}
 
+	template <class T> void
+	FieldPolynomial<T>::LeftShift(const FieldPolynomial<T>& a, const long n) {
+		if (!a.parent_field) {
+			*this = a;
+			return;
+		}
+		base = a.base;
+		parent_field = a.parent_field;
+
+		parent_field->switchContext();
+		if (base) NTL::LeftShift(repBase, a.repBase, n);
+		else NTL::LeftShift(repExt, a.repExt, n);
+	}
+
+	template <class T> void
+	FieldPolynomial<T>::RightShift(const FieldPolynomial<T>& a, const long n) {
+		if (!a.parent_field) {
+			*this = a;
+			return;
+		}
+		base = a.base;
+		parent_field = a.parent_field;
+
+		parent_field->switchContext();
+		if (base) NTL::RightShift(repBase, a.repBase, n);
+		else NTL::RightShift(repExt, a.repExt, n);
+	}
+
 	/* Unary operations */
 	template <class T> bool
 	FieldPolynomial<T>::divides(const FieldPolynomial<T>& e)

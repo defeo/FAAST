@@ -51,7 +51,29 @@ template class FieldElement<GF2_Algebra>;
 template class FieldPolynomial<GF2_Algebra>;
 
 namespace FAAST {
-	template <> void
+	template FieldPolynomial<zz_p_Algebra>
+	GCD<zz_p_Algebra>(const FieldPolynomial<zz_p_Algebra>& P,
+			const FieldPolynomial<zz_p_Algebra>& Q) throw(NotInSameFieldException);
+	template FieldPolynomial<ZZ_p_Algebra>
+	GCD<ZZ_p_Algebra>(const FieldPolynomial<ZZ_p_Algebra>& P,
+			const FieldPolynomial<ZZ_p_Algebra>& Q) throw(NotInSameFieldException);
+	template FieldPolynomial<GF2_Algebra>
+	GCD<GF2_Algebra>(const FieldPolynomial<GF2_Algebra>& P,
+			const FieldPolynomial<GF2_Algebra>& Q) throw(NotInSameFieldException);
+
+	template void
+	HalfGCD<zz_p_Algebra>(FieldPolynomial<zz_p_Algebra>& U0, FieldPolynomial<zz_p_Algebra>& V0,
+			FieldPolynomial<zz_p_Algebra>& U1, FieldPolynomial<zz_p_Algebra>& V1,
+			const FieldPolynomial<zz_p_Algebra>& P, const FieldPolynomial<zz_p_Algebra>& Q,
+			const long d)
+	throw(NotInSameFieldException, BadParametersException);
+	template void
+	HalfGCD<ZZ_p_Algebra>(FieldPolynomial<ZZ_p_Algebra>& U0, FieldPolynomial<ZZ_p_Algebra>& V0,
+			FieldPolynomial<ZZ_p_Algebra>& U1, FieldPolynomial<ZZ_p_Algebra>& V1,
+			const FieldPolynomial<ZZ_p_Algebra>& P, const FieldPolynomial<ZZ_p_Algebra>& Q,
+			const long d)
+	throw(NotInSameFieldException, BadParametersException);
+	template void
 	HalfGCD<GF2_Algebra>(FieldPolynomial<GF2_Algebra>& U0, FieldPolynomial<GF2_Algebra>& V0,
 			FieldPolynomial<GF2_Algebra>& U1, FieldPolynomial<GF2_Algebra>& V1,
 			const FieldPolynomial<GF2_Algebra>& P, const FieldPolynomial<GF2_Algebra>& Q,

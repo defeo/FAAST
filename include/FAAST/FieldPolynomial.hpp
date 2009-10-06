@@ -45,7 +45,7 @@ namespace FAAST {
 			FieldPolynomial<T>& U1, FieldPolynomial<T>& V1,
 			const FieldPolynomial<T>& P, const FieldPolynomial<T>& Q,
 			const long d)
-	throw(NotInSameFieldException);
+	throw(NotInSameFieldException, BadParametersException);
 /****************** Class FieldPolynomial ******************/
 	/**
 	 * \ingroup Fields
@@ -330,6 +330,26 @@ namespace FAAST {
 			tmp %= e;
 			return tmp;
 		}
+		/** \brief Left shift.
+		 * \param [in] n an integer.
+		 * \return The product of this polynomial by X<sup>n</sup>.
+		 * \invariant P << n equals P >> -n.
+		 */
+		FieldPolynomial<T> operator<<(const long n) const {
+			FieldPolynomial<T> tmp;
+			tmp.LeftShift(*this, n);
+			return tmp;
+		}
+		/** \brief Right shift.
+		 * \param [in] n an integer.
+		 * \return The quotient of this polynomial by X<sup>n</sup>.
+		 * \invariant P >> n equals P << -n.
+		 */
+		FieldPolynomial<T> operator>>(const long n) const {
+			FieldPolynomial<T> tmp;
+			tmp.RightShift(*this, n);
+			return tmp;
+		}
 
 		/* Self-incrementing binary operations. */
 		void operator+=(const FieldPolynomial<T>&)
@@ -342,6 +362,16 @@ namespace FAAST {
 			throw(NotInSameFieldException, DivisionByZeroException);
 		void operator%=(const FieldPolynomial<T>&)
 			throw(NotInSameFieldException, DivisionByZeroException);
+		/** \brief \copybrief operator<<(const long) const
+		 * \see operator<<(const long) const
+		 */
+		void operator<<=(const long n)
+		{ this->LeftShift(*this, n); }
+		/** \brief \copybrief operator>>(const long) const
+		 * \see operator>>(const long) const
+		 */
+		void operator>>=(const long n)
+		{ this->RightShift(*this, n); }
 
 		/** \brief Stores \a a + \a b in this polynomial. */
 		void sum(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
@@ -363,6 +393,16 @@ namespace FAAST {
 		void mod(const FieldPolynomial<T>& a, const FieldPolynomial<T>& b)
 			throw(NotInSameFieldException, DivisionByZeroException)
 		{ operator=(a); operator%=(b); }
+		/** \brief \copybrief operator<<(const long) const
+		 * Stores \a a * X<sup>\a n</sup> in this polynomial.
+		 * \see operator<<(const long) const .
+		 */
+		void LeftShift(const FieldPolynomial<T>& a, const long n);
+		/** \brief \copybrief operator>>(const long) const
+		 * Stores \a a / X<sup>\a n</sup> in this polynomial.
+		 * \see operator>>(const long) const .
+		 */
+		void RightShift(const FieldPolynomial<T>& a, const long n);
 
 		/** @} */
 
