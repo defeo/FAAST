@@ -90,10 +90,9 @@ RecHalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 	FieldPolynomial<T> t1, t2;
 	t1.product(u0, P1);
 	t2.product(v0, Q1);
-	t1.sum(t1, t2);
+	t1 += t2;
 	t2.product(u1, P1);
-	Q1.product(v1, Q1);
-	Q1.sum(t2, Q1);
+	Q1 *= v1; Q1 += t2;
 	P1 = t1;
 
 	long d2 = Q1.degree() - P.degree() + n + d;
@@ -111,9 +110,10 @@ RecHalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 	// matrix multiplication
 	// |u0 v0|    |0  1| |u0 v0|
 	// |u1 v1| <- |1 -q| |u1 v1|
-	t1.product(q, u1); t1.negate(); t1 += u0;
+	q.negate();
+	t1.product(q, u1); t1 += u0;
 	u0 = u1; u1 = t1;
-	t1.product(q, v1); t1.negate(); t1 += v0;
+	t1.product(q, v1); t1 += v0;
 	v0 = v1; v1 = t1;
 
 	// matrix multiplication (Strassen formula)
@@ -133,7 +133,7 @@ RecHalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 	t1.sum(v0, v1); t1 *= y0;
 	V0 += t1; V1 -= t1;
 
-	t2.sum(y0, w0); t1.difference(v1, u0); t1 *= t2;
+	t2.sum(y0, w1); t1.difference(v1, u0); t1 *= t2;
 	U0 -= t1; V1 += t1;
 
 	t2.sum(y0, y1); t1.sum(u0, v0); t1 *= t2;
