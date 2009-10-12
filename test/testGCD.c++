@@ -38,8 +38,8 @@ namespace FAAST {
 using namespace std;
 using namespace FAAST;
 
-typedef Field<zz_p_Algebra> GFp;
-typedef FieldPolynomial<zz_p_Algebra> GFpX;
+typedef Field<GF2_Algebra> GFp;
+typedef FieldPolynomial<GF2_Algebra> GFpX;
 
 int main(int argv, char* argc[]) {
 	double cputime;
@@ -51,7 +51,7 @@ int main(int argv, char* argc[]) {
 	}
 	
 	const GFp& K = GFp::createField(p, n);
-	
+
 	GFpX P, Q, P1, Q1, G1, G2, U0, V0, U1, V1;
 	for (long i = 0 ; i < d ; i++) {
 		P.setCoeff(i, K.random());
@@ -59,13 +59,17 @@ int main(int argv, char* argc[]) {
 	}
 	P.setCoeff(d);
 
-	cputime = -NTL::GetTime();
-	RecHalfGCD(U0, V0, U1, V1, P, Q, d+1);
-	G1 = U0*P + V0*Q;
-	cputime += NTL::GetTime();
-	cout << cputime << "\t";
-	cout.flush();
-	
+	for (long t = 0 ; t <= d ; t += 10) {
+		GFp::Infrastructure::consts.HalfGCD_CROSSOVER = t;
+
+		cputime = -NTL::GetTime();
+		RecHalfGCD(U0, V0, U1, V1, P, Q, d/2);
+		G1 = U0*P + V0*Q;
+		cputime += NTL::GetTime();
+		cout << t << "\t" << cputime << endl;
+		cout.flush();
+	}
+/*
 	P1 = P; Q1 = Q;
 	cputime = -NTL::GetTime();
 	IterHalfGCD(U0, V0, U1, V1, P1, Q1, d+1);
@@ -79,5 +83,5 @@ int main(int argv, char* argc[]) {
 		cout << P << endl << Q << endl << G1 << endl;
 		cout << G2 << endl;
 		return 1;
-	} else return 0;
+	} else return 0;*/
 }

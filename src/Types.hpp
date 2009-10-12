@@ -24,7 +24,7 @@ namespace FAAST {
 	char const * const ZZ_p_Algebra::name = "ZZ_p";
 	char const * const GF2_Algebra::name = "GF2";
 
-	const Constants zz_p_Algebra::consts = Constants(100); //NTL_zz_pX_HalfGCD_CROSSOVER
-	const Constants ZZ_p_Algebra::consts = Constants(0); //NTL_ZZ_pX_HalfGCD_CROSSOVER
-	const Constants GF2_Algebra::consts = Constants(6L*NTL_BITS_PER_LONG);
+	const Constants zz_p_Algebra::consts(20);
+	const Constants ZZ_p_Algebra::consts(20);
+	const Constants GF2_Algebra::consts(40);
 }

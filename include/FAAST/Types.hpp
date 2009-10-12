@@ -45,7 +45,7 @@ NTL_CLIENT
 namespace FAAST {
 	/** \brief A structure to hold predefined constants depending on the type. */
 	struct Constants {
-		const long HalfGCD_CROSSOVER;
+		mutable long HalfGCD_CROSSOVER;
 		Constants(const long h) : HalfGCD_CROSSOVER(h) {}
 	};
 

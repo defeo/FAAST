@@ -74,7 +74,7 @@ RecHalfGCD(FieldPolynomial<T>& U0, FieldPolynomial<T>& V0,
 	P1.RightShift(P, n);
 	Q1.RightShift(Q, n);
 
-	if (d*P.parent().degree() <= T::consts.HalfGCD_CROSSOVER) {
+	if (d <= T::consts.HalfGCD_CROSSOVER) {
 		IterHalfGCD<T>(U0, V0, U1, V1, P1, Q1, d);
 		return;
 	}
