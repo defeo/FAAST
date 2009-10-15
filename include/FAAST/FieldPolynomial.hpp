@@ -135,7 +135,7 @@ namespace FAAST {
 	 * \left(\begin{array}{c}P\\Q\end{array}\right) =
 	 * \left(\begin{array}{c}R_j\\R_{j+1}\end{array}\right)\f]
 	 * where \f$R_j\f$ and \f$R_{j+1}\f$ are the reminders in the XGCD computation of
-	 * \a P and \a Q such that \f$\deg R_{j+1}\le\max(\deg P,\deg Q)-d<\deg\R_j\f$.
+	 * \a P and \a Q such that \f$\deg R_{j+1}\le\max(\deg P,\deg Q)-d<\deg R_j\f$.
 	 * \relates FieldPolynomial
 	 */
 	friend void
