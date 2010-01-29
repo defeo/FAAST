@@ -1,5 +1,6 @@
 AM_CPPFLAGS = -DFAAST_TIMINGS -I$(srcdir)/../include
 
+bin_PROGRAMS = testNTLmul
 check_PROGRAMS = test testCyclotomic testGCD testIso testLE testStem testTraceFrob
 test_SOURCES = test.c++
 test_LDADD = ../src/libfaast.la

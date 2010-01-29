@@ -20,15 +20,13 @@ int main(int argv, char* argc[]) {
 	}
 
 	cout << "Using " << gfp::Infrastructure::name << endl << endl;
+	const gfp* K = &(gfp::createField(p,d));
 	cout << *K << " in " << cputime << endl << endl;
 	cout << "\tFAAST\tNTL" << endl;
 	for (int i = 1 ; i <= l ; i++) {
 		cout << i << "\t";
 		/** Construction **/
-		cputime = -NTL::GetTime();
 		K = &(K->ArtinSchreierExtension());
-		cputime += NTL::GetTime();
-		cout << cputime << "\t";
 
 		gfp_E a = K->random(), b = K->random();
 
@@ -42,11 +40,11 @@ int main(int argv, char* argc[]) {
 		/** NTL Multiplication **/
 		gfp::Infrastructure::GFpE A; a.toInfrastructure(A);
 		gfp::Infrastructure::GFpE B; a.toInfrastructure(B);
+		gfp::Infrastructure::GFpE C;
 		cputime = -GetTime();
 		for (int i = 0 ; i < 10 ; i++)
-			NTL::mul(A,B);
+			NTL::mul(C,A,B);
 		cputime += GetTime();
 		cout << cputime/10 << endl;
 	}
-	totaltime += GetTime();
 }
