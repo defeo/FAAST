@@ -64,8 +64,8 @@ Compling
 
 To compile FAAST, simply type
 
-	tar xzf faast-xxx.tgz
-	cd faast-xxx/
+	unzip FAAST-xxx.zip
+	cd FAAST-xxx/
 	./configure
 	make
 	make check
