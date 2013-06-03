@@ -4,17 +4,15 @@ FAAST is an open-source C++ library providing strongly object-oriented
 data structures and high-performance algorithms for elements and
 polynomials in Artin-Schreier towers over finite fields.
 
-The most recent version of FAAST is available at
-https://github.com/defeo/FAAST
+The latest stable version of FAAST is available at
+https://github.com/defeo/FAAST/archive/latest.zip.
 
-Contents:
-=========
+You can grab the latest sources from the GitHub repo at
+https://github.com/defeo/FAAST.
 
-This README contains
-
- - Copying Conditions
- - Installing Instructions
- - Using FAAST
+The API documentation is available at https://defeo.github.io/faast,
+or can be downloaded from
+https://github.com/defeo/FAAST/archive/gh-pages.zip.
 
 
 Copying Conditions:
@@ -41,8 +39,10 @@ Installing Instructions:
 
 Requirements
 ------------
+
 FAAST is built on top of Victor Shoup's NTL, you can download it at
-http://www.shoup.net/NTL/.
+http://www.shoup.net/NTL/. Only NTL 5.x is supported, work to port the
+library to NTL 6 is ongoing.
 
 There's a few libraries that affect how NTL works. GMP is a
 multiprecision arithmetic library that can be used by NTL to represent
@@ -61,6 +61,7 @@ can be found at http://www.shoup.net/ntl/doc/tour.html.
 
 Compling
 --------
+
 To compile FAAST, simply type
 
 	tar xzf faast-xxx.tgz
@@ -79,6 +80,7 @@ or gf2x if they are installed in some exotic directory; see `configure --help`.
 
 Installing
 ----------
+
 To install FAAST, from the compilation directory type
 
 	su
@@ -87,10 +89,15 @@ To install FAAST, from the compilation directory type
 The library will be installed to a default location, you can
 change this by giving a different `--prefix` to the configure script.
 
-Generating the documentation
-----------------------------
-This library is documented using doxygen and you must have it
-installed in order to generate the documentation. You can download
+Generating the API docs
+-----------------------
+
+The latest API docs are available online at
+https://defeo.github.io/faast, or can be downloaded from
+https://github.com/defeo/FAAST/archive/gh-pages.zip.
+
+If you wish, you can generate from your source pacakge. You must have
+installed the doxygen documentation system for this. You can download
 doxygen at http://www.doxygen.org/. You will also need LaTeX and
 Xy-pic to generate some formulae, graphs and two logos.
 
