@@ -1,10 +1,10 @@
 /**
 	\page Copying FAAST Copying Conditions
 
-	Copyright &copy; 2009 <a href="http://www.lix.polytechnique.fr/~defeo">Luca De Feo</a>
+	Copyright &copy; 2009-2013 <a href="http://defeo.lu/">Luca De Feo</a>
 	and <a href="http://www.cs.uwo.ca/~eschost">Éric Schost</a>.
 	
-	The most recent version of FAAST is available at http://www.lix.polytechnique.fr/~defeo/FAAST
+	The most recent version of FAAST is available at https://github.com/defeo/FAAST
 
 	FAAST is free software; you can redistribute it and/or
 	modify it under the terms of the GNU General Public License
