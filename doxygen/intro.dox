@@ -6,7 +6,7 @@
 	high-performance algorithms for elements and polynomials in Artin-Schreier
 	towers over finite fields.
 	
-	Remind that given a field \b K of characteristic \a p, an Artin-Schreier
+	Recall that given a field \b K of characteristic \a p, an Artin-Schreier
 	polynomial is a	polynomial of the form
 	\f[ X^p - X - a \f]
 	where \f$a\f$ is an element of \b K. When such	a polynomial is irreducible,
