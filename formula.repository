@@ -1,0 +1,25 @@
+\form#0:$ [\mathtt{K} : \mathtt{K.baseField()}] = p^\mathtt{height} $
+\form#1:$ X^p - X - \mathtt{alpha} $
+\form#2:\begin{equation} \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... + \mathtt{v[p-1]}*\mathtt{x}^{p-1} \mathrm{.} \end{equation}
+\form#3:\begin{equation} \mathtt{e} = \mathtt{v[0]} + \mathtt{v[1]}*\mathtt{x} + ... + \mathtt{v[p-1]}*\mathtt{x}^{p-1} \mathrm{,} \end{equation}
+\form#4:\[ \mathrm{T}_n(x) = \sum_{\ell=0}^{n-1} x^{p^\ell} \mathrm{.} \]
+\form#5:\[ P(x) = \mathtt{a}\mathrm{,} \]
+\form#6:\[ P\bigl(\phi_F^n(x)\bigr) = \phi_F^n(\mathtt{a}) \quad \forall n\mathrm{,} \]
+\form#7:$ \phi_F $
+\form#8:$d>\max(\deg P,\deg Q)$
+\form#9:$d<0$
+\form#10:\[\left(\begin{array}{cc}U_0&V_0\\U_1&V_1\end{array}\right) \left(\begin{array}{c}P\\Q\end{array}\right) = \left(\begin{array}{c}R_j\\R_{j+1}\end{array}\right)\]
+\form#11:$R_j$
+\form#12:$R_{j+1}$
+\form#13:$\deg R_{j+1}\le\max(\deg P,\deg Q)-d<\deg R_j$
+\form#14:\[ X^p - X - a \]
+\form#15:$a$
+\form#16:\[ X^p - X - a\mathrm{.} \]
+\form#17:\[F_p\]
+\form#18:\[\xymatrix{ \mathbf{K}_0 \ar@{-}[d]\\ F_p }\]
+\form#19:\[\xymatrix{ \mathbf{K}_1\ar@{-}[d]^p\\ \mathbf{K}_0 \ar@{-}[d]\\ F_p }\]
+\form#20:$ X^p - X - \mathtt{e} $
+\form#21:\[\xymatrix{ \mathbf{K}_1\ar@{-}[d]^p & \mathbf{L}_1\ar@{~}[l]\\ \mathbf{K}_0 \ar@{-}[d]\\ F_p }\]
+\form#22:$X^p - X - \mathtt{e}$
+\form#23:\[\xymatrix{ \mathbf{M}_1\ar@{~}[r] & \mathbf{K}_1\ar@{-}[d]^p & \mathbf{L}_1\ar@{~}[l]\\ & \mathbf{K}_0 \ar@{-}[d]\\ & F_p }\]
+\form#24:\[\xymatrix{ \mathbf{W}_n\ar@{~}[r] & \mathbf{K}_n\ar@{--}[dd] & \mathbf{Z}_n\ar@{~}[l]\\ \\ \mathbf{U}_2\ar@{~}[r] & \mathbf{K}_2\ar@{-}[d]^p & \mathbf{V}_2\ar@{~}[l]\\ \mathbf{M}_1\ar@{~}[r] & \mathbf{K}_1\ar@{-}[d]^p & \mathbf{L}_1\ar@{~}[l]\\ & \mathbf{K}_0 \ar@{-}[d]\\ & F_p }\]
