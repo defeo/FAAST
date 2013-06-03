@@ -50,81 +50,62 @@ namespace FAAST {
 	 */
 	class NotIrreducibleException : public FAASTException {
 	public:
-		virtual const char* what() const throw() {
-			return "NotIrreducibleException";
-		}
+		NotIrreducibleException() : FAASTException("NotIrreducibleException") {}
 	};
 	/**
 	 * \brief The polynomial is irreducible.
 	 */
 	class IsIrreducibleException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "IsIrreducibleException";
-		}
+		IsIrreducibleException() : FAASTException("IsIrreducibleException") {}
 	};
 	/**
 	 * \brief The number is not a prime.
 	 */
 	class NotPrimeException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NotPrimeException";
-		}
+		NotPrimeException() : FAASTException("NotPrimeException") {}
 	};
 	/**
 	 * \brief No overfield is known for the given field.
 	 */
 	class NoOverFieldException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NoOverFieldException";
-		}
+		NoOverFieldException() : FAASTException("NoOverFieldException") {}
 	};
 	/**
 	 * \brief No subfield is known for the given field.
 	 */
 	class NoSubFieldException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NoSubFieldException";
-		}
+		NoSubFieldException() : FAASTException("NoSubFieldException") {}
 	};
 	/**
 	 * \brief The field is not a subfield of the given field.
 	 */
 	class NotASubFieldException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NotASubFieldException";
-		}
+		NotASubFieldException() : FAASTException("NotASubFieldException") {}
 	};
 	/**
 	 * \brief The two elements do not belong to the same field.
 	 */
 	class NotInSameFieldException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NotInSameFieldException";
-		}
+		NotInSameFieldException() : FAASTException("NotInSameFieldException") {}
 	};
 	/**
 	 * \brief Division by zero.
 	 */
-	class DivisionByZeroException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "DivisionByZeroException";
-		}
+	class DivisionByZeroException : public FAASTException {
+	public:
+		DivisionByZeroException() : FAASTException("DivisionByZeroException") {}
 	};
 	/**
 	 * \brief The element cannot be coerced to the given field.
 	 */
 	class IllegalCoercionException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "IllegalCoercionException";
-		}
+		IllegalCoercionException() : FAASTException("IllegalCoercionException") {}
 	};
 	/**
 	 * \brief There is no polynomial with the given property.
 	 */
 	class NoSuchPolynomialException : public FAASTException {	public:
-		virtual const char* what() const throw() {
-			return "NoSuchPolynomialException";
-		}
+		NoSuchPolynomialException() : FAASTException("NoSuchPolynomialException") {}
 	};
 	/**
 	 * \brief The operation is not supported (yet?)
@@ -169,9 +150,7 @@ namespace FAAST {
 	 */
 	class UndefinedFieldException : public FAASTException {
 	public:
-		virtual const char* what() const throw() {
-			return "This is the 0 element of any field.";
-		}
+		UndefinedFieldException() : FAASTException("This is the 0 element of any field.") {}
 	};
 	/**
 	 * \brief The function does not accept such parameters.
@@ -186,9 +165,7 @@ namespace FAAST {
 	 */
 	class CharacteristicTooLargeException : public FAASTException {
 	public:
-		virtual const char* what() const throw() {
-			return "Do you really think it is wise to do computational\n Artin-Schreier theory in characteristic\n >= 2^(your machine word length) ?!";
-		}
+		CharacteristicTooLargeException() : FAASTException("Do you really think it is wise to do computational\n Artin-Schreier theory in characteristic\n >= 2^(your machine word length) ?!") {}
 	};
 
 	/**

@@ -43,13 +43,19 @@
 NTL_CLIENT
 
 namespace FAAST {
+	/** \brief A structure to hold predefined constants depending on the type. */
+	struct Constants {
+		mutable long HalfGCD_CROSSOVER;
+		Constants(const long h) : HalfGCD_CROSSOVER(h) {}
+	};
+
 	/**
 	 * \if DEV
 	 * \ingroup NTLhacks
 	 * \endif
 	 *
 	 * \brief A class providing automatic conversion between
-	 * \c ZZ and \c long types.
+	 * 22\c ZZ and \c long types.
 	 *
 	 * You can pass a \c ZZ as well as a \c long to
 	 * any function requiring a \c ZZ_auto as parameter.
@@ -167,6 +173,8 @@ namespace FAAST {
 		/** \brief Pre-condtioned polynomials over the field F<sub>p</sub>. */
 		typedef zz_pXMultiplier GFpXMultiplier;
 
+		/** \brief predefined constants */
+		static const Constants consts;
 		/** \brief The name of the Infrastructure */
 		static char const * const name;
 	};
@@ -208,6 +216,8 @@ namespace FAAST {
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef ZZ_pXMultiplier GFpXMultiplier;
 
+		/** \brief \copybrief zz_p_Algebra::consts */
+		static const Constants consts;
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
 	};
@@ -246,6 +256,8 @@ namespace FAAST {
 		/** \brief \copybrief zz_p_Algebra::GFpXMultiplier */
 		typedef GF2XTransMultiplier GFpXMultiplier;
 
+		/** \brief \copybrief zz_p_Algebra::consts */
+		static const Constants consts;
 		/** \brief \copybrief zz_p_Algebra::name */
 		static char const * const name;
 	};

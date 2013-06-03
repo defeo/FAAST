@@ -57,7 +57,7 @@ int main(int argv, char* argc[]) {
 #endif
 	cout << endl;
 
-	cout << "\tCreate\tPushDow\tLiftUp\tPreLift\tMul" << endl;
+	cout << "\tCreate\tPushDow\tLiftUp\tPreLift\tMul\tInv" << endl;
 	totaltime = -GetTime();
 	for (int i = 1 ; i <= l ; i++) {
 		cout << i << "\t";
@@ -98,6 +98,12 @@ int main(int argv, char* argc[]) {
 		/** Multiplication **/
 		cputime = -GetTime();
 		a*b;
+		cputime += GetTime();
+		cout << cputime << "\t";
+
+		/** Inversion **/
+		cputime = -GetTime();
+		if (a != 0) a.inv();
 		cputime += GetTime();
 		cout << cputime << endl;
 	}
