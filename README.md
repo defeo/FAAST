@@ -10,7 +10,7 @@ https://github.com/defeo/FAAST/archive/latest.zip.
 You can grab the latest sources from the GitHub repo at
 https://github.com/defeo/FAAST.
 
-The API documentation is available at https://defeo.github.io/faast,
+The API documentation is available at http://defeo.github.io/FAAST,
 or can be downloaded from
 https://github.com/defeo/FAAST/archive/gh-pages.zip.
 
@@ -93,7 +93,7 @@ Generating the API docs
 -----------------------
 
 The latest API docs are available online at
-https://defeo.github.io/faast, or can be downloaded from
+http://defeo.github.io/FAAST, or can be downloaded from
 https://github.com/defeo/FAAST/archive/gh-pages.zip.
 
 If you wish, you can generate from your source pacakge. You must have
